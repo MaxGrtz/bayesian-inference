@@ -10,7 +10,7 @@ class SampleResult:
 
     def __init__(self, model, samples, trace):
         self.model = model
-        self.samples = samples
+        self.samples = [tf.squeeze(part) for part in samples]
         self.trace = trace
         self.accept_ratios = tf.reduce_mean(tf.cast(self.trace[0], tf.float32), axis=0)
         self.potential_scale_reduction = tfp.mcmc.potential_scale_reduction(self.samples)
@@ -22,7 +22,7 @@ class SampleResult:
     def sample_statistics(self, format_as='namedtuple'):
         sample_stats = [[tf.reduce_mean(chains),
                          tfp.stats.stddev(chains, sample_axis=[0, 1]),
-                         *tf.unstack(percentiles), r_hat, tf.round(tf.reduce_sum(eff_ss))]
+                         *tf.unstack(percentiles), r_hat, tf.round(tf.reduce_mean(eff_ss))]
                         for chains, percentiles, r_hat, eff_ss
                         in zip(self.samples,
                                self.percentiles,
@@ -30,7 +30,7 @@ class SampleResult:
                                self.effective_sample_sizes)]
 
         distributions, _ = self.model.sample_distributions()
-        prior_params = ['_'.join(dist.name.split('_')[3:]) for dist in distributions[:-1]]
+        prior_params = [dist.name.split('_')[-1] for dist in distributions[:-1]]
         SampleStatistics = namedtuple('SampleStatistics', ['param', 'mean', 'stddev',
                                                            'min', 'HDI_95_lower', 'mode', 'HDI_95_upper', 'max',
                                                            'R_hat', 'eff_ss'])

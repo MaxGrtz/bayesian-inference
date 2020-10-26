@@ -3,15 +3,17 @@ import tensorflow_probability as tfp
 import tensorflow as tf
 from bayes_vi.mcmc.sample_results import SampleResult
 
+tfd = tfp.distributions
+
 
 class MCMC:
 
-    def __init__(self, model, y, x, constraining_bijectors, transition_kernel):
-        self.model = model
+    def __init__(self, model_fn, y, x, constraining_bijectors, transition_kernel):
         self.y = y
         self.x = x
+        self.model = tfd.JointDistributionCoroutine(model_fn(y, x))
         self.constraining_bijectors = constraining_bijectors
-        self.target_log_prob_fn = lambda *args: model.log_prob(args + (y,))
+        self.target_log_prob_fn = lambda *args: self.model.log_prob(args + (y,))
         self.transition_kernel = transition_kernel
 
 
