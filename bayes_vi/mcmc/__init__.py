@@ -11,7 +11,7 @@ class MCMC:
     def __init__(self, model_fn, y, x, constraining_bijectors, transition_kernel):
         self.y = y
         self.x = x
-        self.model = tfd.JointDistributionCoroutine(model_fn(y, x))
+        self.model = tfd.JointDistributionCoroutine(model_fn(x))
         self.constraining_bijectors = constraining_bijectors
         self.target_log_prob_fn = lambda *args: self.model.log_prob(args + (y,))
         self.transition_kernel = transition_kernel
