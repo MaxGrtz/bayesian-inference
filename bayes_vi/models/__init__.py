@@ -25,7 +25,7 @@ class FrequentistModel(Model):
 
     def __init__(self,
                  params: 'collections.OrderedDict[str, tf.Tensor]',
-                 likelihood: 'Callable[[Any], tfd.Distribution]',
+                 likelihood: Callable[[Any], tfd.Distribution],
                  constraining_bijectors: List[tfb.Bijector]) -> None:
         super(FrequentistModel, self).__init__(param_names=list(params.keys()),
                                                constraining_bijectors=constraining_bijectors)
@@ -49,7 +49,11 @@ class FrequentistModel(Model):
         else:
             likelihood = functools.partial(self.likelihood, features=None, targets=self.targets)
 
-        self.data_distribution = likelihood(**self.params)
+        self.data_distribution = tfd.JointDistributionNamedAutoBatched(
+            collections.OrderedDict(
+                y=likelihood(**self.params)
+            )
+        )
         return self
 
 
