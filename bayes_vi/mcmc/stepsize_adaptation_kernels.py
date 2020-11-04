@@ -4,8 +4,12 @@ import functools
 
 class StepSizeAdaptationKernel:
 
-    def __init__(self, num_adaptation_steps, target_accept_prob, step_size_setter_fn,
-                 step_size_getter_fn, log_accept_prob_getter_fn):
+    def __init__(self,
+                 num_adaptation_steps,
+                 target_accept_prob,
+                 step_size_setter_fn,
+                 step_size_getter_fn,
+                 log_accept_prob_getter_fn):
         self.num_adaptation_steps = num_adaptation_steps
         self.target_accept_prob = target_accept_prob
         self.step_size_setter_fn = step_size_setter_fn
@@ -24,8 +28,15 @@ class StepSizeAdaptationKernel:
 
 class SimpleStepSizeAdaptation(StepSizeAdaptationKernel):
 
-    def __init__(self, num_adaptation_steps, target_accept_prob=0.75, adaptation_rate=0.01,
-                 step_size_setter_fn=None, step_size_getter_fn=None, log_accept_prob_getter_fn=None):
+    def __init__(self,
+                 num_adaptation_steps,
+                 target_accept_prob=0.75,
+                 adaptation_rate=0.01,
+                 step_size_setter_fn=tfp.mcmc.simple_step_size_adaptation.hmc_like_step_size_setter_fn,
+                 step_size_getter_fn=tfp.mcmc.simple_step_size_adaptation.hmc_like_step_size_getter_fn,
+                 log_accept_prob_getter_fn=tfp.mcmc.simple_step_size_adaptation.hmc_like_log_accept_prob_getter_fn,
+                 validate_args=False,
+                 name=None):
         super(SimpleStepSizeAdaptation, self).__init__(num_adaptation_steps, target_accept_prob,
                                                        step_size_setter_fn, step_size_getter_fn,
                                                        log_accept_prob_getter_fn)
@@ -33,7 +44,12 @@ class SimpleStepSizeAdaptation(StepSizeAdaptationKernel):
         self.kernel = functools.partial(tfp.mcmc.SimpleStepSizeAdaptation,
                                         num_adaptation_steps=num_adaptation_steps,
                                         target_accept_prob=target_accept_prob,
-                                        adaptation_rate=adaptation_rate)
+                                        adaptation_rate=adaptation_rate,
+                                        step_size_setter_fn=step_size_setter_fn,
+                                        step_size_getter_fn=step_size_getter_fn,
+                                        log_accept_prob_getter_fn=log_accept_prob_getter_fn,
+                                        validate_args=validate_args,
+                                        name=name)
 
     def __call__(self, inner_kernel):
         return self.kernel(inner_kernel)
@@ -45,9 +61,18 @@ class SimpleStepSizeAdaptation(StepSizeAdaptationKernel):
 
 class DualAveragingStepSizeAdaptation(StepSizeAdaptationKernel):
 
-    def __init__(self, num_adaptation_steps, target_accept_prob=0.75, exploration_shrinkage=0.05,
-                 shrinkage_target=None, step_count_smoothing=10, decay_rate=0.75,
-                 step_size_setter_fn=None, step_size_getter_fn=None, log_accept_prob_getter_fn=None):
+    def __init__(self,
+                 num_adaptation_steps,
+                 target_accept_prob=0.75,
+                 exploration_shrinkage=0.05,
+                 shrinkage_target=None,
+                 step_count_smoothing=10,
+                 decay_rate=0.75,
+                 step_size_setter_fn=tfp.mcmc.simple_step_size_adaptation.hmc_like_step_size_setter_fn,
+                 step_size_getter_fn=tfp.mcmc.simple_step_size_adaptation.hmc_like_step_size_getter_fn,
+                 log_accept_prob_getter_fn=tfp.mcmc.simple_step_size_adaptation.hmc_like_log_accept_prob_getter_fn,
+                 validate_args=False,
+                 name=None):
         super(DualAveragingStepSizeAdaptation, self).__init__(num_adaptation_steps, target_accept_prob,
                                                               step_size_setter_fn, step_size_getter_fn,
                                                               log_accept_prob_getter_fn)
@@ -62,7 +87,12 @@ class DualAveragingStepSizeAdaptation(StepSizeAdaptationKernel):
                                         exploration_shrinkage=exploration_shrinkage,
                                         shrinkage_target=shrinkage_target,
                                         step_count_smoothing=step_count_smoothing,
-                                        decay_rate=decay_rate)
+                                        decay_rate=decay_rate,
+                                        step_size_setter_fn=step_size_setter_fn,
+                                        step_size_getter_fn=step_size_getter_fn,
+                                        log_accept_prob_getter_fn=log_accept_prob_getter_fn,
+                                        validate_args=validate_args,
+                                        name=name)
 
     def __call__(self, inner_kernel):
         return self.kernel(inner_kernel)

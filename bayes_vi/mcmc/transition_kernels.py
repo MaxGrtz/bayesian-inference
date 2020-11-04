@@ -1,5 +1,6 @@
-import tensorflow_probability as tfp
 import functools
+
+import tensorflow_probability as tfp
 
 
 class TransitionKernel:
@@ -20,11 +21,15 @@ class TransitionKernel:
 
 class HamiltonianMonteCarlo(TransitionKernel):
 
-    def __init__(self, step_size, num_leapfrog_steps, step_size_adaptation_kernel=None, state_gradients_are_stopped=False, seed=None, name=None):
+    def __init__(self,
+                 step_size,
+                 num_leapfrog_steps,
+                 state_gradients_are_stopped=False,
+                 seed=None,
+                 name=None):
         super(HamiltonianMonteCarlo, self).__init__(seed, name)
         self.state_gradients_are_stopped = state_gradients_are_stopped
         self.step_size = step_size
-        self.step_size_adaptation_kernel = step_size_adaptation_kernel
         self.num_leapfrog_steps = num_leapfrog_steps
         self.kernel = functools.partial(tfp.mcmc.HamiltonianMonteCarlo, step_size=step_size,
                                         num_leapfrog_steps=num_leapfrog_steps,
@@ -36,13 +41,19 @@ class HamiltonianMonteCarlo(TransitionKernel):
 
     @staticmethod
     def trace_fn(_, pkr):
-        return (pkr.is_accepted, )
+        return (pkr.is_accepted,)
 
 
 class NoUTurnSampler(TransitionKernel):
 
-    def __init__(self, step_size, max_tree_depth=10, max_energy_diff=1000.0, unrolled_leapfrog_steps=1,
-                 parallel_iterations=10, seed=None, name=None):
+    def __init__(self,
+                 step_size,
+                 max_tree_depth=10,
+                 max_energy_diff=1000.0,
+                 unrolled_leapfrog_steps=1,
+                 parallel_iterations=10,
+                 seed=None,
+                 name=None):
         super(NoUTurnSampler, self).__init__(seed, name)
         self.step_size = step_size
         self.max_tree_depth = max_tree_depth
@@ -60,7 +71,7 @@ class NoUTurnSampler(TransitionKernel):
 
     @staticmethod
     def trace_fn(_, pkr):
-        return (pkr.is_accepted, )
+        return (pkr.is_accepted,)
 
 
 class RandomWalkMetropolis(TransitionKernel):
@@ -76,25 +87,31 @@ class RandomWalkMetropolis(TransitionKernel):
 
     @staticmethod
     def trace_fn(_, pkr):
-        return (pkr.is_accepted, )
+        return (pkr.is_accepted,)
 
 
 class MetropolisAdjustedLangevinAlgorithm(TransitionKernel):
 
-    def __init__(self, step_size, volatility_fn=None,
-                 parallel_iterations=10, seed=None, name=None):
+    def __init__(self,
+                 step_size,
+                 volatility_fn=None,
+                 parallel_iterations=10,
+                 seed=None,
+                 name=None):
         super(MetropolisAdjustedLangevinAlgorithm, self).__init__(seed, name)
         self.step_size = step_size
         self.volatility_fn = volatility_fn
         self.parallel_iterations = parallel_iterations
-        self.kernel = functools.partial(tfp.mcmc.MetropolisAdjustedLangevinAlgorithm, step_size=step_size,
-                                        volatility_fn=volatility_fn, parallel_iterations=parallel_iterations,
-                                        seed=seed, name=name)
+        self.kernel = functools.partial(tfp.mcmc.MetropolisAdjustedLangevinAlgorithm,
+                                        step_size=step_size,
+                                        volatility_fn=volatility_fn,
+                                        parallel_iterations=parallel_iterations,
+                                        seed=seed,
+                                        name=name)
 
     def __call__(self, target_log_prob_fn):
         return self.kernel(target_log_prob_fn)
 
     @staticmethod
     def trace_fn(_, pkr):
-        return (pkr.is_accepted, )
-
+        return (pkr.is_accepted,)
