@@ -1,6 +1,6 @@
 import collections
 import functools
-from typing import Callable, List, Any, Dict, Union, OrderedDict
+from typing import Callable, List, Any, Dict, Union
 
 import tensorflow as tf
 import tensorflow_probability as tfp
@@ -24,7 +24,7 @@ class Model:
 class FrequentistModel(Model):
 
     def __init__(self,
-                 params: OrderedDict[str, tf.Tensor],
+                 params: collections.OrderedDict[str, tf.Tensor],
                  likelihood: Callable[[Any], tfd.Distribution],
                  constraining_bijectors: List[tfb.Bijector]) -> None:
         super(FrequentistModel, self).__init__(param_names=list(params.keys()),
@@ -56,7 +56,7 @@ class FrequentistModel(Model):
 class BayesianModel(Model):
 
     def __init__(self,
-                 priors: OrderedDict[str, Union[tfd.Distribution, Callable[[Any], tfd.Distribution]]],
+                 priors: collections.OrderedDict[str, Union[tfd.Distribution, Callable[[Any], tfd.Distribution]]],
                  likelihood: Callable[[Any], tfd.Distribution],
                  constraining_bijectors: List[tfb.Bijector]) -> None:
         super(BayesianModel, self).__init__(param_names=list(priors.keys()),

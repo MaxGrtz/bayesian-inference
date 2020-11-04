@@ -1,7 +1,6 @@
 import collections
 import functools
 from typing import Callable, Any, List
-from typing import OrderedDict
 
 import tensorflow as tf
 import tensorflow_probability as tfp
@@ -62,7 +61,7 @@ class MCMC(Inference):
                num_chains: int = 4,
                num_samples: int = 4000,
                num_burnin_steps: int = 1000,
-               initial_sample: OrderedDict[str, tf.Tensor] = None,
+               initial_sample: collections.OrderedDict[str, tf.Tensor] = None,
                jitter: float = 0.1,
                merge_states: bool = False):
 
