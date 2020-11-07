@@ -30,7 +30,7 @@ def make_dataset_from_df(df,
     if format_features_as not in ['tensor', 'dict']:
         raise ValueError('format_features_as has to be in ["tensor", "dict"]')
 
-    if not isinstance(y, list):
+    if not isinstance(target_names, list):
         raise TypeError('target_names has to be a List[str]')
 
     dict_map = lambda x, y: ({k: v[..., tf.newaxis] for k, v in x.items()}, y)
