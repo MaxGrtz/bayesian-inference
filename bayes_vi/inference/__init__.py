@@ -25,6 +25,22 @@ class Inference:
         self.dataset = dataset
 
 
+class MLE(Inference):
+
+    def __init__(self, model: Model, dataset: tf.data.Dataset):
+        super(MLE, self).__init__(model=model, dataset=dataset)
+        self.model = model
+        self.dataset = dataset
+
+
+class MAP(Inference):
+
+    def __init__(self, model: Model, dataset: tf.data.Dataset):
+        super(MAP, self).__init__(model=model, dataset=dataset)
+        self.model = model
+        self.dataset = dataset
+
+
 class MCMC(Inference):
 
     def __init__(self,
@@ -196,10 +212,3 @@ class VI(Inference):
             sample_size=sample_size, trainable_variables=trainable_variables, seed=seed, name=name
         )
 
-
-class MLE(Inference):
-
-    def __init__(self, model: Model, dataset: tf.data.Dataset):
-        super(MLE, self).__init__(model=model, dataset=dataset)
-        self.model = model
-        self.dataset = dataset

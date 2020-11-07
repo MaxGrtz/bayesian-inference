@@ -10,79 +10,99 @@ tfb = tfp.bijectors
 
 
 class Model:
+    """A probabilistic model in the Bayesian sense.
 
-    def __init__(self,
-                 param_names: List[str],
-                 constraining_bijectors: Union[List[tfb.Bijector], None]) -> None:
-        self.param_names = param_names
-        self.constraining_bijectors = constraining_bijectors
-
-    def __call__(self, *args, **kwargs):
-        pass
-
-
-class FrequentistModel(Model):
-
-    def __init__(self,
-                 params: 'collections.OrderedDict[str, tf.Tensor]',
-                 likelihood: Callable[[Any], tfd.Distribution],
-                 constraining_bijectors: List[tfb.Bijector]) -> None:
-        super(FrequentistModel, self).__init__(param_names=list(params.keys()),
-                                               constraining_bijectors=constraining_bijectors)
-        self.params = collections.OrderedDict(
-            [(k, tfp.util.TransformedVariable(v, bijector=bij))
-             for (k, v), bij in zip(params.items(), constraining_bijectors)]
-        )
-        self.likelihood = likelihood
-        self.features = None
-        self.targets = None
-        self.data_distribution = None
-
-    def __call__(self,
-                 features: Union[Dict[str, tf.Tensor], tf.Tensor],
-                 targets: tf.Tensor) -> Model:
-        self.features = features
-        self.targets = targets
-
-        if self.features is not None:
-            likelihood = functools.partial(self.likelihood, features=self.features, targets=self.targets)
-        else:
-            likelihood = functools.partial(self.likelihood, features=None, targets=self.targets)
-
-        self.data_distribution = tfd.JointDistributionNamedAutoBatched(
-            collections.OrderedDict(
-                y=likelihood(**self.params)
-            )
-        )
-        return self
-
-
-class BayesianModel(Model):
+    A Bayesian `Model` consists of:
+        a likelihood function (conditional distribution of the data),
+        an `collections.OrderedDict` of prior `tfp.distributions.Distribution` and
+        a list of constraining `tfp.bijectors.Bijector` (can possibly be inferred in later versions).
+    """
 
     def __init__(self,
                  priors: 'collections.OrderedDict[str, Union[tfd.Distribution, Callable[[Any], tfd.Distribution]]]',
                  likelihood: Callable[[Any], tfd.Distribution],
                  constraining_bijectors: List[tfb.Bijector]) -> None:
-        super(BayesianModel, self).__init__(param_names=list(priors.keys()),
-                                            constraining_bijectors=constraining_bijectors)
+        """Initializes the a `Model` instance.
+
+        Parameters
+        ----------
+        priors: `collections.OrderedDict[str, tfp.distributions.Distribution]`
+            An ordered mapping from parameter names (`str`) to `tfp.distributions.Distribution`
+            or callables returning a `tfp.distributions.Distribution` (conditional distributions).
+        likelihood: callable
+            A callable taking the model parameters, features and targets (of the dataset)
+            and returning a `tfp.distributions.Distribution`.
+        constraining_bijectors: `list` of `tfp.bijectors.Bijector`
+            A list of diffeomorphisms defined as `tfp.bijectors.Bijector`
+            to transform the parameters into unconstrained space R^n.
+
+        Attributes
+        ----------
+        priors: `collections.OrderedDict[str, tfp.distributions.Distribution]`
+            An ordered mapping from parameter names `str` to `tfp.distributions.Distribution`s
+            or callables returning a `tfp.distributions.Distribution` (conditional distributions).
+            The `tfp.distributions.Distribution`s may contain trainable hyperparameters
+            as `tf.Variable` or `tfp.util.TransformedVariable`.
+        param_names: `list` of `str`
+            A list of the ordered parameter names derived from `priors`.
+        likelihood: callable
+            A callable taking the model parameters, `features` and `targets` (of the dataset)
+            and returning a `tfp.distributions.Distribution`.
+        constraining_bijectors: `list` of `tfp.bijectors.Bijector`
+            A list of diffeomorphisms defined as `tfp.bijectors.Bijector`
+            to transform the parameters into unconstrained space R^n.
+        features: `tf.Tensor` or `dict[str, tf.Tensor]`
+            A single `tf.Tensor` of all features of the dataset of shape (N,m),
+            where N is the number of examples in the dataset (or batch) and m is the the number of features.
+            Or a mapping from feature names to a `tf.Tensor` of shape (N,1).
+        targets: `tf.Tensor`
+            A `tf.Tensor` of all target variables of shape (N,r),
+            where N is the number of examples in the dataset (or batch) and r is the number of targets.
+        distribution: `tfp.distributions.JointDistributionNamedAutoBatched`
+            A joint distribution (`tfp.distributions.JointDistributionNamedAutoBatched`)
+            of the `priors` and the `likelihood`, defining the Bayesian model.
+        """
         self.priors = priors
+        self.param_names = list(priors.keys())
         self.likelihood = likelihood
+        self.constraining_bijectors = constraining_bijectors
         self.features = None
         self.targets = None
-        self.joint_distribution = None
+        self.distribution = None
+
 
     def __call__(self,
                  features: Union[Dict[str, tf.Tensor], tf.Tensor],
-                 targets: tf.Tensor) -> Model:
+                 targets: tf.Tensor) -> self:
+        """Initializes the `Model` with data (`features` and `targets`) and construct the joint `distribution`.
+
+        Parameters
+        ----------
+        features: `tf.Tensor` or `dict[str, tf.Tensor]`
+            A single `tf.Tensor` of all features of the dataset of shape (N,m),
+            where N is the number of examples in the dataset (or batch) and m is the the number of features.
+            Or a mapping from feature names to a `tf.Tensor` of shape (N,1).
+        targets: `tf.Tensor`
+            A `tf.Tensor` of all target variables of shape (N,r),
+            where N is the number of examples in the dataset (or batch) and r is the number of targets.
+
+        Returns
+        -------
+        `Model`
+            The `Model` instance initialized with `features` and `targets` and the constructed joint `distribution`.
+
+        """
         self.features = features
         self.targets = targets
 
+        # closure of likelihood over the features and targets
         if self.features is not None:
             likelihood = functools.partial(self.likelihood, features=self.features, targets=self.targets)
         else:
             likelihood = functools.partial(self.likelihood, features=None, targets=self.targets)
 
-        self.joint_distribution = tfd.JointDistributionNamedAutoBatched(
+        # construct the joint distribution defining the Bayesian model
+        self.distribution = tfd.JointDistributionNamedAutoBatched(
             collections.OrderedDict(
                 **self.priors,
                 y=likelihood,
