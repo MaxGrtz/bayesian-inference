@@ -4,10 +4,10 @@ import pandas as pd
 import tensorflow as tf
 
 
-def make_dataset_from_df(df: pd.DataFrame,
-                         target_names: List[str],
-                         feature_names: List[str] = None,
-                         format_features_as: str = 'tensor') -> tf.data.Dataset:
+def make_dataset_from_df(df,
+                         target_names,
+                         feature_names=None,
+                         format_features_as='tensor'):
     """Constructs a `tf.data.Dataset` from a `pd.DataFrame` and lists of feature and target names.
 
     Parameters

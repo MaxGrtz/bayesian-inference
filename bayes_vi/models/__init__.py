@@ -19,9 +19,9 @@ class Model:
     """
 
     def __init__(self,
-                 priors: 'collections.OrderedDict[str, Union[tfd.Distribution, Callable[[Any], tfd.Distribution]]]',
-                 likelihood: Callable[[Any], tfd.Distribution],
-                 constraining_bijectors: List[tfb.Bijector]) -> None:
+                 priors,
+                 likelihood,
+                 constraining_bijectors):
         """Initializes the a `Model` instance.
 
         Parameters
@@ -72,8 +72,8 @@ class Model:
 
 
     def __call__(self,
-                 features: Union[Dict[str, tf.Tensor], tf.Tensor],
-                 targets: tf.Tensor) -> self:
+                 features,
+                 targets):
         """Initializes the `Model` with data (`features` and `targets`) and construct the joint `distribution`.
 
         Parameters
