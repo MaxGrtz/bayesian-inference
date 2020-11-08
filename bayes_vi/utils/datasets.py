@@ -23,6 +23,11 @@ def make_dataset_from_df(df,
         should return the features as a single `tf.Tensor` or as a `dict[str, tf.Tensor]`.
         Note: If 'dict' is chosen, the feature names can be used to
               index the `features` parameter of the likelihood function.
+
+    Returns
+    -------
+    `tf.data.Dataset`
+        A `tf.data.Dataset` consisting of the specified `features` and `targets`.
     """
     if not isinstance(df, pd.DataFrame):
         raise TypeError('df has to be of Type {}'.format(pd.DataFrame))
