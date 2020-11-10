@@ -1,6 +1,5 @@
 import collections
 import functools
-from typing import Callable, List, Any, Dict, Union
 
 import tensorflow as tf
 import tensorflow_probability as tfp
@@ -69,7 +68,6 @@ class Model:
         self.features = None
         self.targets = None
         self.distribution = None
-
 
     def __call__(self,
                  features,
