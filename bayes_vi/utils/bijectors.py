@@ -1,48 +1,69 @@
-from typing import List
 import tensorflow as tf
 import tensorflow_probability as tfp
 
-from bayes_vi.utils.functions import apply_fn, apply_fns, apply_inverse_bijector, apply_inverse_bijectors
+from tensorflow_probability.python.internal import dtype_util
+from tensorflow_probability.python.internal import prefer_static as ps
+from tensorflow_probability.python.internal import tensorshape_util
 
 tfd = tfp.distributions
 tfb = tfp.bijectors
 
 
-class TransformReshapeSplit(tfb.Bijector):
+class Mapper:
+    """Basically, this is a bijector without log-jacobian correction."""
 
-    def __init__(self,
-                 transforming_bijectors: List[tfb.Bijector],
-                 reshaping_bijectors: List[tfb.Reshape],
-                 split_bijector: tfb.Split,
-                 validate_args: bool = False,
-                 name: str = 'transform_reshape_split'):
-        super(TransformReshapeSplit, self).__init__(forward_min_event_ndims=1,
-                                                    inverse_min_event_ndims=1,
-                                                    validate_args=validate_args,
-                                                    name=name)
-        self.transforming_bijectors = transforming_bijectors
-        self.transform_forward = tfp.mcmc.transformed_kernel.make_transform_fn(self.transforming_bijectors, 'forward')
-        self.transform_inverse = tfp.mcmc.transformed_kernel.make_transform_fn(self.transforming_bijectors, 'inverse')
-        self.reshaping_bijectors = reshaping_bijectors
-        self.reshaping_forward = tfp.mcmc.transformed_kernel.make_transform_fn(self.reshaping_bijectors, 'forward')
-        self.reshaping_inverse = tfp.mcmc.transformed_kernel.make_transform_fn(self.reshaping_bijectors, 'inverse')
-        self.split_bijector = split_bijector
+    def __init__(self, list_of_tensors, list_of_bijectors, event_shape):
+        self.dtype = dtype_util.common_dtype(
+            list_of_tensors, dtype_hint=tf.float32)
+        self.list_of_tensors = list_of_tensors
+        self.bijectors = list_of_bijectors
+        self.event_shape = event_shape
 
-    def forward(self, x):
-        xs = self.split_bijector.forward(x)
-        return [*self.transform_forward(self.reshaping_forward(xs))]
+    def flatten_and_concat(self, list_of_tensors):
+        def _reshape_map_part(part, event_shape, bijector):
+            part = tf.cast(bijector.inverse(part), self.dtype)
+            static_rank = tf.get_static_value(ps.rank_from_shape(event_shape))
+            if static_rank == 1:
+                return part
+            new_shape = ps.concat([
+                ps.shape(part)[:ps.size(ps.shape(part)) - ps.size(event_shape)],
+                [-1]
+            ], axis=-1)
+            return tf.reshape(part, ps.cast(new_shape, tf.int32))
 
-    def inverse(self, ys):
-        xs = self.reshaping_inverse(self.transform_inverse(ys))
-        return self.split_bijector.inverse(xs)
+        x = tf.nest.map_structure(_reshape_map_part,
+                                  list_of_tensors,
+                                  self.event_shape,
+                                  self.bijectors)
+        return tf.concat(tf.nest.flatten(x), axis=-1)
 
-    def inverse_log_det_jacobian(self, y):
-        return 0.
+    def split_and_reshape(self, x):
+        assertions = []
+        message = 'Input must have at least one dimension.'
+        if tensorshape_util.rank(x.shape) is not None:
+            if tensorshape_util.rank(x.shape) == 0:
+                raise ValueError(message)
+        else:
+            assertions.append(assert_util.assert_rank_at_least(x, 1, message=message))
+        with tf.control_dependencies(assertions):
+            splits = [
+                tf.cast(ps.maximum(1, ps.reduce_prod(s)), tf.int32)
+                for s in tf.nest.flatten(self.event_shape)
+            ]
+            x = tf.nest.pack_sequence_as(
+                self.event_shape, tf.split(x, splits, axis=-1))
 
-    def forward_log_det_jacobian(self, x):
-        return 0.
+            def _reshape_map_part(part, part_org, event_shape, bijector):
+                part = tf.cast(bijector.forward(part), part_org.dtype)
+                static_rank = tf.get_static_value(ps.rank_from_shape(event_shape))
+                if static_rank == 1:
+                    return part
+                new_shape = ps.concat([ps.shape(part)[:-1], event_shape], axis=-1)
+                return tf.reshape(part, ps.cast(new_shape, tf.int32))
 
-
-    @classmethod
-    def _is_increasing(cls, **kwargs):
-        pass
+            x = tf.nest.map_structure(_reshape_map_part,
+                                      x,
+                                      self.list_of_tensors,
+                                      self.event_shape,
+                                      self.bijectors)
+        return x
