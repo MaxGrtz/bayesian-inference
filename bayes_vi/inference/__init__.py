@@ -1,4 +1,5 @@
 import tensorflow as tf
+import tensorflow_probability as tfp
 
 from bayes_vi.models import Model
 
@@ -19,7 +20,7 @@ class Inference:
     """
 
     def __init__(self, model, dataset):
-        """Initializes and Inference instance.
+        """Initializes an Inference instance.
 
         Parameters
         ----------
@@ -30,6 +31,7 @@ class Inference:
         """
         self.model = model
         self.dataset = dataset
+
 
     def fit(self, *args, **kwargs):
         """Fits the Bayesian model to the dataset.
@@ -49,3 +51,4 @@ class Inference:
             If the fit method is not implemented in a subclass.
         """
         raise NotImplementedError('fit is not yet implemented!')
+

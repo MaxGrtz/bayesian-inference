@@ -28,6 +28,8 @@ def make_dataset_from_df(df,
     -------
     `tf.data.Dataset`
         A `tf.data.Dataset` consisting of the specified `features` and `targets`.
+        Note: if `feature_names` are not provided, the dataset will return a default
+              `feature` tensor of the same shape as `targets`.
     """
     if not isinstance(df, pd.DataFrame):
         raise TypeError('df has to be of Type {}'.format(pd.DataFrame))
@@ -35,8 +37,8 @@ def make_dataset_from_df(df,
     if format_features_as not in ['tensor', 'dict']:
         raise ValueError('format_features_as has to be in ["tensor", "dict"]')
 
-    if not isinstance(target_names, list):
-        raise TypeError('target_names has to be a List[str]')
+    if not isinstance(target_names, list) and target_names != []:
+        raise TypeError('target_names has to be a non-empty List[str]')
 
     dict_map = lambda x, y: ({k: v[..., tf.newaxis] for k, v in x.items()}, y)
 
@@ -51,4 +53,4 @@ def make_dataset_from_df(df,
 
     else:
         targets = df[target_names]
-        return tf.data.Dataset.from_tensor_slices(targets.values)
+        return tf.data.Dataset.from_tensor_slices((tf.zeros_like(targets.values), targets.values))

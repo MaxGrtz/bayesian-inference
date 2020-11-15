@@ -5,13 +5,6 @@ import functools
 tfb = tfp.bijectors
 
 
-def make_val_and_grad_fn(value_fn):
-    @functools.wraps(value_fn)
-    def val_and_grad(x):
-        return tfp.math.value_and_gradient(value_fn, x)
-    return val_and_grad
-
-
 def apply_inverse_bijectors(bijectors, ys):
     return list(map(lambda bij, y: bij.inverse(y), bijectors, ys))
 
