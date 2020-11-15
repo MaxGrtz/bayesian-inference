@@ -240,7 +240,7 @@ class Model:
             _state = self.constrain_state(state)
 
         if to_dict:
-            return to_ordered_dict(self.model.param_names, _state)
+            return to_ordered_dict(self.param_names, _state)
         else:
             return _state
 
