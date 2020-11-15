@@ -74,7 +74,7 @@ class Model:
             to transform the parameters into unconstrained space R^n.
         """
         self.priors = collections.OrderedDict([(k, tfd.Sample(v, sample_shape=1))
-                                               if v.event_shape == [] and v.batch_shape == []
+                                               if not callable(v) and v.event_shape == [] and v.batch_shape == []
                                                else (k, v)
                                                for k, v in priors.items()])
         self.param_names = list(self.priors.keys())
