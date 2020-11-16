@@ -31,11 +31,13 @@ class SGD(Inference):
                                                       burnin=burnin,
                                                       **optimizer_kwargs)
         losses = self.training(batch_size=batch_size, repeat=repeat, shuffle=shuffle, epochs=epochs)
-        return losses, \
-               self.model.transform_state_forward(self.state), \
-               SampleResult(self.model,
-                            [tf.stack(param[burnin:]) for param in map(list, zip(*self.recorded_states))],
-                            None)
+
+        final_state = self.model.transform_state_forward(self.state)
+        samples = [tf.stack(param[burnin:]) for param in map(list, zip(*self.recorded_states))]
+        # reduce one dimensional params to scalar
+        samples = [tf.reshape(s, shape=s.shape[:-1]) if s.shape[-1] == 1 else s for s in samples]
+        sample_results = SampleResult(model=self.model, samples=samples, trace=None)
+        return losses, final_state, sample_results
 
     def loss(self, state, y):
         return - self.transformed_log_prob(self.model.split_bijector(state), y)
