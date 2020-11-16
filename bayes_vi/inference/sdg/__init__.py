@@ -3,6 +3,7 @@ import tensorflow_probability as tfp
 
 from bayes_vi.inference import Inference
 from bayes_vi.utils import make_transformed_log_prob, to_ordered_dict
+from bayes_vi.inference.mcmc.sample_results import SampleResult
 
 tfb = tfp.bijectors
 
@@ -32,7 +33,9 @@ class SGD(Inference):
         losses = self.training(batch_size=batch_size, repeat=repeat, shuffle=shuffle, epochs=epochs)
         return losses, \
                self.model.transform_state_forward(self.state), \
-               [tf.stack(param[burnin:]) for param in map(list, zip(*self.recorded_states))]
+               SampleResult(self.model,
+                            [tf.stack(param[burnin:]) for param in map(list, zip(*self.recorded_states))],
+                            None)
 
     def loss(self, state, y):
         return - self.transformed_log_prob(self.model.split_bijector(state), y)
