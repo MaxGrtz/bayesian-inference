@@ -79,6 +79,10 @@ class Model:
                                                for k, v in priors.items()])
         self.param_names = list(self.priors.keys())
         self.prior_distribution = tfd.JointDistributionNamedAutoBatched(self.priors)
+        self.posteriors = None
+        self.posterior_distribution = None
+        self.posterior_model = None
+        self.init_posterior_model_by_distribution(self.prior_distribution)
         self.constraining_bijectors = constraining_bijectors
         self.likelihood = likelihood
         self.is_generative_model = 'features' not in inspect.signature(likelihood).parameters.keys()
@@ -144,6 +148,46 @@ class Model:
             )
         return self
 
+    def init_posterior_model_by_samples(self, posterior_samples):
+        self.posteriors = collections.OrderedDict(
+            [(name, tfd.Empirical(tf.reshape(part, shape=(-1, *list(event_shape))), event_ndims=len(event_shape)))
+             for (name, part), event_shape
+             in zip(posterior_samples.items(), self.prior_distribution.event_shape.values())]
+        )
+        self.posterior_distribution = tfd.JointDistributionNamedAutoBatched(self.posteriors)
+
+        if not self.is_generative_model:
+            likelihood = functools.partial(self.likelihood, features=self.features)
+        else:
+            likelihood = self.likelihood
+
+        self.posterior_model = tfd.JointDistributionNamedAutoBatched(
+            collections.OrderedDict(
+                **self.posteriors,
+                y=likelihood,
+            )
+        )
+
+    def init_posterior_model_by_distribution(self, posterior_distribution):
+        if not isinstance(posterior_distribution, (tfd.JointDistributionNamed, tfd.JointDistributionNamedAutoBatched)):
+            raise TypeError("The `posterior_distribution` has to be a `tfp.distributions.JointDistributionNamed` "
+                            "or a `tfp.distributions.JointDistributionNamedAutoBatched`.")
+        self.posterior_distribution = posterior_distribution
+
+        self.posteriors, _ = self.posterior_distribution.sample_distributions()
+
+        if not self.is_generative_model:
+            likelihood = functools.partial(self.likelihood, features=self.features)
+        else:
+            likelihood = self.likelihood
+
+        self.posterior_model = tfd.JointDistributionNamedAutoBatched(
+            collections.OrderedDict(
+                **self.posteriors,
+                y=likelihood,
+            )
+        )
+        
     @tf.function
     def unnormalized_log_posterior_parts(self, prior_sample, targets):
         """Computes the unnormalized log posterior parts (prior log prob, data log prob).
@@ -230,6 +274,14 @@ class Model:
                 y=tf.reshape(targets, shape=[1] * len(sample_shape) + targets.shape)
             )
             return tf.reshape(self.distribution.log_prob_parts(state)['y'], shape=sample_shape)
+
+    @tf.function
+    def sample_prior_predictive(self, shape):
+        return self.distribution.sample(shape)['y']
+
+    @tf.function
+    def sample_posterior_predictive(self, shape):
+        return self.posterior_model.sample(shape)['y']
 
     @tf.function
     def transform_state_forward(self, state, split=True, to_dict=True):
