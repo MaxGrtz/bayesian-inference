@@ -82,7 +82,6 @@ class Model:
         self.posteriors = None
         self.posterior_distribution = None
         self.posterior_model = None
-        self.init_posterior_model_by_distribution(self.prior_distribution)
         self.constraining_bijectors = constraining_bijectors
         self.likelihood = likelihood
         self.is_generative_model = 'features' not in inspect.signature(likelihood).parameters.keys()
@@ -93,6 +92,7 @@ class Model:
                 y=likelihood,
             )
         )
+        self.init_posterior_model_by_distribution(self.prior_distribution)
 
         prior_sample = list(self.prior_distribution.sample().values())
 
@@ -187,7 +187,7 @@ class Model:
                 y=likelihood,
             )
         )
-        
+
     @tf.function
     def unnormalized_log_posterior_parts(self, prior_sample, targets):
         """Computes the unnormalized log posterior parts (prior log prob, data log prob).
