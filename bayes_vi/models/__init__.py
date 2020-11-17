@@ -92,7 +92,7 @@ class Model:
                 y=likelihood,
             )
         )
-        self.init_posterior_model_by_distribution(self.prior_distribution)
+        self.update_posterior_distribution_by_distribution(self.prior_distribution)
 
         prior_sample = list(self.prior_distribution.sample().values())
 
