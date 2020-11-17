@@ -148,7 +148,7 @@ class Model:
             )
         return self
 
-    def init_posterior_model_by_samples(self, posterior_samples):
+    def update_posterior_distribution_by_samples(self, posterior_samples):
         self.posteriors = collections.OrderedDict(
             [(name, tfd.Empirical(tf.reshape(part, shape=(-1, *list(event_shape))), event_ndims=len(event_shape)))
              for (name, part), event_shape
@@ -156,19 +156,8 @@ class Model:
         )
         self.posterior_distribution = tfd.JointDistributionNamedAutoBatched(self.posteriors)
 
-        if not self.is_generative_model:
-            likelihood = functools.partial(self.likelihood, features=self.features)
-        else:
-            likelihood = self.likelihood
 
-        self.posterior_model = tfd.JointDistributionNamedAutoBatched(
-            collections.OrderedDict(
-                **self.posteriors,
-                y=likelihood,
-            )
-        )
-
-    def init_posterior_model_by_distribution(self, posterior_distribution):
+    def update_posterior_distribution_by_distribution(self, posterior_distribution):
         if not isinstance(posterior_distribution, (tfd.JointDistributionNamed, tfd.JointDistributionNamedAutoBatched)):
             raise TypeError("The `posterior_distribution` has to be a `tfp.distributions.JointDistributionNamed` "
                             "or a `tfp.distributions.JointDistributionNamedAutoBatched`.")
@@ -281,7 +270,18 @@ class Model:
 
     @tf.function
     def sample_posterior_predictive(self, shape):
-        return self.posterior_model.sample(shape)['y']
+        if not self.is_generative_model:
+            likelihood = functools.partial(self.likelihood, features=self.features)
+        else:
+            likelihood = self.likelihood
+
+        posterior_model = tfd.JointDistributionNamedAutoBatched(
+            collections.OrderedDict(
+                **self.posteriors,
+                y=likelihood,
+            )
+        )
+        return posterior_model.sample(shape)['y']
 
     @tf.function
     def transform_state_forward(self, state, split=True, to_dict=True):
