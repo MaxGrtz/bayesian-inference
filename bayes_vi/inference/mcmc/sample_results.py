@@ -86,7 +86,6 @@ class SampleResult:
 
 
     @staticmethod
-    @tf.function
     def flatten_stats(param, stats):
         arr = stats[0]
         if len(arr.shape) != 0:
@@ -98,27 +97,26 @@ class SampleResult:
             return [param], [stats]
 
 
-    @tf.function
     def structured_results(self, results):
-        events = [s[0, 0] for s in results]
-        samples = [s.numpy() for s in results]
+        events = [r[0, 0] for r in results]
+        results = [r.numpy() for r in results]
         structured_results = collections.OrderedDict([])
-        for param, event, sample in zip(self.model.param_names, events, samples):
+        for param, event, result in zip(self.model.param_names, events, results):
             if len(event.shape) != 0:
                 indices = np.indices(event.shape).reshape(len(event.shape), -1).T
                 names = ['{}{}'.format(param, list(idx)) for idx in indices]
-                flat_samples = [sample[(slice(None), slice(None)) + tuple(idx)] for idx in indices]
+                flat_result = [result[(slice(None), slice(None)) + tuple(idx)] for idx in indices]
                 structured_result = collections.OrderedDict([
                   (name, collections.OrderedDict([
                       ('chain-{}'.format(c), v) for c, v in enumerate(s.T)
                   ]))
-                  for name, s in zip(names, flat_samples)
+                  for name, s in zip(names, flat_result)
                 ])
                 structured_results.update([(param, structured_result)])
             else:
                 structured_result = collections.OrderedDict([
                   (param, collections.OrderedDict([
-                      ('chain-{}'.format(c), v) for c, v in enumerate(sample.T)
+                      ('chain-{}'.format(c), v) for c, v in enumerate(result.T)
                   ]))])
                 structured_results.update([(param, structured_result)])
         return structured_results
