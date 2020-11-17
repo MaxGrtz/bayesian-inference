@@ -1,4 +1,4 @@
-from collections import namedtuple
+import collections
 from bayes_vi.utils import to_ordered_dict
 
 import numpy as np
@@ -69,9 +69,11 @@ class SampleResult:
                                self.r_hat,
                                self.eff_ss)]
 
-        SampleStatistics = namedtuple('SampleStatistics', ['param', 'mean', 'stddev', 'mcse',
-                                                           'min', 'HDI_95_lower', 'mode', 'HDI_95_upper', 'max',
-                                                           'R_hat', 'eff_ss'])
+        SampleStatistics = collections.namedtuple(
+            'SampleStatistics',
+            ['param', 'mean', 'stddev', 'mcse',
+             'min', 'HDI_95_lower', 'mode', 'HDI_95_upper', 'max',
+             'R_hat', 'eff_ss'])
         sample_statistics_tuples = [SampleStatistics._make([name, *flat_stat])
                                     for param, stats in zip(self.model.param_names, sample_stats)
                                     for name, flat_stat in zip(*self.flatten_stats(param, stats))]
