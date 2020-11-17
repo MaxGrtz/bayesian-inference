@@ -170,17 +170,6 @@ class Model:
 
         self.posteriors, _ = self.posterior_distribution.sample_distributions()
 
-        if not self.is_generative_model:
-            likelihood = functools.partial(self.likelihood, features=self.features)
-        else:
-            likelihood = self.likelihood
-
-        self.posterior_model = tfd.JointDistributionNamedAutoBatched(
-            collections.OrderedDict(
-                **self.posteriors,
-                y=likelihood,
-            )
-        )
 
     @tf.function
     def unnormalized_log_posterior_parts(self, prior_sample, targets):
