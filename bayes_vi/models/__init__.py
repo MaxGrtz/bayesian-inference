@@ -149,6 +149,11 @@ class Model:
         return self
 
     def update_posterior_distribution_by_samples(self, posterior_samples):
+        if isinstance(posterior_samples, list):
+            posterior_samples = to_ordered_dict(self.param_names, posterior_samples)
+        if not isinstance(posterior_samples, collections.OrderedDict):
+            raise TypeError("`posterior_samples` have to be of type `list` or `collections.OrderedDict`.")
+
         self.posteriors = collections.OrderedDict(
             [(name, tfd.Empirical(tf.reshape(part, shape=(-1, *list(event_shape))), event_ndims=len(event_shape)))
              for (name, part), event_shape
@@ -265,11 +270,11 @@ class Model:
             return tf.reshape(self.distribution.log_prob_parts(state)['y'], shape=sample_shape)
 
     @tf.function
-    def sample_prior_predictive(self, shape):
+    def sample_prior_predictive(self, shape=()):
         return self.distribution.sample(shape)['y']
 
     @tf.function
-    def sample_posterior_predictive(self, shape):
+    def sample_posterior_predictive(self, shape=()):
         if not self.is_generative_model:
             likelihood = functools.partial(self.likelihood, features=self.features)
         else:

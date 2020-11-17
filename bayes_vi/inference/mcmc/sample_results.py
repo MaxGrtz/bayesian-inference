@@ -1,4 +1,5 @@
 from collections import namedtuple
+from bayes_vi.utils import to_ordered_dict
 
 import numpy as np
 import pandas as pd
@@ -85,6 +86,7 @@ class SampleResult:
 
 
     @staticmethod
+    @tf.function
     def flatten_stats(param, stats):
         arr = stats[0]
         if len(arr.shape) != 0:
@@ -94,3 +96,29 @@ class SampleResult:
             return names, flat_stats
         else:
             return [param], [stats]
+
+
+    @tf.function
+    def structured_results(self, results):
+        events = [s[0, 0] for s in results]
+        samples = [s.numpy() for s in results]
+        structured_results = collections.OrderedDict([])
+        for param, event, sample in zip(self.model.param_names, events, samples):
+            if len(event.shape) != 0:
+                indices = np.indices(event.shape).reshape(len(event.shape), -1).T
+                names = ['{}{}'.format(param, list(idx)) for idx in indices]
+                flat_samples = [sample[(slice(None), slice(None)) + tuple(idx)] for idx in indices]
+                structured_result = collections.OrderedDict([
+                  (name, collections.OrderedDict([
+                      ('chain-{}'.format(c), v) for c, v in enumerate(s.T)
+                  ]))
+                  for name, s in zip(names, flat_samples)
+                ])
+                structured_results.update([(param, structured_result)])
+            else:
+                structured_result = collections.OrderedDict([
+                  (param, collections.OrderedDict([
+                      ('chain-{}'.format(c), v) for c, v in enumerate(sample.T)
+                  ]))])
+                structured_results.update([(param, structured_result)])
+        return structured_results
