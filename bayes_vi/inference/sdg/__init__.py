@@ -23,13 +23,25 @@ class SGD(Inference):
                                                               bijector=self.model.reshape_constrain_bijectors,
                                                               direction='forward')
 
-    def fit(self, initial_state, burnin=25, batch_size=25, repeat=1, shuffle=1000, epochs=10, **optimizer_kwargs):
+    def fit(self,
+            initial_state,
+            max_learning_rate=1.0,
+            preconditioner_decay_rate=0.95,
+            burnin=25,
+            burnin_max_learning_rate=1e-06,
+            batch_size=25,
+            repeat=1,
+            shuffle=1000,
+            epochs=10):
         self.state = tf.Variable(self.model.transform_state_inverse(initial_state))
         self.data_batch_ratio = self.num_examples // batch_size
-        self.optimizer = tfp.optimizer.VariationalSGD(batch_size,
-                                                      self.num_examples,
+        self.optimizer = tfp.optimizer.VariationalSGD(batch_size=batch_size,
+                                                      total_num_examples=self.num_examples,
+                                                      max_learning_rate=max_learning_rate,
+                                                      preconditioner_decay_rate=preconditioner_decay_rate,
                                                       burnin=burnin,
-                                                      **optimizer_kwargs)
+                                                      burnin_max_learning_rate=burnin_max_learning_rate)
+        
         losses = self.training(batch_size=batch_size, repeat=repeat, shuffle=shuffle, epochs=epochs)
 
         final_state = self.model.transform_state_forward(self.state)
