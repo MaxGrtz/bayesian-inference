@@ -76,27 +76,34 @@ class BFGS(Inference):
     def __init__(self, model, dataset):
         super(BFGS, self).__init__(model=model, dataset=dataset)
 
-    @tf.function
-    def fit(self, initial_state, target_log_prob, num_parallel_runs=1, jitter=0.1, save_memory=True, **optimizer_kwargs):
+    def fit(self, initial_state, target_log_prob, num_parallel_runs=1, jitter=0.1, limited_memory=True, **optimizer_kwargs):
         unconstrained_state = self.model.transform_state_inverse(initial_state)
-        initial_pos = [tf.random.normal(unconstrained_state.shape, mean=unconstrained_state, stddev=jitter)
-                       if float(jitter) != 0. else unconstrained_state for _ in range(num_parallel_runs)]
+        initial_position = [tf.random.normal(unconstrained_state.shape, mean=unconstrained_state, stddev=jitter)
+                            if float(jitter) != 0. else unconstrained_state for _ in range(num_parallel_runs)]
 
         loss = lambda state: - target_log_prob(self.model.transform_state_forward(state))
 
-        if save_memory:
-            res = tfp.optimizer.lbfgs_minimize(
-                value_and_gradients_function=make_val_and_grad_fn(loss),
-                initial_position=initial_pos,
-                **optimizer_kwargs
-            )
+        if limited_memory:
+            res = self.lbfgs_minimize(loss, initial_position, **optimizer_kwargs)
         else:
-            res = tfp.optimizer.bfgs_minimize(
-                value_and_gradients_function=make_val_and_grad_fn(loss),
-                initial_position=initial_pos,
-                **optimizer_kwargs
-            )
+            res = self.bfgs_minimize(loss, initial_position, **optimizer_kwargs)
 
         return res, \
                [self.model.transform_state_forward(x) for x in res.position[res.converged]], \
                [self.model.transform_state_forward(x) for x in res.position[~res.converged]]
+
+    @tf.function
+    def lbfgs_minimize(self, loss, initial_position, **optimizer_kwargs):
+        return tfp.optimizer.lbfgs_minimize(
+                value_and_gradients_function=make_val_and_grad_fn(loss),
+                initial_position=initial_position,
+                **optimizer_kwargs
+        )
+
+    @tf.function
+    def bfgs_minimize(self, loss, initial_position, **optimizer_kwargs):
+        return tfp.optimizer.bfgs_minimize(
+                value_and_gradients_function=make_val_and_grad_fn(loss),
+                initial_position=initial_position,
+                **optimizer_kwargs
+        )
