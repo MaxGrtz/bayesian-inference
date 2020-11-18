@@ -76,6 +76,7 @@ class BFGS(Inference):
     def __init__(self, model, dataset):
         super(BFGS, self).__init__(model=model, dataset=dataset)
 
+    @tf.function
     def fit(self, initial_state, target_log_prob, num_parallel_runs=1, jitter=0.1, save_memory=True, **optimizer_kwargs):
         unconstrained_state = self.model.transform_state_inverse(initial_state)
         initial_pos = [tf.random.normal(unconstrained_state.shape, mean=unconstrained_state, stddev=jitter)

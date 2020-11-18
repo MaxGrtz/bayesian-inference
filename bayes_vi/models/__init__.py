@@ -170,7 +170,6 @@ class Model:
 
         self.posteriors, _ = self.posterior_distribution.sample_distributions()
 
-
     @tf.function
     def unnormalized_log_posterior_parts(self, prior_sample, targets):
         """Computes the unnormalized log posterior parts (prior log prob, data log prob).
@@ -258,11 +257,9 @@ class Model:
             )
             return tf.reshape(self.distribution.log_prob_parts(state)['y'], shape=sample_shape)
 
-    @tf.function
     def sample_prior_predictive(self, shape=()):
         return self.distribution.sample(shape)['y']
 
-    @tf.function
     def sample_posterior_predictive(self, shape=()):
         if not self.is_generative_model:
             likelihood = functools.partial(self.likelihood, features=self.features)
