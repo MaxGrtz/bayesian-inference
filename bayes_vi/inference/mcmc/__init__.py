@@ -9,7 +9,7 @@ from bayes_vi.inference.mcmc.sample_results import SampleResult
 from bayes_vi.inference.mcmc.stepsize_adaptation_kernels import StepSizeAdaptationKernel
 from bayes_vi.inference.mcmc.transition_kernels import TransitionKernel, HamiltonianMonteCarlo
 from bayes_vi.models import Model
-from bayes_vi.utils.functions import compose
+from bayes_vi.utils import compose
 from bayes_vi.utils import to_ordered_dict, make_transformed_log_prob
 
 tfd = tfp.distributions

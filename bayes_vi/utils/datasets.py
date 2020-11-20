@@ -7,7 +7,7 @@ import tensorflow as tf
 def make_dataset_from_df(df,
                          target_names,
                          feature_names=None,
-                         format_features_as='tensor'):
+                         format_features_as='dict'):
     """Constructs a `tf.data.Dataset` from a `pd.DataFrame` and lists of feature and target names.
 
     Parameters

@@ -11,6 +11,8 @@ class Inference:
         a Bayesian `Model` and
         a `tf.data.Dataset`.
 
+    Note: Every subclass has to implement a `fit` method.
+
     Attributes
     ----------
     model: `Model`

@@ -152,6 +152,18 @@ def make_val_and_grad_fn(value_fn):
     return val_and_grad
 
 
+def compose(fns):
+    def composition(*args, fns_):
+        res = fns_[0](*args)
+        for f in fns_[1:]:
+            res = f(*res)
+        return res
+
+    return functools.partial(composition, fns_=fns)
+
+
 def to_ordered_dict(param_names, state):
     """Transforms list of state parts into collections.OrderedDict with given param names."""
     return collections.OrderedDict([(k, v) for k, v in zip(param_names, state)])
+
+
