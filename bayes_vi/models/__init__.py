@@ -107,10 +107,7 @@ class Model:
             while the forward transformation constrains the parameter sample to the allowed range.
         """
         self.param_names = list(priors.keys())
-        self.priors = collections.OrderedDict([(k, tfd.Sample(v, sample_shape=1))
-                                               if not callable(v) and v.event_shape == [] and v.batch_shape == []
-                                               else (k, v)
-                                               for k, v in priors.items()])
+        self.priors = collections.OrderedDict(priors)
         self.prior_distribution = tfd.JointDistributionNamedAutoBatched(self.priors)
 
         self.likelihood = likelihood

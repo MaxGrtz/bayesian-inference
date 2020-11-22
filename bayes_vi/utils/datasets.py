@@ -44,7 +44,7 @@ def make_dataset_from_df(df,
 
     if isinstance(feature_names, list) and feature_names != []:
         features = df[feature_names]
-        targets = df[target_names]
+        targets = df[target_names[0]] if len(target_names) == 1 else df[target_names]
 
         if format_features_as == 'tensor':
             return tf.data.Dataset.from_tensor_slices((features.values, targets.values))
