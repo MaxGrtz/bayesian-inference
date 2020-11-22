@@ -245,8 +245,13 @@ class Model:
         """
         state = prior_sample.copy()
 
-        sample_shape = list(state.values())[0].shape[:-len(list(self.distribution.event_shape.values())[0])]
+        event_shape_ndims_first_param = len(list(self.distribution.event_shape.values())[0])
 
+        if event_shape_ndims_first_param > 0:
+            sample_shape = list(state.values())[0].shape[:-event_shape_ndims_first_param]
+        else:
+            sample_shape = list(state.values())[0].shape
+            
         if self.features is None:
             state.update(
                 y=tf.reshape(targets, shape=[targets.shape[0]] + [1] * len(sample_shape) + targets.shape[1:])
@@ -304,7 +309,12 @@ class Model:
         """
         state = prior_sample.copy()
 
-        sample_shape = list(state.values())[0].shape[:-len(list(self.distribution.event_shape.values())[0])]
+        event_shape_ndims_first_param = len(list(self.distribution.event_shape.values())[0])
+
+        if event_shape_ndims_first_param > 0:
+            sample_shape = list(state.values())[0].shape[:-event_shape_ndims_first_param]
+        else:
+            sample_shape = list(state.values())[0].shape
 
         if self.features is None:
             state.update(
