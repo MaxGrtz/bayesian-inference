@@ -43,7 +43,7 @@ def make_dataset_from_df(df,
     dict_map = lambda x, y: ({k: v[..., tf.newaxis] for k, v in x.items()}, y)
 
     if isinstance(feature_names, list) and feature_names != []:
-        features = df[feature_names]
+        features = df[feature_names[0]] if len(feature_names) == 1 else df[feature_names]
         targets = df[target_names[0]] if len(target_names) == 1 else df[target_names]
 
         if format_features_as == 'tensor':
@@ -52,5 +52,5 @@ def make_dataset_from_df(df,
             return tf.data.Dataset.from_tensor_slices((dict(features), targets.values)).map(dict_map)
 
     else:
-        targets = df[target_names]
+        targets = df[target_names[0]] if len(target_names) == 1 else df[target_names]
         return tf.data.Dataset.from_tensor_slices((tf.zeros_like(targets.values), targets.values))
