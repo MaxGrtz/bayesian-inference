@@ -251,7 +251,7 @@ class Model:
             sample_shape = list(state.values())[0].shape[:-event_shape_ndims_first_param]
         else:
             sample_shape = list(state.values())[0].shape
-            
+
         if self.features is None:
             state.update(
                 y=tf.reshape(targets, shape=[targets.shape[0]] + [1] * len(sample_shape) + targets.shape[1:])

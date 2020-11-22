@@ -40,7 +40,7 @@ def make_dataset_from_df(df,
     if not isinstance(target_names, list) and target_names != []:
         raise TypeError('target_names has to be a non-empty List[str]')
 
-    dict_map = lambda x, y: ({k: v[..., tf.newaxis] for k, v in x.items()}, y)
+    dict_map = lambda x, y: ({k: v for k, v in x.items()}, y)
 
     if isinstance(feature_names, list) and feature_names != []:
         features = df[feature_names[0]] if len(feature_names) == 1 else df[feature_names]
