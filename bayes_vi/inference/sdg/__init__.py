@@ -1,6 +1,6 @@
 import tensorflow as tf
 import tensorflow_probability as tfp
-from copy import copy
+from copy import deepcopy
 from bayes_vi.inference import Inference
 from bayes_vi.utils import make_transformed_log_prob, to_ordered_dict
 from bayes_vi.inference.mcmc.sample_results import SampleResult
@@ -56,7 +56,6 @@ class SGD(Inference):
 
         final_state = self.split_reshape_constrain_and_to_dict(self.state)
         samples = list(self.split_reshape_constrain_and_to_dict(tf.stack(self.recorded_states[burnin:])).values())
-        print(samples)
         sample_results = SampleResult(model=self.model, samples=samples, trace=None)
         return losses, final_state, sample_results
 
@@ -73,7 +72,7 @@ class SGD(Inference):
                 # self.recorded_states.append(
                 #     list(self.split_reshape_constrain_and_to_dict(self.state).values())
                 # )
-                self.recorded_states.append(copy(self.state))
+                self.recorded_states.append(deepcopy(self.state))
                 self.model = self.model(x)
                 loss = self.train_step(y)
                 losses.append(loss)
