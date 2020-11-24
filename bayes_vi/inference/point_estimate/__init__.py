@@ -53,7 +53,6 @@ class PointEstimate(Inference):
                 losses.append(loss)
         return losses
 
-    @tf.function
     def train_step(self, y):
         with tf.GradientTape() as tape:
             loss = self.loss(self.state, y)
@@ -69,7 +68,6 @@ class MLE(PointEstimate):
     def __init__(self, model, dataset):
         super(MLE, self).__init__(model=model, dataset=dataset)
 
-    @tf.function
     def loss(self, state, y):
         return - self.model.log_likelihood(self.split_reshape_constrain_and_to_dict(self.state), y)
 
@@ -79,7 +77,6 @@ class MAP(PointEstimate):
     def __init__(self, model, dataset):
         super(MAP, self).__init__(model=model, dataset=dataset)
 
-    @tf.function
     def loss(self, state, y):
         prior_log_prob, data_log_prob = self.model.unnormalized_log_posterior_parts(
             self.split_reshape_constrain_and_to_dict(self.state), y)
@@ -109,6 +106,7 @@ class BFGS(PointEstimate):
                self.split_reshape_constrain_and_to_dict(res.position[res.converged]), \
                self.split_reshape_constrain_and_to_dict(res.position[~res.converged])
 
+    @tf.function
     def loss(self, state):
         return - self.target_log_prob(self.split_reshape_constrain_and_to_dict(state))
 
