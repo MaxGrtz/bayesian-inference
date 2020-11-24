@@ -128,7 +128,9 @@ class MCMC(Inference):
         )
 
         if merge_state_parts:
-            samples = [samples]
+            samples = self.model.reshape_flat_constrained_sample(
+                self.model.split_constrained_bijector.forward(samples)
+            )
 
         # return `SampleResult` object containing samples, trace and statistics
         return SampleResult(self.model, samples, trace)
