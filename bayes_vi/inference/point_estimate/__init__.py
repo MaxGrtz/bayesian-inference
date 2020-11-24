@@ -16,6 +16,9 @@ class PointEstimate(Inference):
         super(PointEstimate, self).__init__(model=model, dataset=dataset)
         self.state = None
         self.optimizer = None
+        self.num_examples = int(self.dataset.cardinality())
+        self.batch_size = None
+        self.data_batch_ratio = None
         self.unconstrain_flatten_and_merge = lambda state: self.model.split_unconstrained_bijector.inverse(
             self.model.flatten_unconstrained_sample(
                 self.model.unconstrain_sample(state.values())
@@ -33,7 +36,9 @@ class PointEstimate(Inference):
     def fit(self, initial_state, optimizer, batch_size=25, repeat=1, shuffle=1000, epochs=10):
         self.state = tf.Variable(self.unconstrain_flatten_and_merge(initial_state))
         self.optimizer = optimizer
-        losses = self.training(batch_size=batch_size, repeat=repeat, shuffle=shuffle, epochs=epochs)
+        self.batch_size = batch_size
+        self.data_batch_ratio = self.num_examples // self.batch_size
+        losses = self.training(batch_size=self.batch_size, repeat=repeat, shuffle=shuffle, epochs=epochs)
         return losses, self.split_reshape_constrain_and_to_dict(self.state)
 
     def loss(self, state, y):
@@ -76,9 +81,11 @@ class MAP(PointEstimate):
 
     @tf.function
     def loss(self, state, y):
-        # TODO: base loss on mean and scale down prior log probs for batched version
-        return - self.model.unnormalized_log_posterior(self.split_reshape_constrain_and_to_dict(self.state), y) \
-               - self.model.target_log_prob_correction_forward(state)
+        prior_log_prob, data_log_prob = self.model.unnormalized_log_posterior_parts(
+            self.split_reshape_constrain_and_to_dict(self.state), y)
+        jacobian_det_correction = self.model.target_log_prob_correction_forward(state)
+        return - (prior_log_prob + jacobian_det_correction) / self.data_batch_ratio \
+               - data_log_prob
 
 
 class BFGS(PointEstimate):

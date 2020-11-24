@@ -14,6 +14,7 @@ class SGD(Inference):
         super(SGD, self).__init__(model=model, dataset=dataset)
         self.state = None
         self.num_examples = int(self.dataset.cardinality())
+        self.batch_size = None
         self.data_batch_ratio = None
         self.recorded_states = []
         self.optimizer = None
@@ -44,15 +45,16 @@ class SGD(Inference):
             shuffle=1000,
             epochs=10):
         self.state = tf.Variable(self.unconstrain_flatten_and_merge(initial_state))
-        self.data_batch_ratio = self.num_examples // batch_size
-        self.optimizer = tfp.optimizer.VariationalSGD(batch_size=batch_size,
+        self.batch_size = batch_size
+        self.data_batch_ratio = self.num_examples // self.batch_size
+        self.optimizer = tfp.optimizer.VariationalSGD(batch_size=self.batch_size,
                                                       total_num_examples=self.num_examples,
                                                       max_learning_rate=max_learning_rate,
                                                       preconditioner_decay_rate=preconditioner_decay_rate,
                                                       burnin=burnin,
                                                       burnin_max_learning_rate=burnin_max_learning_rate)
         
-        losses = self.training(batch_size=batch_size, repeat=repeat, shuffle=shuffle, epochs=epochs)
+        losses = self.training(batch_size=self.batch_size, repeat=repeat, shuffle=shuffle, epochs=epochs)
 
         final_state = self.split_reshape_constrain_and_to_dict(self.state)
         samples = list(self.split_reshape_constrain_and_to_dict(tf.stack(self.recorded_states[burnin:])).values())
@@ -61,9 +63,11 @@ class SGD(Inference):
 
     @tf.function
     def loss(self, state, y):
-        # TODO: base loss on mean and scale down prior log probs for batched version
-        return - self.model.unnormalized_log_posterior(self.split_reshape_constrain_and_to_dict(self.state), y) \
-               - self.model.target_log_prob_correction_forward(state)
+        prior_log_prob, data_log_prob = self.model.unnormalized_log_posterior_parts(
+            self.split_reshape_constrain_and_to_dict(self.state), y)
+        jacobian_det_correction = self.model.target_log_prob_correction_forward(state)
+        return - (prior_log_prob + jacobian_det_correction) / self.data_batch_ratio \
+               - data_log_prob
 
     def training(self, batch_size, repeat, shuffle, epochs):
         losses = []
