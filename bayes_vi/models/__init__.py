@@ -448,7 +448,7 @@ class Model:
             try:
                 # for flattened unconstrained sample parts
                 sample_ = self.reshape_constrain_sample(sample_)
-            except tf.errors.InvalidArgumentError:
+            except:
                 # for non flattened unconstrained sample parts
                 sample_ = self.constrain_sample(sample_)
 
@@ -475,7 +475,7 @@ class Model:
                     bij.forward_log_det_jacobian(x, event_ndims=1)
                     for bij, x in zip(self.reshape_constraining_bijectors, sample_)
                 )
-            except tf.errors.InvalidArgumentError:
+            except:
                 # for non flattened unconstrained sample parts
                 return sum(
                     bij.forward_log_det_jacobian(x, event_ndims=len(event_shape))
@@ -516,7 +516,7 @@ class Model:
             try:
                 # for flattened constrained sample parts
                 sample_ = self.reshape_unconstrain_sample(sample_)
-            except tf.errors.InvalidArgumentError:
+            except:
                 # for non flattened constrained sample parts
                 sample_ = self.unconstrain_sample(sample_)
 
@@ -543,7 +543,7 @@ class Model:
                     bij.inverse_log_det_jacobian(x, event_ndims=1)
                     for bij, x in zip(self.reshape_constraining_bijectors, sample_)
                 )
-            except tf.errors.InvalidArgumentError:
+            except:
                 # for non flattened constrained sample parts
                 return sum(
                     bij.inverse_log_det_jacobian(x, event_ndims=len(event_shape))
