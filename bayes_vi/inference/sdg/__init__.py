@@ -61,6 +61,7 @@ class SGD(Inference):
         sample_results = SampleResult(model=self.model, samples=samples, trace=None)
         return losses, final_state, sample_results
 
+    @tf.function
     def loss(self, state, y):
         prior_log_prob, data_log_prob = self.model.unnormalized_log_posterior_parts(
             self.split_reshape_constrain_and_to_dict(self.state), y)
@@ -78,6 +79,7 @@ class SGD(Inference):
                 losses.append(loss)
         return losses
 
+    @tf.function
     def train_step(self, y):
         with tf.GradientTape() as tape:
             loss = self.loss(self.state, y)
