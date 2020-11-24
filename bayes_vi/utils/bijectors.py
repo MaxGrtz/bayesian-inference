@@ -1,0 +1,59 @@
+import collections
+import functools
+
+import tensorflow as tf
+import tensorflow_probability as tfp
+from tensorflow_probability.python.internal import prefer_static
+from bayes_vi.utils import make_transform_fn
+
+tfb = tfp.bijectors
+
+
+class CustomBlockwise(tfb.Bijector):
+
+    def __init__(self, bijectors, input_block_sizes, output_block_sizes,
+                 validate_args=False, name='custom_blockwise'):
+        super(CustomBlockwise, self).__init__(
+            validate_args=validate_args,
+            forward_min_event_ndims=0,
+            name=name
+        )
+        self.bijectors = bijectors
+        self.input_split_bijector = tfb.Split(num_or_size_splits=input_block_sizes)
+        self.output_split_bijector = tfb.Split(num_or_size_splits=output_block_sizes)
+
+        self.forward_fn = make_transform_fn(bijector=bijectors, direction='forward')
+        self.inverse_fn = make_transform_fn(bijector=bijectors, direction='inverse')
+
+
+    def _forward(self, x):
+        return self.output_split_bijector.inverse(
+            self.forward_fn(self.input_split_bijector.forward(x))
+        )
+
+    def _inverse(self, y):
+        return self.input_split_bijector.inverse(
+            self.inverse_fn(self.output_split_bijector.forward(y))
+        )
+
+    def forward_log_det_jacobian(self, x, event_ndims, name='forward_log_det_jacobian', **kwargs):
+        return self._forward_log_det_jacobian(x)
+
+    def _forward_log_det_jacobian(self, x):
+        return sum(
+            b.forward_log_det_jacobian(x_, event_ndims=1)
+            for b, x_ in zip(self.bijectors, self.input_split_bijector.forward(x))
+        )
+
+    def inverse_log_det_jacobian(self, x, event_ndims, name='inverse_log_det_jacobian', **kwargs):
+        return self._inverse_log_det_jacobian(x)
+
+    def _inverse_log_det_jacobian(self, y):
+        return sum(
+            [b.inverse_log_det_jacobian(y_, event_ndims=1)
+             for b, y_ in zip(self.bijectors, self.output_split_bijector.forward(y))]
+        )
+
+    @classmethod
+    def _is_increasing(cls, **kwargs):
+        return False

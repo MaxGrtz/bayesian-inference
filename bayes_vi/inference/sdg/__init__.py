@@ -1,6 +1,6 @@
 import tensorflow as tf
 import tensorflow_probability as tfp
-
+from copy import copy
 from bayes_vi.inference import Inference
 from bayes_vi.utils import make_transformed_log_prob, to_ordered_dict
 from bayes_vi.inference.mcmc.sample_results import SampleResult
@@ -17,11 +17,21 @@ class SGD(Inference):
         self.data_batch_ratio = None
         self.recorded_states = []
         self.optimizer = None
-        unnormalized_log_posterior = lambda state, y: self.model.unnormalized_log_posterior(
-            to_ordered_dict(self.model.param_names, state), y)
-        self.transformed_log_prob = make_transformed_log_prob(unnormalized_log_posterior,
-                                                              bijector=self.model.reshape_constrain_bijectors,
-                                                              direction='forward')
+        self.unconstrain_flatten_and_merge = lambda state: self.model.split_unconstrained_bijector.inverse(
+            self.model.flatten_unconstrained_sample(
+                self.model.unconstrain_sample(state.values())
+            )
+        )
+        self.split_reshape_constrain_and_to_dict = lambda state: to_ordered_dict(
+            self.model.param_names,
+            self.model.constrain_sample(
+                self.model.reshape_flat_unconstrained_sample(
+                    self.model.split_unconstrained_bijector.forward(state)
+                )
+            )
+        )
+
+
 
     def fit(self,
             initial_state,
@@ -33,7 +43,7 @@ class SGD(Inference):
             repeat=1,
             shuffle=1000,
             epochs=10):
-        self.state = tf.Variable(self.model.transform_state_inverse(initial_state))
+        self.state = tf.Variable(self.unconstrain_flatten_and_merge(initial_state))
         self.data_batch_ratio = self.num_examples // batch_size
         self.optimizer = tfp.optimizer.VariationalSGD(batch_size=batch_size,
                                                       total_num_examples=self.num_examples,
@@ -44,23 +54,26 @@ class SGD(Inference):
         
         losses = self.training(batch_size=batch_size, repeat=repeat, shuffle=shuffle, epochs=epochs)
 
-        final_state = self.model.transform_state_forward(self.state)
-        samples = [tf.stack(param[burnin:]) for param in map(list, zip(*self.recorded_states))]
-        # reduce one dimensional params to scalar
-        samples = [tf.reshape(s, shape=s.shape[:-1]) if s.shape[-1] == 1 else s for s in samples]
+        final_state = self.split_reshape_constrain_and_to_dict(self.state)
+        samples = list(self.split_reshape_constrain_and_to_dict(tf.stack(self.recorded_states[burnin:])).values())
+        print(samples)
         sample_results = SampleResult(model=self.model, samples=samples, trace=None)
         return losses, final_state, sample_results
 
+    @tf.function
     def loss(self, state, y):
-        return - self.transformed_log_prob(self.model.split_bijector(state), y)
+        # TODO: base loss on mean and scale down prior log probs for batched version
+        return - self.model.unnormalized_log_posterior(self.split_reshape_constrain_and_to_dict(self.state), y) \
+               - self.model.target_log_prob_correction_forward(state)
 
     def training(self, batch_size, repeat, shuffle, epochs):
         losses = []
         for epoch in range(1, epochs + 1):
             for x, y in self.dataset.repeat(repeat).shuffle(shuffle).batch(batch_size):
-                self.recorded_states.append(
-                    list(self.model.transform_state_forward(self.state).values())
-                )
+                # self.recorded_states.append(
+                #     list(self.split_reshape_constrain_and_to_dict(self.state).values())
+                # )
+                self.recorded_states.append(copy(self.state))
                 self.model = self.model(x)
                 loss = self.train_step(y)
                 losses.append(loss)

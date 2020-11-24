@@ -6,6 +6,8 @@ import tensorflow as tf
 import tensorflow_probability as tfp
 
 from bayes_vi.utils import make_transform_fn, to_ordered_dict
+from bayes_vi.utils.bijectors import CustomBlockwise
+
 
 tfd = tfp.distributions
 tfb = tfp.bijectors
@@ -28,8 +30,6 @@ class Model:
     priors: `collections.OrderedDict[str, tfp.distributions.Distribution]`
         An ordered mapping from parameter names `str` to `tfp.distributions.Distribution`s
         or callables returning a `tfp.distributions.Distribution` (conditional distributions).
-        Note that scalar distributions (batch_shape = event_shape = ()) will be transformed into
-        1-dimensional distributions (event_shape = (1,)).
     prior_distribution: `tfp.distributions.JointDistributionNamedAutoBatched`
         A joint distribution of the `priors`.
     likelihood: `callable`
@@ -94,8 +94,6 @@ class Model:
         priors: `collections.OrderedDict[str, tfp.distributions.Distribution]`
             An ordered mapping from parameter names `str` to `tfp.distributions.Distribution`s
             or callables returning a `tfp.distributions.Distribution` (conditional distributions).
-            Note that non-batched scalar distributions (batch_shape = event_shape = ()) will be
-            transformed into 1-dimensional distributions (event_shape = (1,)).
         likelihood: `callable`
             A `callable` taking the model parameters (and `features` of the dataset for regression models)
             and returning a `tfp.distributions.Distribution` of the data. The distribution has to be
@@ -109,7 +107,6 @@ class Model:
         self.param_names = list(priors.keys())
         self.priors = collections.OrderedDict(priors)
         self.prior_distribution = tfd.JointDistributionNamedAutoBatched(self.priors)
-
         self.likelihood = likelihood
         self.distribution = tfd.JointDistributionNamedAutoBatched(
             collections.OrderedDict(
@@ -128,24 +125,78 @@ class Model:
 
         prior_sample = list(self.prior_distribution.sample().values())
 
+        # shapes of each sample part in unconstrained sample space
         self.unconstrained_event_shapes = [
             bij.inverse(part).shape
             for part, bij in zip(prior_sample, self.constraining_bijectors)
         ]
-        self.reshaping_bijectors = [
+
+        # reshaping bijector from flat to unconstrained sample shape
+        self.reshaping_unconstrained_bijectors = [
             tfb.Reshape(event_shape_out=shape, event_shape_in=(-1,))
             for shape in self.unconstrained_event_shapes
         ]
-        self.reshape_constrain_bijectors = [
-            tfb.Chain([constr, reshape]) for reshape, constr
-            in zip(self.reshaping_bijectors, self.constraining_bijectors)
+
+        # reshaping bijector from flat to constrained sample shape
+        self.reshaping_constrained_bijectors = [
+            tfb.Reshape(event_shape_out=shape, event_shape_in=(-1,))
+            for shape in self.prior_distribution.event_shape.values()
         ]
 
-        self.unconstrain_state = make_transform_fn(self.reshape_constrain_bijectors, direction='inverse')
-        self.constrain_state = make_transform_fn(self.reshape_constrain_bijectors, direction='forward')
+        # reshape flattened unconstrained sample, constrain sample and flatten constrained sample
+        self.reshape_constraining_bijectors = [
+            tfb.Chain([tfb.Invert(reshape_constrained), constrain, reshape_unconstrained])
+            for reshape_constrained, constrain, reshape_unconstrained
+            in zip(self.reshaping_constrained_bijectors,
+                   self.constraining_bijectors,
+                   self.reshaping_unconstrained_bijectors)
+        ]
 
-        self.split_bijector = tfb.Split(
-            [part.shape[-1] for part in self.unconstrain_state(prior_sample)]
+        self.flatten_constrained_sample = make_transform_fn(
+            self.reshaping_constrained_bijectors, direction='inverse'
+        )
+        self.reshape_flat_constrained_sample = make_transform_fn(
+            self.reshaping_constrained_bijectors, direction='forward'
+        )
+
+        self.flatten_unconstrained_sample = make_transform_fn(
+            self.reshaping_unconstrained_bijectors, direction='inverse'
+        )
+        self.reshape_flat_unconstrained_sample = make_transform_fn(
+            self.reshaping_unconstrained_bijectors, direction='forward'
+        )
+
+        self.unconstrain_sample = make_transform_fn(
+            self.constraining_bijectors, direction='inverse'
+        )
+        self.constrain_sample = make_transform_fn(
+            self.constraining_bijectors, direction='forward'
+        )
+
+        self.reshape_unconstrain_sample = make_transform_fn(
+            self.reshape_constraining_bijectors, direction='inverse'
+        )
+        self.reshape_constrain_sample = make_transform_fn(
+            self.reshape_constraining_bijectors, direction='forward'
+        )
+
+        input_block_sizes = [part.shape[-1]
+                             for part in self.flatten_unconstrained_sample(self.unconstrain_sample(prior_sample))]
+
+        output_block_sizes = [part.shape[-1]
+                              for part in self.flatten_constrained_sample(prior_sample)]
+
+        self.blockwise_constraining_bijector = CustomBlockwise(
+            input_block_sizes=input_block_sizes,
+            output_block_sizes=output_block_sizes,
+            bijectors=self.reshape_constraining_bijectors
+        )
+
+        self.split_unconstrained_bijector = tfb.Split(
+            input_block_sizes
+        )
+        self.split_constrained_bijector = tfb.Split(
+            output_block_sizes
         )
 
     def __call__(self, features):
@@ -368,63 +419,134 @@ class Model:
         )
         return posterior_model.sample(shape)['y']
 
-    @tf.function
-    def transform_state_forward(self, state, split=True, to_dict=True):
-        """Convenience function to transform an unconstrained state into a constrained state.
+    def transform_sample_forward(self, sample):
+        """Convenience function to transform an unconstrained sample into a constrained sample.
 
         Parameters
         ----------
-        state: `tf.Tensor` or `list` of `tf.Tensor`
-            A prior sample (state) in unconstrained space, either split into parts or merged.
-        split: `bool`
-            A boolean to indicate whether or not the state has to be split
-            before it can be transformed into constrained space.
-        to_dict: `bool`
-            A boolean to indicate whether to return a `list` of the constrained state parts or
-            an ordered mapping `collections.OrderedDict`.
+        sample: `tf.Tensor` or `list` of `tf.Tensor` or `collection.OrderedDict[str, tf.Tensor]`
+            A prior sample in unconstrained space, either split into parts or merged.
 
         Returns
         -------
-        `list` of `tf.Tensor` or `collections.OrderedDict[str, tf.Tensor]`
-            The constrained state, either as a list or ordered mapping of its parts.
+        `tf.Tensor` or `list` of `tf.Tensor` or `collections.OrderedDict[str, tf.Tensor]`
+            The constrained sample, either merged or as a list or ordered mapping of its parts.
         """
-        if split:
-            _state = self.constrain_state(self.split_bijector.forward(state))
+        if isinstance(sample, collections.OrderedDict):
+            sample_ = list(sample.values())
+            to_dict = True
+        elif isinstance(sample, (collections.abc.Iterable, tf.Tensor, tf.Variable)):
+            sample_ = sample
+            to_dict = False
         else:
-            _state = self.constrain_state(state)
+            raise TypeError("`sample` has to be a tf.Tensor or a collections.OrderedDict or list thereof.")
+
+        if isinstance(sample_, (tf.Tensor, tf.Variable)):
+            # for merged unconstrained sample
+            sample_ = self.blockwise_constraining_bijector.forward(sample_)
+        else:
+            try:
+                # for flattened unconstrained sample parts
+                sample_ = self.reshape_constrain_sample(sample_)
+            except tf.errors.InvalidArgumentError:
+                # for non flattened unconstrained sample parts
+                sample_ = self.constrain_sample(sample_)
 
         if to_dict:
-            return to_ordered_dict(self.param_names, _state)
+            return to_ordered_dict(self.param_names, sample_)
         else:
-            return _state
+            return sample_
 
-    @tf.function
-    def transform_state_inverse(self, state, split=True, from_dict=True):
-        """Convenience function to transform a constrained state into an unconstrained state.
+    def target_log_prob_correction_forward(self, sample):
+        if isinstance(sample, collections.OrderedDict):
+            sample_ = list(sample.values())
+        elif isinstance(sample, (collections.abc.Iterable, tf.Tensor, tf.Variable)):
+            sample_ = sample
+        else:
+            raise TypeError("`sample` has to be a tf.Tensor or a collections.OrderedDict or list thereof.")
 
-        Note: This is the inverse to `transform_state_forward`.
+        if isinstance(sample_, (tf.Tensor, tf.Variable)):
+            # for merged unconstrained sample
+            return self.blockwise_constraining_bijector.forward_log_det_jacobian(sample_, event_ndims=1)
+        else:
+            try:
+                # for flattened unconstrained sample parts
+                return sum(
+                    bij.forward_log_det_jacobian(x, event_ndims=1)
+                    for bij, x in zip(self.reshape_constraining_bijectors, sample_)
+                )
+            except tf.errors.InvalidArgumentError:
+                # for non flattened unconstrained sample parts
+                return sum(
+                    bij.forward_log_det_jacobian(x, event_ndims=len(event_shape))
+                    for bij, x, event_shape in zip(self.constraining_bijectors, sample_,
+                                                   self.unconstrained_event_shapes)
+                )
+
+    def transform_sample_inverse(self, sample):
+        """Convenience function to transform a constrained sample into an unconstrained sample.
+
+        Note: This is the inverse to `transform_sample_forward`.
 
         Parameters
         ----------
-        state: `list` of `tf.Tensor` or `list` of `tf.Tensor`
-            A prior sample (state) in constrained space,
-            either as a `list` or ordered mapping of the state parts.
-        split: `bool`
-            A boolean to indicate whether or not the state should be merged in unconstrained space.
-        from_dict: `bool`
-            A boolean to indicate whether the input state is a `list` of the constrained state parts or
-            an ordered mapping `collections.OrderedDict`.
+        sample: `tf.Tensor` or `list` of `tf.Tensor` or `collection.OrderedDict[str, tf.Tensor]`
+            A prior sample in constrained space, either split into parts or merged.
 
         Returns
         -------
-        `list` of `tf.Tensor` or `tf.Tensor`
-            The unconstrained state, either as a list of its parts or merged.
+        `tf.Tensor` or `list` of `tf.Tensor` or `collections.OrderedDict[str, tf.Tensor]`
+            The unconstrained sample, either merged or as a list or ordered mapping of its parts.
         """
-        if from_dict:
-            _state = list(state.values())
+        if isinstance(sample, collections.OrderedDict):
+            sample_ = list(sample.values())
+            to_dict = True
+        elif isinstance(sample, (collections.abc.Iterable, tf.Tensor, tf.Variable)):
+            sample_ = sample
+            to_dict = False
         else:
-            _state = state
-        if split:
-            return self.split_bijector.inverse(self.unconstrain_state(_state))
+            raise TypeError("`sample` has to be a tf.Tensor or a collections.OrderedDict or list thereof.")
+
+        if isinstance(sample_, (tf.Tensor, tf.Variable)):
+            # for merged constrained sample
+            sample_ = self.split_unconstrained_bijector.inverse(
+                self.reshape_unconstrain_sample(self.split_constrained_bijector.forward(sample_))
+            )
         else:
-            return self.unconstrain_state(_state)
+            try:
+                # for flattened constrained sample parts
+                sample_ = self.reshape_unconstrain_sample(sample_)
+            except tf.errors.InvalidArgumentError:
+                # for non flattened constrained sample parts
+                sample_ = self.unconstrain_sample(sample_)
+
+        if to_dict:
+            return to_ordered_dict(self.param_names, sample_)
+        else:
+            return sample_
+
+    def target_log_prob_correction_inverse(self, sample):
+        if isinstance(sample, collections.OrderedDict):
+            sample_ = list(sample.values())
+        elif isinstance(sample, (collections.abc.Iterable, tf.Tensor, tf.Variable)):
+            sample_ = sample
+        else:
+            raise TypeError("`sample` has to be a tf.Tensor or a collections.OrderedDict or list thereof.")
+
+        if isinstance(sample_, (tf.Tensor, tf.Variable)):
+            # for merged constrained sample
+            return self.blockwise_constraining_bijector.inverse_log_det_jacobian(sample_, event_ndims=1)
+        else:
+            try:
+                # for flattened constrained sample parts
+                return sum(
+                    bij.inverse_log_det_jacobian(x, event_ndims=1)
+                    for bij, x in zip(self.reshape_constraining_bijectors, sample_)
+                )
+            except tf.errors.InvalidArgumentError:
+                # for non flattened constrained sample parts
+                return sum(
+                    bij.inverse_log_det_jacobian(x, event_ndims=len(event_shape))
+                    for bij, x, event_shape in zip(self.constraining_bijectors, sample_,
+                                                   self.prior_distribution.event_shape.values())
+                )

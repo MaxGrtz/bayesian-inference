@@ -54,3 +54,5 @@ class Inference:
         """
         raise NotImplementedError('fit is not yet implemented!')
 
+
+

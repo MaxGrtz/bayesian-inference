@@ -16,12 +16,25 @@ class PointEstimate(Inference):
         super(PointEstimate, self).__init__(model=model, dataset=dataset)
         self.state = None
         self.optimizer = None
+        self.unconstrain_flatten_and_merge = lambda state: self.model.split_unconstrained_bijector.inverse(
+            self.model.flatten_unconstrained_sample(
+                self.model.unconstrain_sample(state.values())
+            )
+        )
+        self.split_reshape_constrain_and_to_dict = lambda state: to_ordered_dict(
+            self.model.param_names,
+            self.model.constrain_sample(
+                self.model.reshape_flat_unconstrained_sample(
+                    self.model.split_unconstrained_bijector.forward(state)
+                )
+            )
+        )
 
     def fit(self, initial_state, optimizer, batch_size=25, repeat=1, shuffle=1000, epochs=10):
-        self.state = tf.Variable(self.model.transform_state_inverse(initial_state))
+        self.state = tf.Variable(self.unconstrain_flatten_and_merge(initial_state))
         self.optimizer = optimizer
         losses = self.training(batch_size=batch_size, repeat=repeat, shuffle=shuffle, epochs=epochs)
-        return losses, self.model.transform_state_forward(self.state)
+        return losses, self.split_reshape_constrain_and_to_dict(self.state)
 
     def loss(self, state, y):
         raise NotImplementedError("No loss implemented.")
@@ -53,57 +66,57 @@ class MLE(PointEstimate):
 
     @tf.function
     def loss(self, state, y):
-        return - self.model.log_likelihood(self.model.transform_state_forward(state), y)
+        return - self.model.log_likelihood(self.split_reshape_constrain_and_to_dict(self.state), y)
 
 
 class MAP(PointEstimate):
 
     def __init__(self, model, dataset):
         super(MAP, self).__init__(model=model, dataset=dataset)
-        unnormalized_log_posterior = lambda state, y: self.model.unnormalized_log_posterior(
-            to_ordered_dict(self.model.param_names, state), y)
-        self.transformed_log_prob = make_transformed_log_prob(unnormalized_log_posterior,
-                                                              bijector=self.model.reshape_constrain_bijectors,
-                                                              direction='forward')
 
     @tf.function
     def loss(self, state, y):
-        return - self.transformed_log_prob(self.model.split_bijector(state), y)
+        # TODO: base loss on mean and scale down prior log probs for batched version
+        return - self.model.unnormalized_log_posterior(self.split_reshape_constrain_and_to_dict(self.state), y) \
+               - self.model.target_log_prob_correction_forward(state)
 
 
-class BFGS(Inference):
+class BFGS(PointEstimate):
 
     def __init__(self, model, dataset):
         super(BFGS, self).__init__(model=model, dataset=dataset)
+        self.target_log_prob = None
+        self.features, self.targets = list(dataset.batch(dataset.cardinality()).take(1))[0]
+        self.model = model(features=self.features)
 
-    def fit(self, initial_state, target_log_prob, num_parallel_runs=1, jitter=0.1, limited_memory=True, **optimizer_kwargs):
-        unconstrained_state = self.model.transform_state_inverse(initial_state)
-        initial_position = [tf.random.normal(unconstrained_state.shape, mean=unconstrained_state, stddev=jitter)
-                            if float(jitter) != 0. else unconstrained_state for _ in range(num_parallel_runs)]
-
-        loss = lambda state: - target_log_prob(self.model.transform_state_forward(state))
+    def fit(self, initial_state, target_log_prob, limited_memory=False, **optimizer_kwargs):
+        initial_state = self.unconstrain_flatten_and_merge(initial_state)
+        self.target_log_prob = target_log_prob
 
         if limited_memory:
-            res = self.lbfgs_minimize(loss, initial_position, **optimizer_kwargs)
+            res = self.lbfgs_minimize(self.loss, initial_state, **optimizer_kwargs)
         else:
-            res = self.bfgs_minimize(loss, initial_position, **optimizer_kwargs)
+            res = self.bfgs_minimize(self.loss, initial_state, **optimizer_kwargs)
 
         return res, \
-               [self.model.transform_state_forward(x) for x in res.position[res.converged]], \
-               [self.model.transform_state_forward(x) for x in res.position[~res.converged]]
+               self.split_reshape_constrain_and_to_dict(res.position[res.converged]), \
+               self.split_reshape_constrain_and_to_dict(res.position[~res.converged])
+
+    def loss(self, state):
+        return - self.target_log_prob(self.split_reshape_constrain_and_to_dict(state))
 
     @tf.function
-    def lbfgs_minimize(self, loss, initial_position, **optimizer_kwargs):
+    def lbfgs_minimize(self, loss, initial_state, **optimizer_kwargs):
         return tfp.optimizer.lbfgs_minimize(
-                value_and_gradients_function=make_val_and_grad_fn(loss),
-                initial_position=initial_position,
-                **optimizer_kwargs
+            value_and_gradients_function=make_val_and_grad_fn(loss),
+            initial_position=initial_state,
+            **optimizer_kwargs
         )
 
     @tf.function
-    def bfgs_minimize(self, loss, initial_position, **optimizer_kwargs):
+    def bfgs_minimize(self, loss, initial_state, **optimizer_kwargs):
         return tfp.optimizer.bfgs_minimize(
-                value_and_gradients_function=make_val_and_grad_fn(loss),
-                initial_position=initial_position,
-                **optimizer_kwargs
+            value_and_gradients_function=make_val_and_grad_fn(loss),
+            initial_position=initial_state,
+            **optimizer_kwargs
         )
