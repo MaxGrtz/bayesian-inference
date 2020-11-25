@@ -1,6 +1,7 @@
 import tensorflow as tf
 
 from bayes_vi.models import Model
+from bayes_vi.utils import to_ordered_dict
 
 
 class Inference:

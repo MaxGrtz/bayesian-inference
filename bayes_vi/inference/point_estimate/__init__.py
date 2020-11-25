@@ -2,7 +2,7 @@ import tensorflow as tf
 import tensorflow_probability as tfp
 
 from bayes_vi.inference import Inference
-from bayes_vi.utils import make_val_and_grad_fn, to_ordered_dict
+from bayes_vi.utils import make_val_and_grad_fn
 
 tfb = tfp.bijectors
 
