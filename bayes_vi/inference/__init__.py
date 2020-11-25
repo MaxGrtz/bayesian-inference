@@ -1,5 +1,4 @@
 import tensorflow as tf
-import tensorflow_probability as tfp
 
 from bayes_vi.models import Model
 
@@ -33,7 +32,20 @@ class Inference:
         """
         self.model = model
         self.dataset = dataset
-
+        self.num_examples = int(self.dataset.cardinality())
+        self.unconstrain_flatten_and_merge = lambda state: self.model.split_unconstrained_bijector.inverse(
+            self.model.flatten_unconstrained_sample(
+                self.model.unconstrain_sample(state.values())
+            )
+        )
+        self.split_reshape_constrain_and_to_dict = lambda state: to_ordered_dict(
+            self.model.param_names,
+            self.model.constrain_sample(
+                self.model.reshape_flat_unconstrained_sample(
+                    self.model.split_unconstrained_bijector.forward(state)
+                )
+            )
+        )
 
     def fit(self, *args, **kwargs):
         """Fits the Bayesian model to the dataset.
@@ -53,6 +65,3 @@ class Inference:
             If the fit method is not implemented in a subclass.
         """
         raise NotImplementedError('fit is not yet implemented!')
-
-
-

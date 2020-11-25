@@ -1,9 +1,11 @@
+from copy import deepcopy
+
 import tensorflow as tf
 import tensorflow_probability as tfp
-from copy import deepcopy
+
 from bayes_vi.inference import Inference
-from bayes_vi.utils import make_transformed_log_prob, to_ordered_dict
 from bayes_vi.inference.mcmc.sample_results import SampleResult
+from bayes_vi.utils import to_ordered_dict
 
 tfb = tfp.bijectors
 
@@ -32,8 +34,6 @@ class SGD(Inference):
             )
         )
 
-
-
     def fit(self,
             initial_state,
             max_learning_rate=1.0,
@@ -53,7 +53,7 @@ class SGD(Inference):
                                                       preconditioner_decay_rate=preconditioner_decay_rate,
                                                       burnin=burnin,
                                                       burnin_max_learning_rate=burnin_max_learning_rate)
-        
+
         losses = self.training(batch_size=self.batch_size, repeat=repeat, shuffle=shuffle, epochs=epochs)
 
         final_state = self.split_reshape_constrain_and_to_dict(self.state)

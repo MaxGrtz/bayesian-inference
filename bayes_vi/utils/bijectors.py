@@ -1,15 +1,12 @@
-import collections
-import functools
-
-import tensorflow as tf
 import tensorflow_probability as tfp
-from tensorflow_probability.python.internal import prefer_static
+
 from bayes_vi.utils import make_transform_fn
 
 tfb = tfp.bijectors
 
 
 class CustomBlockwise(tfb.Bijector):
+    """Custom modification of tfp.bijectors.Blockwise."""
 
     def __init__(self, bijectors, input_block_sizes, output_block_sizes,
                  validate_args=False, name='custom_blockwise'):
@@ -24,7 +21,6 @@ class CustomBlockwise(tfb.Bijector):
 
         self.forward_fn = make_transform_fn(bijector=bijectors, direction='forward')
         self.inverse_fn = make_transform_fn(bijector=bijectors, direction='inverse')
-
 
     def _forward(self, x):
         return self.output_split_bijector.inverse(

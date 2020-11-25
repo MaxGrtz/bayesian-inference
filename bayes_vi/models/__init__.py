@@ -8,7 +8,6 @@ import tensorflow_probability as tfp
 from bayes_vi.utils import make_transform_fn, to_ordered_dict
 from bayes_vi.utils.bijectors import CustomBlockwise
 
-
 tfd = tfp.distributions
 tfb = tfp.bijectors
 
@@ -62,28 +61,63 @@ class Model:
         such that the inverse transformation of each bijector unconstrains a parameter sample,
         while the forward transformation constrains the parameter sample to the allowed range.
     unconstrained_event_shapes: `list` of `TensorShape`
-        The event shape of each prior sample in unconstrained space
+        The event shape of each parameter sample in unconstrained space
         (after applying the corresponding bijector inverse transformation).
-    reshaping_bijectors: `list` of `tfp.bijectors.Reshape`
+    reshaping_unconstrained_bijectors: `list` of `tfp.bijectors.Reshape`
         A list of reshape bijectors, that flatten and reshape parameter samples in unconstrained space.
-    reshape_constrain_bijectors: `list` of `tfp.bijectors.Bijector`
-        A list of bijectors, chaining the the corresponding `constraining_bijectors` and `reshaping_bijectors`.
-        I.e. tfp.bijectors.Chain([constraining_bijector, reshaping_bijector]) for each parameter.
-        The inverse transformation thus applies constraining_bijector.inverse to unconstrain
-        the parameter sample first and then reshaping_bijector.inverse to flatten it.
-        The forward transformation first reshapes the sample and then constrains the sample to the allowed range.
-    unconstrain_state: `callable`
-        A `callable`, transforming a prior sample (also referred to as state) of the model
-        into unconstrained space by applying the inverse transformations of `reshape_constrain_bijectors`
-        to the corresponding parameter sample.
-    constrain_state: `callable`
-        A `callable`, transforming an unconstrained prior sample of the model
-        into the originally constrained space by applying the forward transformations of
-        `reshape_constrain_bijectors` to the corresponding parameter sample.
-    split_bijector: `tfp.bijectors.Split`
+    reshaping_constrained_bijectors: `list` of `tfp.bijectors.Reshape`
+        A list of reshape bijectors, that flatten and reshape parameter samples in constrained space.
+    reshape_constraining_bijectors: `list` of `tfp.bijectors.Bijector`
+        A list of bijectors, chaining the corresponding `constraining_bijectors` and reshaping bijectors.
+        I.e. tfp.bijectors.Chain([tfb.Invert(reshaping_constrained_bij), constrain, reshaping_unconstrained_bij])
+        for each parameter. The inverse transformation thus reshapes a flattened sample in constrained space,
+        unconstrains it and then flattens it in unconstrained space. The forward transformation first reshapes
+        the sample in unconstrained space, constrains it and then flattens it in constrained space.
+    flatten_constrained_sample: `callable`
+        A `callable`, flattening a constrained parameter sample of the model by applying
+        the inverse transformations of `reshaping_constrained_bijectors` to the corresponding
+        parameter sample parts.
+    flatten_unconstrained_sample: `callable`
+        A `callable`, flattening an unconstrained parameter sample of the model by applying
+        the inverse transformations of `reshaping_unconstrained_bijectors` to the corresponding
+        parameter sample parts.
+    reshape_flat_constrained_sample:
+        A `callable`, reshaping a flattened constrained parameter sample of the model by applying
+        the forward transformations of `reshaping_constrained_bijectors` to the corresponding
+        parameter sample parts.
+    reshape_flat_unconstrained_sample:
+        A `callable`, reshaping a flattened unconstrained parameter sample of the model by applying
+        the forward transformations of `reshaping_unconstrained_bijectors` to the corresponding
+        parameter sample parts.
+    constrain_sample: `callable`
+        A `callable`, transforming an unconstrained parameter sample of the model
+        into constrained space by applying the forward transformations of
+        `constraining_bijectors` to the corresponding parameter sample parts.
+    unconstrain_sample: `callable`
+        A `callable`, transforming a constrained parameter sample of the model
+        into unconstrained space by applying the inverse transformations of
+        `constraining_bijectors` to the corresponding parameter sample parts.
+    reshape_constrain_sample: `callable`
+        A `callable`, transforming a flattened unconstrained parameter sample of the model
+        into constrained space by applying the forward transformations of
+        `reshape_constraining_bijectors` to the corresponding parameter sample parts.
+    reshape_unconstrain_sample: `callable`
+        A `callable`, transforming a flattened constrained parameter sample of the model
+        into unconstrained space by applying the inverse transformations of
+        `reshape_constraining_bijectors` to the corresponding parameter sample parts.
+    split_unconstrained_bijector: `tfp.bijectors.Split`
         A bijector, whose forward transform splits a `tf.Tensor` into a `list` of `tf.Tensor`,
         and whose inverse transform merges a `list` of `tf.Tensor` into a single `tf.Tensor`.
-        This is used to merge the state parts into a single state in unconstrained space.
+        This is used to merge flattened sample parts into a single merged sample in unconstrained space.
+    split_constrained_bijector: `tfp.bijectors.Split`
+        A bijector, whose forward transform splits a `tf.Tensor` into a `list` of `tf.Tensor`,
+        and whose inverse transform merges a `list` of `tf.Tensor` into a single `tf.Tensor`.
+        This is used to merge flattened sample parts into a single merged sample in constrained space.
+    blockwise_constraining_bijector: `bayes_vi.utils.bijectors.CustomBlockwise`
+        A modification of `tfp.bijectors.Blockwise`. This bijectors allows constraining/unconstraining
+        a merged parameter sample. Here, a merged parameter sample corresponds to:
+            in constrained space:   split_constrained_bijector.inverse(flatten_constrained_sample(sample))
+            in unconstrained space: split_unconstrained_bijector.inverse(flatten_unconstrained_sample(sample))
     """
 
     def __init__(self, priors, likelihood, constraining_bijectors):
@@ -155,29 +189,29 @@ class Model:
         self.flatten_constrained_sample = make_transform_fn(
             self.reshaping_constrained_bijectors, direction='inverse'
         )
-        self.reshape_flat_constrained_sample = make_transform_fn(
-            self.reshaping_constrained_bijectors, direction='forward'
-        )
-
         self.flatten_unconstrained_sample = make_transform_fn(
             self.reshaping_unconstrained_bijectors, direction='inverse'
+        )
+
+        self.reshape_flat_constrained_sample = make_transform_fn(
+            self.reshaping_constrained_bijectors, direction='forward'
         )
         self.reshape_flat_unconstrained_sample = make_transform_fn(
             self.reshaping_unconstrained_bijectors, direction='forward'
         )
 
-        self.unconstrain_sample = make_transform_fn(
-            self.constraining_bijectors, direction='inverse'
-        )
         self.constrain_sample = make_transform_fn(
             self.constraining_bijectors, direction='forward'
         )
-
-        self.reshape_unconstrain_sample = make_transform_fn(
-            self.reshape_constraining_bijectors, direction='inverse'
+        self.unconstrain_sample = make_transform_fn(
+            self.constraining_bijectors, direction='inverse'
         )
+
         self.reshape_constrain_sample = make_transform_fn(
             self.reshape_constraining_bijectors, direction='forward'
+        )
+        self.reshape_unconstrain_sample = make_transform_fn(
+            self.reshape_constraining_bijectors, direction='inverse'
         )
 
         input_block_sizes = [part.shape[-1]
@@ -281,8 +315,8 @@ class Model:
         Parameters
         ----------
         prior_sample: `collections.OrderedDict[str, tf.Tensor]`
-            A sample from `prior_distribution` with sample_shape=(m,n,...,k).
-            That is, `prior_sample` has shape=(m,n,...,k,B,E), where B are the batch
+            A sample from `prior_distribution` with sample_shape=S.
+            That is, `prior_sample` has shape=(S,B,E), where B are the batch
             and E the event dimensions.
         targets: `tf.Tensor`
             A `tf.Tensor` of all target variables of shape (N,r),
@@ -291,8 +325,7 @@ class Model:
         Returns
         -------
         `tuple` of `tf.Tensor`
-            A tuple consisting of the prior and data log probabilities of the `Model`,
-            all of shape (m,n,...,k).
+            A tuple consisting of the prior and data log probabilities of the `Model`, all of shape (S).
         """
         state = prior_sample.copy()
 
@@ -325,8 +358,8 @@ class Model:
         Parameters
         ----------
         prior_sample: `collections.OrderedDict[str, tf.Tensor]`
-            A sample from `prior_distribution` with sample_shape=(m,n,...,k).
-            That is, `prior_sample` has shape=(m,n,...,k,B,E), where B are the batch
+            A sample from `prior_distribution` with sample_shape=(S).
+            That is, `prior_sample` has shape=(S,B,E), where B are the batch
             and E the event dimensions.
         targets: `tf.Tensor`
             A `tf.Tensor` of all target variables of shape (N,r),
@@ -335,7 +368,7 @@ class Model:
         Returns
         -------
         `tf.Tensor`
-            The unnormalized log posterior probability of the `Model` of shape (m,n,...,k).
+            The unnormalized log posterior probability of the `Model` of shape (S).
         """
         return tf.reduce_sum(list(self.unnormalized_log_posterior_parts(prior_sample, targets)), axis=0)
 
@@ -346,8 +379,8 @@ class Model:
         Parameters
         ----------
         prior_sample: `collections.OrderedDict[str, tf.Tensor]`
-            A sample from `prior_distribution` with sample_shape=(m,n,...,k).
-            That is, `prior_sample` has shape=(m,n,...,k,B,E), where B are the batch
+            A sample from `prior_distribution` with sample_shape=(S).
+            That is, `prior_sample` has shape=(S,B,E), where B are the batch
             and E the event dimensions.
         targets: `tf.Tensor`
             A `tf.Tensor` of all target variables of shape (N,r),
@@ -356,7 +389,7 @@ class Model:
         Returns
         -------
         `tf.Tensor`
-            The log likelihood of the `Model` of shape (m,n,...,k).
+            The log likelihood of the `Model` of shape (S).
         """
         state = prior_sample.copy()
 
@@ -422,6 +455,8 @@ class Model:
     def transform_sample_forward(self, sample):
         """Convenience function to transform an unconstrained sample into a constrained sample.
 
+        Note: this transformation retains the input structure.
+
         Parameters
         ----------
         sample: `tf.Tensor` or `list` of `tf.Tensor` or `collection.OrderedDict[str, tf.Tensor]`
@@ -458,6 +493,17 @@ class Model:
             return sample_
 
     def target_log_prob_correction_forward(self, sample):
+        """Compute the log det Jacobian correction for `transform_sample_forward`.
+
+        Parameters
+        ----------
+        sample: `tf.Tensor` or `list` of `tf.Tensor` or `collection.OrderedDict[str, tf.Tensor]`
+            A prior sample in unconstrained space, either split into parts or merged.
+
+        Returns
+        -------
+        `tf.Tensor` with the log det Jacobian correction with sample shape of sample.
+        """
         if isinstance(sample, collections.OrderedDict):
             sample_ = list(sample.values())
         elif isinstance(sample, (collections.abc.Iterable, tf.Tensor, tf.Variable)):
@@ -526,6 +572,17 @@ class Model:
             return sample_
 
     def target_log_prob_correction_inverse(self, sample):
+        """Compute the log det Jacobian correction for `transform_sample_inverse`.
+
+        Parameters
+        ----------
+        sample: `tf.Tensor` or `list` of `tf.Tensor` or `collection.OrderedDict[str, tf.Tensor]`
+            A prior sample in constrained space, either split into parts or merged.
+
+        Returns
+        -------
+        `tf.Tensor` with the log det Jacobian correction with sample shape of sample.
+        """
         if isinstance(sample, collections.OrderedDict):
             sample_ = list(sample.values())
         elif isinstance(sample, (collections.abc.Iterable, tf.Tensor, tf.Variable)):
