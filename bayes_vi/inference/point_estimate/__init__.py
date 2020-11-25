@@ -57,18 +57,18 @@ class PointEstimate(Inference):
         optimizer: `tf.optimizers.Optimizer`
             Optimizer to use in each `train_step`.
         batch_size: `int`
-            Number of examples (i.e. datapoints) considered in each `train_step`. Default: 25.
+            Number of examples (i.e. datapoints) considered in each `train_step`. (Default: `25`).
         repeat: `int`
-            Number of times to duplicate the dataset. Default: 1.
+            Number of times to duplicate the dataset. (Default: `1`).
         shuffle: `int`
-            Number of samples to consider for shuffling. Default: 1000.
+            Number of samples to consider for shuffling. (Default: `1000`).
         epochs: `int`
-            Number of epochs to train for, i.e. how often to iterate over complete dataset. Default: 100.
+            Number of epochs to train for, i.e. how often to iterate over complete dataset. (Default: `100`).
 
         Returns
         -------
         losses: `list` of `tf.Tensor`
-            Training `loss` on each iteration.
+            Training `loss` on each optimization step.
         final_state: `collections.OrderedDict[str, tf.Tensor]`
             The final state of the optimization, having the same shape as `initial_state`.
         """
@@ -103,13 +103,13 @@ class PointEstimate(Inference):
         Parameters
         ----------
         batch_size: `int`
-            Number of examples (i.e. datapoints) considered in each `train_step`. Default: 25.
+            Number of examples (i.e. datapoints) considered in each `train_step`. (Default: `25`).
         repeat: `int`
-            Number of times to duplicate the dataset. Default: 1.
+            Number of times to duplicate the dataset. (Default: `1`).
         shuffle: `int`
-            Number of samples to consider for shuffling. Default: 1000.
+            Number of samples to consider for shuffling. (Default: `1000`).
         epochs: `int`
-            Number of epochs to train for, i.e. how often to iterate over complete dataset. Default: 100.
+            Number of epochs to train for, i.e. how often to iterate over complete dataset. (Default: `100`).
 
         Returns
         -------
@@ -148,24 +148,30 @@ class PointEstimate(Inference):
 
 
 class MLE(PointEstimate):
-    """Maximum Likelihood Estimate (MLE) for model parameters."""
+    """Implementation of Maximum Likelihood Estimate (MLE) for model parameters."""
 
     def __init__(self, model, dataset):
         super(MLE, self).__init__(model=model, dataset=dataset)
 
     @tf.function
     def loss(self, state, y):
+        """Computes the negative log likelihood of the model for the given state."""
         return - self.model.log_likelihood(self.split_reshape_constrain_and_to_dict(self.state), y)
 
 
 class MAP(PointEstimate):
-    """Maximum a Posteriori (MAP) estimate for model parameters."""
+    """Implementation of Maximum a Posteriori (MAP) estimate for model parameters."""
 
     def __init__(self, model, dataset):
         super(MAP, self).__init__(model=model, dataset=dataset)
 
     @tf.function
     def loss(self, state, y):
+        """Computes the negative unnormalized log posterior of the model for the given state.
+
+        Note: the prior contribution is scaled down based on `data_batch_ratio` to
+              allow for consistent stochastic gradient descent solution.
+        """
         prior_log_prob, data_log_prob = self.model.unnormalized_log_posterior_parts(
             self.split_reshape_constrain_and_to_dict(self.state), y)
         jacobian_det_correction = self.model.target_log_prob_correction_forward(state)

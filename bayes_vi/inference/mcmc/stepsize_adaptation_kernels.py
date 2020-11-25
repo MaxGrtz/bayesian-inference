@@ -3,6 +3,7 @@ import functools
 
 
 class StepSizeAdaptationKernel:
+    """Base class for step size adaptation kernels."""
 
     def __init__(self,
                  num_adaptation_steps,
@@ -27,6 +28,10 @@ class StepSizeAdaptationKernel:
 
 
 class SimpleStepSizeAdaptation(StepSizeAdaptationKernel):
+    """Implements the SimpleStepSizeAdaptation kernel.
+
+    Note: This is a wrapper around `tfp.mcmc.SimpleStepSizeAdaptation`.
+    """
 
     def __init__(self,
                  num_adaptation_steps,
@@ -60,6 +65,10 @@ class SimpleStepSizeAdaptation(StepSizeAdaptationKernel):
 
 
 class DualAveragingStepSizeAdaptation(StepSizeAdaptationKernel):
+    """Implements the DualAveragingStepSizeAdaptation kernel.
+
+    Note: This is a wrapper around `tfp.mcmc.DualAveragingStepSizeAdaptation`.
+    """
 
     def __init__(self,
                  num_adaptation_steps,

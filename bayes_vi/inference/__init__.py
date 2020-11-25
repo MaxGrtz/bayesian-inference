@@ -19,6 +19,12 @@ class Inference:
         A Bayesian probabilistic `Model`.
     dataset: `tf.data.Dataset`
         A `tf.data.Dataset` consisting of features (if regression model) and targets.
+    num_examples: `int`
+        Number of examples (i.e. datapoints) in the dataset.
+    unconstrain_flatten_and_merge: `callable`
+        Callable that takes a constrained parameter sample from `model`, unconstrains, flattens and merges it.
+    split_reshape_constrain_and_to_dict: `callable`
+        Callable that takes an unconstrained parameter sample from `model`, splits, reshapes and constrains it.
     """
 
     def __init__(self, model, dataset):
