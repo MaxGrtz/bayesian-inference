@@ -237,8 +237,12 @@ class BFGS(Inference):
             optimizer_results = self.lbfgs_minimize(self.loss, initial_state, **optimizer_kwargs)
         else:
             optimizer_results = self.bfgs_minimize(self.loss, initial_state, **optimizer_kwargs)
-        converged_states = self.split_reshape_constrain_and_to_dict(res.position[res.converged])
-        diverged_states = self.split_reshape_constrain_and_to_dict(res.position[~res.converged])
+        converged_states = self.split_reshape_constrain_and_to_dict(
+            optimizer_results.position[optimizer_results.converged]
+        )
+        diverged_states = self.split_reshape_constrain_and_to_dict(
+            optimizer_results.position[~optimizer_results.converged]
+        )
         return optimizer_results, converged_states, diverged_states
 
     @tf.function
