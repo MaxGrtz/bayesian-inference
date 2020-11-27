@@ -19,12 +19,12 @@ class MeanFieldADVI(SurrogatePosterior):
     def __init__(self):
         super(MeanFieldADVI, self).__init__()
 
-    def __call__(self, model, constraining_bijectors):
+    def __call__(self, model):
         # Sample to get a list of Tensors
-        list_of_samples = list(model.joint_distribution.sample(1).values())[:-1]
+        list_of_samples = list(model.prior_distribution.sample().values())
 
         distlist = []
-        for i, (sample, bijector) in enumerate(zip(list_of_samples, constraining_bijectors)):
+        for i, (sample, bijector, name) in enumerate(zip(list_of_samples, model.constraining_bijectors, model.param_names)):
             dtype = sample.dtype
             rv_shape = sample[0].shape
             loc = tf.Variable(
@@ -37,14 +37,11 @@ class MeanFieldADVI(SurrogatePosterior):
                 name='meanfield_%s_scale' % i,
             )
             approx_node = tfd.TransformedDistribution(tfd.Normal(loc=loc, scale=scale), bijector=bijector)
-            if rv_shape == ():
-                distlist.append(approx_node)
-            else:
-                distlist.append(
-                    tfd.Independent(approx_node, reinterpreted_batch_ndims=1)
-                )
 
-        return tfd.JointDistributionSequential(distlist)
+            distlist.append((name, approx_node))
+
+
+        return tfd.JointDistributionNamedAutoBatched(distlist)
 
 
 class NormalizingFlow(SurrogatePosterior):
