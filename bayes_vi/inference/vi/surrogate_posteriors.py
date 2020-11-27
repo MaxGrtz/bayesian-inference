@@ -45,9 +45,11 @@ class MeanFieldADVI(SurrogatePosterior):
     def __init__(self, model):
         super(MeanFieldADVI, self).__init__(model=model)
 
-        sample = self.model.split_constrained_bijector.inverse(
-                self.model.flatten_constrained_sample(
-                    self.model.prior_distribution.sample().values()
+        sample = self.model.split_unconstrained_bijector.inverse(
+                self.model.flatten_unconstrained_sample(
+                    self.model.unconstrain_sample(
+                        self.model.prior_distribution.sample()
+                    )
                 )
             )
 
@@ -72,11 +74,14 @@ class ADVI(SurrogatePosterior):
 
     def __init__(self, model):
         super(ADVI, self).__init__(model=model)
-        sample = model.split_constrained_bijector.inverse(
-            model.flatten_constrained_sample(
-                model.prior_distribution.sample().values()
+
+        sample = self.model.split_unconstrained_bijector.inverse(
+                self.model.flatten_unconstrained_sample(
+                    self.model.unconstrain_sample(
+                        self.model.prior_distribution.sample()
+                    )
+                )
             )
-        )
 
         loc = tf.Variable(
             tf.random.normal(sample.shape, dtype=sample.dtype),
@@ -106,11 +111,13 @@ class NormalizingFlow(SurrogatePosterior):
         super(NormalizingFlow, self).__init__(model=model)
         self.flow_bijector = flow_bijector
 
-        sample = self.model.split_constrained_bijector.inverse(
-            self.model.flatten_constrained_sample(
-                self.model.prior_distribution.sample().values()
+        sample = self.model.split_unconstrained_bijector.inverse(
+                self.model.flatten_unconstrained_sample(
+                    self.model.unconstrain_sample(
+                        self.model.prior_distribution.sample()
+                    )
+                )
             )
-        )
 
         loc = tf.random.normal(sample.shape, dtype=sample.dtype)
 
