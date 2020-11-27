@@ -17,7 +17,7 @@ class SurrogatePosterior:
         self.posteriors = None
         self.joint_marginal_posteriors = None
 
-    def approx_joint_marginal_posteriors(self, samples_to_approx_marginals):
+    def approx_joint_marginal_posteriors(self, samples_to_approx_marginals=10000):
         reshaped_samples = self.reshape_sample(self.posterior_distribution.sample(samples_to_approx_marginals))
 
         self.posteriors = collections.OrderedDict(
@@ -45,34 +45,9 @@ class SurrogatePosterior:
         )
 
 
-class MeanFieldADVI(SurrogatePosterior):
-
-
-    def __init__(self, model):
-        super(MeanFieldADVI, self).__init__(model=model)
-
-        sample = self.unconstrain_flatten_and_merge(self.model.prior_distribution.sample())
-
-        loc = tf.Variable(
-            tf.random.normal(sample.shape, dtype=sample.dtype),
-            name='meanfield_mu',
-            dtype=sample.dtype)
-
-        scale = tfp.util.TransformedVariable(
-            tf.fill(sample.shape, value=tf.constant(0.5, sample.dtype)),
-            tfb.Softplus(),
-            name='meanfield_scale',
-        )
-
-        self.posterior_distribution = tfd.TransformedDistribution(
-            tfd.MultivariateNormalDiag(loc=loc, scale_diag=scale),
-            bijector=self.model.blockwise_constraining_bijector
-        )
-
-
 class ADVI(SurrogatePosterior):
 
-    def __init__(self, model):
+    def __init__(self, model, mean_field=False):
         super(ADVI, self).__init__(model=model)
 
         sample = self.unconstrain_flatten_and_merge(self.model.prior_distribution.sample())
@@ -82,21 +57,31 @@ class ADVI(SurrogatePosterior):
             name='meanfield_mu',
             dtype=sample.dtype)
 
-        bij = tfb.Chain([
-                tfb.TransformDiagonal(tfb.Shift(tf.ones(shape=sample.shape, dtype=tf.float32) * 1e-1)),
-                tfb.TransformDiagonal(tfb.Exp()),
-                tfb.FillTriangular()])
+        if mean_field:
+            scale = tfp.util.TransformedVariable(
+                tf.fill(sample.shape, value=tf.constant(0.5, sample.dtype)),
+                tfb.Softplus(),
+                name='meanfield_scale',
+            )
+            self.posterior_distribution = tfd.TransformedDistribution(
+                tfd.MultivariateNormalDiag(loc=loc, scale_diag=scale),
+                bijector=self.model.blockwise_constraining_bijector
+            )
 
-        scale_tril = tfp.util.TransformedVariable(
-            tf.linalg.diag(tf.fill(sample.shape, value=tf.constant(0.5, sample.dtype))),
-            bijector=bij,
-            name='meanfield_scale',
-        )
-
-        self.posterior_distribution = tfd.TransformedDistribution(
-            tfd.MultivariateNormalTriL(loc=loc, scale_tril=scale_tril),
-            bijector=model.blockwise_constraining_bijector
-        )
+        else:
+            bij = tfb.Chain([
+                    tfb.TransformDiagonal(tfb.Shift(tf.ones(shape=sample.shape, dtype=tf.float32) * 1e-1)),
+                    tfb.TransformDiagonal(tfb.Exp()),
+                    tfb.FillTriangular()])
+            scale_tril = tfp.util.TransformedVariable(
+                tf.linalg.diag(tf.fill(sample.shape, value=tf.constant(0.5, sample.dtype))),
+                bijector=bij,
+                name='meanfield_scale',
+            )
+            self.posterior_distribution = tfd.TransformedDistribution(
+                tfd.MultivariateNormalTriL(loc=loc, scale_tril=scale_tril),
+                bijector=model.blockwise_constraining_bijector
+            )
 
 
 class NormalizingFlow(SurrogatePosterior):

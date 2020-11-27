@@ -36,7 +36,7 @@ class VI(Inference):
             tfp.vi.monte_carlo_variational_loss, discrepancy_fn=divergence_fn, use_reparameterization=True
         )
 
-    def fit(self, optimizer=tf.optimizers.Adam(), num_steps=10000, sample_size=1, samples_to_approx_marginals=10000,
+    def fit(self, optimizer=tf.optimizers.Adam(), num_steps=10000, sample_size=1,
             convergence_criterion=None, trainable_variables=None, seed=None, name='fit_surrogate_posterior'):
 
         losses = tfp.vi.fit_surrogate_posterior(
