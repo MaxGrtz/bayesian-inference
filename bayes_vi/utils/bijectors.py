@@ -1,4 +1,6 @@
 import tensorflow_probability as tfp
+import tensorflow as tf
+
 
 from bayes_vi.utils import make_transform_fn
 
@@ -16,6 +18,9 @@ class CustomBlockwise(tfb.Bijector):
             name=name
         )
         self.bijectors = bijectors
+        self.input_event_shape = tf.TensorShape([sum(input_block_sizes)])
+        self.output_event_shape = tf.TensorShape([sum(output_block_sizes)])
+
         self.input_split_bijector = tfb.Split(num_or_size_splits=input_block_sizes)
         self.output_split_bijector = tfb.Split(num_or_size_splits=output_block_sizes)
 
@@ -49,6 +54,18 @@ class CustomBlockwise(tfb.Bijector):
             [b.inverse_log_det_jacobian(y_, event_ndims=1)
              for b, y_ in zip(self.bijectors, self.output_split_bijector.forward(y))]
         )
+
+    def _forward_event_shape(self, input_shape):
+        return self.output_event_shape
+
+    def _inverse_event_shape(self, output_shape):
+        return self.input_event_shape
+
+    def _forward_event_shape_tensor(self, input_shape):
+        return tf.constant(self.output_event_shape, dtype=tf.int32)
+
+    def _inverse_event_shape_tensor(self, output_shape):
+        return tf.constant(self.input_event_shape, dtype=tf.int32)
 
     @classmethod
     def _is_increasing(cls, **kwargs):
