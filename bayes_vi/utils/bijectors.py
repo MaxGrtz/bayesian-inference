@@ -18,8 +18,8 @@ class CustomBlockwise(tfb.Bijector):
             name=name
         )
         self.bijectors = bijectors
-        self.input_event_shape = tf.TensorShape([sum(input_block_sizes)])
-        self.output_event_shape = tf.TensorShape([sum(output_block_sizes)])
+        self.input_event_shape = [sum(input_block_sizes)]
+        self.output_event_shape = [sum(output_block_sizes)]
 
         self.input_split_bijector = tfb.Split(num_or_size_splits=input_block_sizes)
         self.output_split_bijector = tfb.Split(num_or_size_splits=output_block_sizes)
@@ -56,10 +56,10 @@ class CustomBlockwise(tfb.Bijector):
         )
 
     def _forward_event_shape(self, input_shape):
-        return self.output_event_shape
+        return tf.TensorShape(self.output_event_shape)
 
     def _inverse_event_shape(self, output_shape):
-        return self.input_event_shape
+        return tf.TensorShape(self.input_event_shape)
 
     def _forward_event_shape_tensor(self, input_shape):
         return tf.constant(self.output_event_shape, dtype=tf.int32)
