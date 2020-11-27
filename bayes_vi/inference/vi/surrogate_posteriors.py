@@ -1,5 +1,9 @@
 import tensorflow as tf
 import tensorflow_probability as tfp
+import collections
+
+from bayes_vi.utils import to_ordered_dict
+
 
 tfd = tfp.distributions
 tfb = tfp.bijectors
@@ -7,74 +11,117 @@ tfb = tfp.bijectors
 
 class SurrogatePosterior:
 
-    def __init__(self):
-        pass
+    def __init__(self, model):
+        self.model = model
+        self.posterior_distribution = None
+        self.posteriors = None
+        self.joint_marginal_posteriors = None
 
-    def __call__(self, *args, **kwargs):
-        raise NotImplementedError('Not yet implemented!')
+
+    def finalize(self, samples_to_approx_marginals):
+        reshaped_samples = self.reshape_sample(self.posterior_distribution.sample(samples_to_approx_marginals))
+
+        self.posteriors = collections.OrderedDict(
+            [(name, tfd.Empirical(tf.reshape(part, shape=(-1, *list(event_shape))), event_ndims=len(event_shape)))
+             for (name, part), event_shape
+             in zip(reshaped_samples.items(), self.model.prior_distribution.event_shape.values())]
+        )
+
+        self.joint_marginal_posteriors = tfd.JointDistributionNamedAutoBatched(self.posteriors)
+
+
+    def reshape_sample(self, samples):
+        return to_ordered_dict(
+                self.model.param_names,
+                self.model.reshape_flat_constrained_sample(
+                    self.model.split_constrained_bijector.forward(samples)
+                )
+            )
 
 
 class MeanFieldADVI(SurrogatePosterior):
 
-    def __init__(self):
-        super(MeanFieldADVI, self).__init__()
 
-    def __call__(self, model):
-        # Sample to get a list of Tensors
-        list_of_samples = list(model.prior_distribution.sample().values())
+    def __init__(self, model):
+        super(MeanFieldADVI, self).__init__(model=model)
 
-        distlist = []
-        for i, (sample, bijector, name) in enumerate(zip(list_of_samples, model.constraining_bijectors, model.param_names)):
-            dtype = sample.dtype
-            rv_shape = sample[0].shape
-            loc = tf.Variable(
-                tf.random.normal(rv_shape, dtype=dtype),
-                name='meanfield_%s_mu' % i,
-                dtype=dtype)
-            scale = tfp.util.TransformedVariable(
-                tf.fill(rv_shape, value=tf.constant(0.02, dtype)),
-                tfb.Softplus(),
-                name='meanfield_%s_scale' % i,
+        sample = self.model.split_constrained_bijector.inverse(
+                self.model.flatten_constrained_sample(
+                    self.model.prior_distribution.sample().values()
+                )
             )
-            approx_node = tfd.TransformedDistribution(tfd.Normal(loc=loc, scale=scale), bijector=bijector)
 
-            distlist.append((name, approx_node))
+        loc = tf.Variable(
+            tf.random.normal(sample.shape, dtype=sample.dtype),
+            name='meanfield_mu',
+            dtype=sample.dtype)
+
+        scale = tfp.util.TransformedVariable(
+            tf.fill(sample.shape, value=tf.constant(0.5, sample.dtype)),
+            tfb.Softplus(),
+            name='meanfield_scale',
+        )
+
+        self.posterior_distribution = tfd.TransformedDistribution(
+            tfd.MultivariateNormalDiag(loc=loc, scale_diag=scale),
+            bijector=self.model.blockwise_constraining_bijector
+        )
 
 
-        return tfd.JointDistributionNamedAutoBatched(distlist)
+class ADVI(SurrogatePosterior):
+
+    def __init__(self, model):
+        super(ADVI, self).__init__(model=model)
+        sample = model.split_constrained_bijector.inverse(
+            model.flatten_constrained_sample(
+                model.prior_distribution.sample().values()
+            )
+        )
+
+        loc = tf.Variable(
+            tf.random.normal(sample.shape, dtype=sample.dtype),
+            name='meanfield_mu',
+            dtype=sample.dtype)
+
+        bij = tfb.Chain([
+                tfb.TransformDiagonal(tfb.Shift(tf.ones(shape=sample.shape, dtype=tf.float32) * 1e-1)),
+                tfb.TransformDiagonal(tfb.Exp()),
+                tfb.FillTriangular()])
+
+        scale_tril = tfp.util.TransformedVariable(
+            tf.linalg.diag(tf.fill(sample.shape, value=tf.constant(0.5, sample.dtype))),
+            bijector=bij,
+            name='meanfield_scale',
+        )
+
+        self.posterior_distribution = tfd.TransformedDistribution(
+            tfd.MultivariateNormalTriL(loc=loc, scale_tril=scale_tril),
+            bijector=model.blockwise_constraining_bijector
+        )
 
 
 class NormalizingFlow(SurrogatePosterior):
 
-    def __init__(self, base_distributions, flow_bijectors):
-        super().__init__()
-        self.base_distributions = base_distributions
-        self.flow_bijectors = flow_bijectors
+    def __init__(self, model, flow_bijector):
+        super(NormalizingFlow, self).__init__(model=model)
+        self.flow_bijector = flow_bijector
 
-    def __call__(self, model, constraining_bijectors):
-        # Sample to get a list of Tensors
-        list_of_samples = list(model.joint_distribution.sample(1).values())[:-1]
-
-        distlist = []
-        for i, (sample, base_dist, flow_bijector, constr_bijector) \
-                in enumerate(
-            zip(list_of_samples, self.base_distributions, self.flow_bijectors, constraining_bijectors)):
-
-            rv_shape = sample[0].shape
-
-            transformed = tfd.TransformedDistribution(
-                distribution=base_dist,
-                bijector=flow_bijector,
-                event_shape=(1,)
+        sample = self.model.split_constrained_bijector.inverse(
+            self.model.flatten_constrained_sample(
+                self.model.prior_distribution.sample().values()
             )
+        )
 
-            approx_node = tfd.TransformedDistribution(transformed, bijector=constr_bijector)
+        loc = tf.random.normal(sample.shape, dtype=sample.dtype)
 
-            if rv_shape == ():
-                distlist.append(approx_node)
-            else:
-                distlist.append(
-                    tfd.Independent(approx_node, reinterpreted_batch_ndims=1)
-                )
+        scale = tf.fill(sample.shape, value=tf.constant(0.5, sample.dtype))
 
-        return tfd.JointDistributionSequential(distlist)
+        base_dist = tfd.MultivariateNormalDiag(loc=loc, scale_diag=scale)
+
+        transformed = tfd.TransformedDistribution(
+            distribution=base_dist, bijector=self.flow_bijector
+        )
+
+        self.posterior_distribution = tfd.TransformedDistribution(
+            distribution=transformed, bijector=self.model.blockwise_constraining_bijector
+        )
