@@ -5,8 +5,7 @@ import tensorflow as tf
 import tensorflow_probability as tfp
 
 from bayes_vi.inference import Inference
-from bayes_vi.inference.vi import SurrogatePosterior, MeanFieldADVI
-from bayes_vi.models import BayesianModel
+from bayes_vi.inference.vi.surrogate_posteriors import SurrogatePosterior, MeanFieldADVI
 
 tfd = tfp.distributions
 tfb = tfp.bijectors
