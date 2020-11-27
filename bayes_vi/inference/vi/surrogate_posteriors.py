@@ -17,7 +17,7 @@ class SurrogatePosterior:
         self.posteriors = None
         self.joint_marginal_posteriors = None
 
-    def approx_marginal_posteriors(self, samples_to_approx_marginals):
+    def approx_joint_marginal_posteriors(self, samples_to_approx_marginals):
         reshaped_samples = self.reshape_sample(self.posterior_distribution.sample(samples_to_approx_marginals))
 
         self.posteriors = collections.OrderedDict(
@@ -27,6 +27,7 @@ class SurrogatePosterior:
         )
 
         self.joint_marginal_posteriors = tfd.JointDistributionNamedAutoBatched(self.posteriors)
+        return self.joint_marginal_posteriors
 
     def reshape_sample(self, sample):
         return to_ordered_dict(
