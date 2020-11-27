@@ -17,7 +17,6 @@ class SurrogatePosterior:
         self.posteriors = None
         self.joint_marginal_posteriors = None
 
-
     def finalize(self, samples_to_approx_marginals):
         reshaped_samples = self.reshape_sample(self.posterior_distribution.sample(samples_to_approx_marginals))
 
@@ -29,14 +28,20 @@ class SurrogatePosterior:
 
         self.joint_marginal_posteriors = tfd.JointDistributionNamedAutoBatched(self.posteriors)
 
-
-    def reshape_sample(self, samples):
+    def reshape_sample(self, sample):
         return to_ordered_dict(
                 self.model.param_names,
                 self.model.reshape_flat_constrained_sample(
-                    self.model.split_constrained_bijector.forward(samples)
+                    self.model.split_constrained_bijector.forward(sample)
                 )
             )
+
+    def unconstrain_flatten_and_merge(self, sample):
+        return self.model.split_unconstrained_bijector.inverse(
+            self.model.flatten_unconstrained_sample(
+                self.model.unconstrain_sample(sample.values())
+            )
+        )
 
 
 class MeanFieldADVI(SurrogatePosterior):
@@ -45,13 +50,7 @@ class MeanFieldADVI(SurrogatePosterior):
     def __init__(self, model):
         super(MeanFieldADVI, self).__init__(model=model)
 
-        sample = self.model.split_unconstrained_bijector.inverse(
-                self.model.flatten_unconstrained_sample(
-                    self.model.unconstrain_sample(
-                        self.model.prior_distribution.sample()
-                    )
-                )
-            )
+        sample = self.unconstrain_flatten_and_merge(self.model.prior_distribution.sample())
 
         loc = tf.Variable(
             tf.random.normal(sample.shape, dtype=sample.dtype),
@@ -75,13 +74,7 @@ class ADVI(SurrogatePosterior):
     def __init__(self, model):
         super(ADVI, self).__init__(model=model)
 
-        sample = self.model.split_unconstrained_bijector.inverse(
-                self.model.flatten_unconstrained_sample(
-                    self.model.unconstrain_sample(
-                        self.model.prior_distribution.sample()
-                    )
-                )
-            )
+        sample = self.unconstrain_flatten_and_merge(self.model.prior_distribution.sample())
 
         loc = tf.Variable(
             tf.random.normal(sample.shape, dtype=sample.dtype),
@@ -111,13 +104,7 @@ class NormalizingFlow(SurrogatePosterior):
         super(NormalizingFlow, self).__init__(model=model)
         self.flow_bijector = flow_bijector
 
-        sample = self.model.split_unconstrained_bijector.inverse(
-                self.model.flatten_unconstrained_sample(
-                    self.model.unconstrain_sample(
-                        self.model.prior_distribution.sample()
-                    )
-                )
-            )
+        sample = self.unconstrain_flatten_and_merge(self.model.prior_distribution.sample())
 
         loc = tf.random.normal(sample.shape, dtype=sample.dtype)
 
