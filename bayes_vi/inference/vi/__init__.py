@@ -46,6 +46,4 @@ class VI(Inference):
             seed=seed, name=name
         )
 
-        self.surrogate_posterior.finalize(samples_to_approx_marginals)
-
         return self.surrogate_posterior, losses

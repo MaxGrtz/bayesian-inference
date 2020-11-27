@@ -17,7 +17,7 @@ class SurrogatePosterior:
         self.posteriors = None
         self.joint_marginal_posteriors = None
 
-    def finalize(self, samples_to_approx_marginals):
+    def approx_marginal_posteriors(self, samples_to_approx_marginals):
         reshaped_samples = self.reshape_sample(self.posterior_distribution.sample(samples_to_approx_marginals))
 
         self.posteriors = collections.OrderedDict(
