@@ -1,9 +1,9 @@
-import tensorflow as tf
-import tensorflow_probability as tfp
 import collections
 
-from bayes_vi.utils import to_ordered_dict
+import tensorflow as tf
+import tensorflow_probability as tfp
 
+from bayes_vi.utils import to_ordered_dict
 
 tfd = tfp.distributions
 tfb = tfp.bijectors
@@ -31,11 +31,11 @@ class SurrogatePosterior:
 
     def reshape_sample(self, sample):
         return to_ordered_dict(
-                self.model.param_names,
-                self.model.reshape_flat_constrained_sample(
-                    self.model.split_constrained_bijector.forward(sample)
-                )
+            self.model.param_names,
+            self.model.reshape_flat_constrained_sample(
+                self.model.split_constrained_bijector.forward(sample)
             )
+        )
 
     def unconstrain_flatten_and_merge(self, sample):
         return self.model.split_unconstrained_bijector.inverse(
@@ -70,9 +70,9 @@ class ADVI(SurrogatePosterior):
 
         else:
             bij = tfb.Chain([
-                    tfb.TransformDiagonal(tfb.Shift(tf.ones(shape=sample.shape, dtype=tf.float32) * 1e-1)),
-                    tfb.TransformDiagonal(tfb.Exp()),
-                    tfb.FillTriangular()])
+                tfb.TransformDiagonal(tfb.Shift(tf.ones(shape=sample.shape, dtype=tf.float32) * 1e-1)),
+                tfb.TransformDiagonal(tfb.Exp()),
+                tfb.FillTriangular()])
             scale_tril = tfp.util.TransformedVariable(
                 tf.linalg.diag(tf.fill(sample.shape, value=tf.constant(0.5, sample.dtype))),
                 bijector=bij,

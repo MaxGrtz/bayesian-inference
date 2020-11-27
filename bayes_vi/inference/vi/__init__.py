@@ -1,12 +1,10 @@
 import functools
-import collections
 
 import tensorflow as tf
 import tensorflow_probability as tfp
 
-from bayes_vi.utils import to_ordered_dict
 from bayes_vi.inference import Inference
-from bayes_vi.inference.vi.surrogate_posteriors import SurrogatePosterior, MeanFieldADVI
+from bayes_vi.inference.vi.surrogate_posteriors import SurrogatePosterior
 
 tfd = tfp.distributions
 tfb = tfp.bijectors
@@ -38,7 +36,6 @@ class VI(Inference):
 
     def fit(self, optimizer=tf.optimizers.Adam(), num_steps=10000, sample_size=1,
             convergence_criterion=None, trainable_variables=None, seed=None, name='fit_surrogate_posterior'):
-
         losses = tfp.vi.fit_surrogate_posterior(
             self.target_log_prob_fn, self.surrogate_posterior.posterior_distribution,
             optimizer, num_steps, convergence_criterion=convergence_criterion,
