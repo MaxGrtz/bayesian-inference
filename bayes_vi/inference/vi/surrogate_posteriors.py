@@ -14,20 +14,15 @@ class SurrogatePosterior:
     def __init__(self, model):
         self.model = model
         self.posterior_distribution = None
-        self.posteriors = None
-        self.joint_marginal_posteriors = None
 
     def approx_joint_marginal_posteriors(self, samples_to_approx_marginals=10000):
         reshaped_samples = self.reshape_sample(self.posterior_distribution.sample(samples_to_approx_marginals))
-
-        self.posteriors = collections.OrderedDict(
+        posteriors = collections.OrderedDict(
             [(name, tfd.Empirical(tf.reshape(part, shape=(-1, *list(event_shape))), event_ndims=len(event_shape)))
              for (name, part), event_shape
              in zip(reshaped_samples.items(), self.model.prior_distribution.event_shape.values())]
         )
-
-        self.joint_marginal_posteriors = tfd.JointDistributionNamedAutoBatched(self.posteriors)
-        return self.joint_marginal_posteriors
+        return tfd.JointDistributionNamedAutoBatched(posteriors)
 
     def reshape_sample(self, sample):
         return to_ordered_dict(
