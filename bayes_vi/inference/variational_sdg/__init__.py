@@ -156,8 +156,8 @@ class VariationalSGD(Inference):
         losses = []
         for epoch in range(1, epochs + 1):
             for x, y in self.dataset.repeat(repeat).shuffle(shuffle).batch(batch_size):
-                self.recorded_states.append(deepcopy(self.state))
-                self.model = self.model(x)
+                self.recorded_states.append(tf.convert_to_tensor(self.state))
+                self.model(x)
                 loss = self.train_step(y)
                 losses.append(loss)
         return losses

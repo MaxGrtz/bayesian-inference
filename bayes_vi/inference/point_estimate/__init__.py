@@ -119,7 +119,7 @@ class PointEstimate(Inference):
         losses = []
         for epoch in range(1, epochs + 1):
             for x, y in self.dataset.repeat(repeat).shuffle(shuffle).batch(batch_size):
-                self.model = self.model(x)
+                self.model(x)
                 loss = self.train_step(y)
                 losses.append(loss)
         return losses
@@ -214,7 +214,7 @@ class BFGS(Inference):
         """
         super(BFGS, self).__init__(model=model, dataset=dataset)
         self.features, self.targets = list(dataset.batch(dataset.cardinality()).take(1))[0]
-        self.model = model(features=self.features)
+        self.model(features=self.features)
         self.target_log_prob = target_log_prob
 
     def fit(self, initial_state, limited_memory=False, **optimizer_kwargs):

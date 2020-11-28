@@ -70,7 +70,7 @@ class MCMC(Inference):
         self.features, self.targets = list(dataset.batch(dataset.cardinality()).take(1))[0]
 
         # condition model on features
-        self.model = model(features=self.features)
+        self.model(features=self.features)
 
         # define target_log_prob_fn as the log probability of the model, being the unnormalized log posterior
         self.target_log_prob = functools.partial(self.model.unnormalized_log_posterior, targets=self.targets)

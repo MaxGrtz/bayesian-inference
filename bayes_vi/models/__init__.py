@@ -261,7 +261,6 @@ class Model:
                     y=likelihood,
                 )
             )
-        return self
 
     def update_posterior_distribution_by_samples(self, posterior_samples):
         """Updates the `posteriors` and the `posterior_distribution` based on `posterior_samples`.
