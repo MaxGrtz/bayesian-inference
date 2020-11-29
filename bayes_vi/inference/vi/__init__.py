@@ -34,20 +34,20 @@ class VI(Inference):
             tfp.vi.monte_carlo_variational_loss, discrepancy_fn=divergence_fn, use_reparameterization=True
         )
 
-    def fit(self, optimizer=tf.optimizers.Adam(), num_steps=10000, sample_size=1,
+    def fit(self, optimizer=tf.optimizers.Adam(), num_steps=10000, sample_size=1, trace_fn=lambda trace: trace.loss,
             convergence_criterion=None, trainable_variables=None, seed=None, name='fit_surrogate_posterior'):
-        losses = self._fit(self.target_log_prob_fn, self.surrogate_posterior.posterior_distribution,
-                           optimizer, num_steps, convergence_criterion, self.loss, sample_size,
-                           trainable_variables, seed, name)
-        return self.surrogate_posterior, losses
+        trace = self._fit(self.target_log_prob_fn, self.surrogate_posterior.posterior_distribution,
+                          optimizer, num_steps, convergence_criterion, self.loss, sample_size, trace_fn,
+                          trainable_variables, seed, name)
+        return self.surrogate_posterior, trace
 
 
     @staticmethod
     @tf.function
-    def _fit(target_log_prob_fn, surrogate_posterior, optimizer,
-             num_steps, convergence_criterion, loss, sample_size, trainable_variables, seed, name):
+    def _fit(target_log_prob_fn, surrogate_posterior, optimizer, num_steps, convergence_criterion,
+             loss, sample_size, trace_fn, trainable_variables, seed, name):
         return tfp.vi.fit_surrogate_posterior(
-            target_log_prob_fn, surrogate_posterior, optimizer, num_steps,
-            convergence_criterion=convergence_criterion, variational_loss_fn=loss, sample_size=sample_size,
+            target_log_prob_fn, surrogate_posterior, optimizer, num_steps, sample_size=sample_size,
+            convergence_criterion=convergence_criterion, variational_loss_fn=loss, trace_fn=trace_fn,
             trainable_variables=trainable_variables, seed=seed, name=name
         )

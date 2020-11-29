@@ -168,7 +168,7 @@ def make_scale_fn(event_shape, hidden_layers=None):
         hidden_layers = [32]
     scale_fn = tfk.Sequential()
     for n in hidden_layers:
-        scale_fn.add(tfk.layers.Dense(n, activation=tf.keras.activations.relu))
+        scale_fn.add(tfk.layers.Dense(n, activation=tf.keras.activations.relu(max_value=6)))
     scale_fn.add(tfk.layers.Dense(event_shape[0], activation=tf.keras.activations.softplus))
     scale_fn.build((None,) + tuple(event_shape))
     return scale_fn
@@ -179,7 +179,7 @@ def make_shift_fn(event_shape, hidden_layers=None):
         hidden_layers = [32]
     shift_fn = tfk.Sequential()
     for n in hidden_layers:
-        shift_fn.add(tfk.layers.Dense(n, activation=tf.keras.activations.relu))
+        shift_fn.add(tfk.layers.Dense(n, activation=tf.keras.activations.relu(max_value=6)))
     shift_fn.add(tfk.layers.Dense(event_shape[0], activation=tf.keras.activations.linear))
     shift_fn.build((None,) + tuple(event_shape))
     return shift_fn
