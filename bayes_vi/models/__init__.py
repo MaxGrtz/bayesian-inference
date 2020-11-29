@@ -233,6 +233,10 @@ class Model:
             output_block_sizes
         )
 
+        self.flat_unconstrained_event_shapes = input_block_sizes
+
+        self.merged_unconstrained_event_shapes = [sum(input_block_sizes)]
+
     def __call__(self, features):
         """Conditions the `Model` on `features` and updates the joint `distribution`.
 

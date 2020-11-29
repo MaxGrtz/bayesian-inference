@@ -46,8 +46,8 @@ class CustomBlockwise(tfb.Bijector):
             for b, x_ in zip(self.bijectors, self.input_split_bijector.forward(x))
         )
 
-    def inverse_log_det_jacobian(self, x, event_ndims, name='inverse_log_det_jacobian', **kwargs):
-        return self._inverse_log_det_jacobian(x)
+    def inverse_log_det_jacobian(self, y, event_ndims, name='inverse_log_det_jacobian', **kwargs):
+        return self._inverse_log_det_jacobian(y)
 
     def _inverse_log_det_jacobian(self, y):
         return sum(

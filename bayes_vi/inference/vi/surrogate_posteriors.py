@@ -65,8 +65,7 @@ class ADVI(SurrogatePosterior):
 
         else:
             bij = tfb.Chain([
-                tfb.TransformDiagonal(tfb.Shift(tf.ones(shape=sample.shape, dtype=tf.float32) * 1e-1)),
-                tfb.TransformDiagonal(tfb.Exp()),
+                tfb.TransformDiagonal(tfb.Softplus()),
                 tfb.FillTriangular()])
             scale_tril = tfp.util.TransformedVariable(
                 tf.linalg.diag(tf.fill(sample.shape, value=tf.constant(0.5, sample.dtype))),
