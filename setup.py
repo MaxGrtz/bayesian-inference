@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="bayes-vi",
-    version="0.0.1",
+    version="0.1.0",
     author="Maximilian Gartz",
     author_email="maximilian.gartz@outlook.de",
     description="A package for bayesian inference",
