@@ -17,8 +17,8 @@ class SurrogatePosterior:
         self.model = model
         self.posterior_distribution = None
 
-    def approx_joint_marginal_posteriors(self, samples_to_approx_marginals=10000):
-        reshaped_samples = self.reshape_sample(self.posterior_distribution.sample(samples_to_approx_marginals))
+    def approx_joint_marginal_posteriors(self, num_samples_to_approx_marginals):
+        reshaped_samples = self.reshape_sample(self.posterior_distribution.sample(num_samples_to_approx_marginals))
         posteriors = collections.OrderedDict(
             [(name, tfd.Empirical(tf.reshape(part, shape=(-1, *list(event_shape))), event_ndims=len(event_shape)))
              for (name, part), event_shape
@@ -163,13 +163,13 @@ class AugmentedNormalizingFlow(SurrogatePosterior):
         def target_log_prob_fn(sample):
             q, a = tf.split(sample, num_or_size_splits=[sample.shape[-1] - self.extra_dims, self.extra_dims], axis=-1)
             log_prob_q = target_log_prob(self.reshape_sample(q))
-            log_prob_a = self.posterior_lift_distribution(q).log_prob(a)
+            log_prob_a = self.posterior_lift_distribution(self.model.blockwise_constraining_bijector.inverse(q)).log_prob(a)
             return log_prob_q + log_prob_a
 
         return target_log_prob_fn
 
-    def approx_joint_marginal_posteriors(self, samples_to_approx_marginals=10000):
-        samples = self.posterior_distribution.sample(samples_to_approx_marginals)
+    def approx_joint_marginal_posteriors(self, num_samples_to_approx_marginals):
+        samples = self.posterior_distribution.sample(num_samples_to_approx_marginals)
         q, a = tf.split(samples, num_or_size_splits=[samples.shape[-1] - self.extra_dims, self.extra_dims], axis=-1)
         reshaped_samples = self.reshape_sample(q)
         posteriors = collections.OrderedDict(

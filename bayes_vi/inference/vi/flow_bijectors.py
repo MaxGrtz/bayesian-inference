@@ -10,7 +10,7 @@ tfb = tfp.bijectors
 
 class AffineFlow(tfb.Bijector):
 
-    def __init__(self, event_shape, validate_args=False, name='affine_flow'):
+    def __init__(self, event_dims, validate_args=False, name='affine_flow'):
         super(AffineFlow, self).__init__(
             validate_args=validate_args,
             forward_min_event_ndims=1,
@@ -18,17 +18,15 @@ class AffineFlow(tfb.Bijector):
             name=name
         )
 
-        self.event_shape = event_shape
-
         bij = tfb.Chain([
             tfb.TransformDiagonal(tfb.Softplus()),
             tfb.FillTriangular()
         ])
 
-        self.shift = tf.Variable(tf.random.normal(shape=self.event_shape))
+        self.shift = tf.Variable(tf.random.normal(shape=[event_dims]))
 
         self.scale_tril = tfp.util.TransformedVariable(
-            tf.linalg.diag(tf.fill(self.event_shape, value=tf.constant(0.5))),
+            tf.linalg.diag(tf.fill([event_dims], value=tf.constant(0.5))),
             bijector=bij,
         )
 
@@ -57,7 +55,7 @@ class AffineFlow(tfb.Bijector):
 
 class HamiltonianFlow(tfb.Bijector):
 
-    def __init__(self, event_shape, potential_energy_fn=None, kinetic_energy_fn=None,
+    def __init__(self, event_dims, potential_energy_fn=None, kinetic_energy_fn=None,
                  symplectic_integrator=LeapfrogIntegrator(), step_sizes=None, num_integration_steps=3,
                  hidden_layers=None, validate_args=False, name='hamiltonian_flow'):
         super(HamiltonianFlow, self).__init__(is_constant_jacobian=True,
@@ -68,11 +66,11 @@ class HamiltonianFlow(tfb.Bijector):
 
         self.potential_energy_fn = potential_energy_fn
         if potential_energy_fn is None:
-            self.potential_energy_fn = make_energy_fn(event_shape=event_shape, hidden_layers=hidden_layers)
+            self.potential_energy_fn = make_energy_fn(event_dims=event_dims, hidden_layers=hidden_layers)
 
         self.kinetic_energy_fn = kinetic_energy_fn
         if kinetic_energy_fn is None:
-            self.kinetic_energy_fn = make_energy_fn(event_shape=event_shape, hidden_layers=hidden_layers)
+            self.kinetic_energy_fn = make_energy_fn(event_dims=event_dims, hidden_layers=hidden_layers)
 
         self.symplectic_integrator = symplectic_integrator
         self.num_integration_steps = num_integration_steps
@@ -100,14 +98,14 @@ class HamiltonianFlow(tfb.Bijector):
         return False
 
 
-def make_energy_fn(event_shape, hidden_layers=None):
+def make_energy_fn(event_dims, hidden_layers=None):
     if hidden_layers is None:
         hidden_layers = [32, 32]
     energy_fn = tfk.Sequential()
     for n in hidden_layers:
         energy_fn.add(tfk.layers.Dense(n, activation=tf.keras.activations.tanh))
     energy_fn.add(tfk.layers.Dense(1, activation=tf.keras.activations.softplus))
-    energy_fn.build((None,) + tuple(event_shape))
+    energy_fn.build((None,) + tuple([event_dims]))
     return energy_fn
 
 

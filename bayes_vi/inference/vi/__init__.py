@@ -34,15 +34,17 @@ class VI(Inference):
         self.discrepancy_fn = discrepancy_fn
 
 
-    def fit(self, optimizer=tf.optimizers.Adam(), num_steps=10000, sample_size=1, trace_fn=lambda trace: trace.loss,
-            convergence_criterion=None, trainable_variables=None, seed=None, name='fit_surrogate_posterior'):
+    def fit(self, optimizer=tf.optimizers.Adam(), num_steps=10000, sample_size=1, num_samples_to_approx_marginals=10000,
+            trace_fn=lambda trace: trace.loss, convergence_criterion=None, trainable_variables=None,
+            seed=None, name='fit_surrogate_posterior'):
         loss_fn = functools.partial(
             tfp.vi.monte_carlo_variational_loss, discrepancy_fn=self.discrepancy_fn, use_reparameterization=True
         )
         trace = self._fit(self.target_log_prob_fn, self.surrogate_posterior.posterior_distribution,
                           optimizer, num_steps, convergence_criterion, loss_fn, sample_size, trace_fn,
                           trainable_variables, seed, name)
-        return self.surrogate_posterior, trace
+        approx_posterior = self.surrogate_posterior.approx_joint_marginal_posteriors(num_samples_to_approx_marginals)
+        return approx_posterior, trace
 
 
     @staticmethod
@@ -57,7 +59,8 @@ class VI(Inference):
 
 
 
-    def custom_fit(self, optimizer=tf.optimizers.Adam(), num_steps=10000, sample_size=1, mle_fit=False):
+    def custom_fit(self, optimizer=tf.optimizers.Adam(), num_steps=10000, sample_size=1,
+                   num_samples_to_approx_marginals=10000, mle_fit=False):
         losses = []
         loss_mean = Mean()
 
@@ -89,4 +92,5 @@ class VI(Inference):
 
             # adjust variables by applying gradient descent update
             optimizer.apply_gradients(zip(clipped_grads, tape.watched_variables()))
-        return self.surrogate_posterior, losses
+        approx_posterior = self.surrogate_posterior.approx_joint_marginal_posteriors(num_samples_to_approx_marginals)
+        return approx_posterior, losses
