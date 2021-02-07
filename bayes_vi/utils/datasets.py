@@ -41,7 +41,7 @@ def make_dataset_from_df(df,
     dict_map = lambda x, y: ({k: v for k, v in x.items()}, y)
 
     if isinstance(feature_names, list) and feature_names != []:
-        features = df[feature_names[0]] if len(feature_names) == 1 else df[feature_names]
+        features = df[feature_names]
         targets = df[target_names[0]] if len(target_names) == 1 else df[target_names]
 
         if format_features_as == 'tensor':
