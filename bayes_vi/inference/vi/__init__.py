@@ -1,11 +1,9 @@
 import functools
-from fastprogress import fastprogress
 
 import numpy as np
 import tensorflow as tf
 import tensorflow_probability as tfp
-from tensorflow.keras.metrics import Mean
-
+from fastprogress import fastprogress
 
 from bayes_vi.inference import Inference
 from bayes_vi.inference.vi.surrogate_posteriors import SurrogatePosterior
@@ -79,31 +77,7 @@ class VI(Inference):
             loss = optimizer_step()
             losses[i] = loss
             if i % 10 == 0 and hasattr(steps, "comment"):
-                steps.comment = "avg loss: {:.3f}".format(losses[max(0, i-100):i+1].mean())
+                steps.comment = "avg loss: {:.3f}".format(losses[max(0, i - 100):i + 1].mean())
 
         approx_posterior = self.surrogate_posterior.approx_joint_marginal_posteriors(num_samples_to_approx_marginals)
         return approx_posterior, losses
-
-
-    def tfp_fit(self, optimizer=tf.optimizers.Adam(), num_steps=10000, sample_size=1, num_samples_to_approx_marginals=10000,
-                trace_fn=lambda trace: trace.loss, convergence_criterion=None, trainable_variables=None,
-                seed=None, name='fit_surrogate_posterior'):
-        loss_fn = functools.partial(
-            tfp.vi.monte_carlo_variational_loss, discrepancy_fn=self.discrepancy_fn, use_reparameterization=True
-        )
-        trace = self._tfp_fit(self.target_log_prob_fn, self.surrogate_posterior.posterior_distribution,
-                              optimizer, num_steps, convergence_criterion, loss_fn, sample_size, trace_fn,
-                              trainable_variables, seed, name)
-        approx_posterior = self.surrogate_posterior.approx_joint_marginal_posteriors(num_samples_to_approx_marginals)
-        return approx_posterior, trace
-
-
-    @staticmethod
-    @tf.function
-    def _tfp_fit(target_log_prob_fn, surrogate_posterior, optimizer, num_steps, convergence_criterion,
-                 loss, sample_size, trace_fn, trainable_variables, seed, name):
-        return tfp.vi.fit_surrogate_posterior(
-            target_log_prob_fn, surrogate_posterior, optimizer, num_steps, sample_size=sample_size,
-            convergence_criterion=convergence_criterion, variational_loss_fn=loss, trace_fn=trace_fn,
-            trainable_variables=trainable_variables, seed=seed, name=name
-        )

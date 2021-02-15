@@ -1,10 +1,9 @@
 import collections
 import functools
-from fastprogress import fastprogress
-
 
 import tensorflow as tf
 import tensorflow_probability as tfp
+from fastprogress import fastprogress
 
 from bayes_vi.inference import Inference
 from bayes_vi.inference.mcmc.stepsize_adaptation_kernels import StepSizeAdaptationKernel
@@ -37,18 +36,9 @@ class MCMC(Inference):
     transition_kernel: `bayes_vi.inference.mcmc.transition_kernels.TransitionKernel`
         A Markov transition kernel to define transition between states.
         (Default: `bayes_vi.inference.mcmc.transition_kernels.RandomWalkMetropolis`).
-    step_size_adaptation_kernel: `bayes_vi.inference.mcmc.stepsize_adaptation_kernels.StepSizeAdaptationKernel`
-        A stepsize adaptation kernel to wrap the transition kernel and optimize stepsize in burnin phase.
-        (Default: `None`)
-    transforming_bijectors: `tfp.bijectors.Bijector` or `list` of `tfp.bijectors.Bijector`
-        A single or per state part transforming bijector to transform the generated samples.
-        This allows trainable bijectors to be applied to achieve decorrelation between parameters and simplifying
-        the target distribution for more efficient sampling.
-        In the context of HMC this is approximately Riemannian-HMC (RHMC).
     """
 
-    def __init__(self, model, dataset, transition_kernel=RandomWalkMetropolis(),
-                 step_size_adaptation_kernel=None, transforming_bijectors=None):
+    def __init__(self, model, dataset, transition_kernel=RandomWalkMetropolis()):
         """Initializes MCMC.
 
         model: `Model`
@@ -58,14 +48,6 @@ class MCMC(Inference):
         transition_kernel: `bayes_vi.inference.mcmc.transition_kernels.TransitionKernel`
             A Markov transition kernel to define transition between states.
             (Default: `bayes_vi.inference.mcmc.transition_kernels.RandomWalkMetropolis`).
-        step_size_adaptation_kernel: `bayes_vi.inference.mcmc.stepsize_adaptation_kernels.StepSizeAdaptationKernel`
-            A stepsize adaptation kernel to wrap the transition kernel and optimize stepsize in burnin phase.
-            (Default: `None`)
-        transforming_bijectors: `tfp.bijectors.Bijector` or `list` of `tfp.bijectors.Bijector`
-            A single or per state part transforming bijector to transform the generated samples.
-            This allows trainable bijectors to be applied to achieve decorrelation between parameters and simplifying
-            the target distribution for more efficient sampling.
-            In the context of HMC this is approximately Riemannian-HMC (RHMC).
         """
         super(MCMC, self).__init__(model=model, dataset=dataset)
         # take num_datapoints as a single batch and extract features and targets
@@ -78,10 +60,8 @@ class MCMC(Inference):
         self.target_log_prob = functools.partial(self.model.unnormalized_log_posterior, targets=self.targets)
 
         self.transition_kernel = transition_kernel
-        self.step_size_adaptation_kernel = step_size_adaptation_kernel
-        self.transforming_bijectors = transforming_bijectors
 
-    def fit(self, initial_state=None, jitter=0.0001, num_chains=4, num_samples=4000,
+    def fit(self, initial_state=None, num_chains=4, num_samples=4000,
             num_burnin_steps=1000, merge_state_parts=False, progress_bar=False):
         """Fits the Bayesian model to the dataset.
 
@@ -94,9 +74,6 @@ class MCMC(Inference):
                 - `None`: uses prior samples .
                 - `ones`: initializes all parameters to 1. (disturbed by `jitter`)
             (Default: `None`).
-        jitter: `float`
-            Stddev with which to disturb `initial_state`, in the case of `initial_state='ones'`.
-            (Default: `0.0001`).
         num_chains: `int`
             Number of chains to run in parallel. (Default: `4`).
         num_samples: `int`
@@ -115,14 +92,11 @@ class MCMC(Inference):
         """
         # generate initial state for markov chain
         if initial_state is None:
-            # sample initial state from priors
-            initial_state = list(self.model.prior_distribution.sample(num_chains).values())
-        elif initial_state == 'ones':
-            # set initial state to all ones
-            sample = [tf.ones_like(x) for x in self.model.prior_distribution.sample().values()]
+            # sample uniform [-2,2] in unconstrained space
+            uniform_sample = [tf.random.uniform([num_chains] + shape) for shape in
+                              self.model.unconstrained_event_shapes]
             initial_state = [
-                tf.random.normal([num_chains] + part.shape, mean=part, stddev=max(0.01, float(jitter)))
-                for part in sample
+                bij.forward(part) for part, bij in zip(uniform_sample, self.model.constraining_bijectors)
             ]
         elif isinstance(initial_state, collections.OrderedDict):
             # define initial state based on given OrderedDict with explicit values for each parameter
@@ -134,7 +108,8 @@ class MCMC(Inference):
         # components of `initial_state` are considered independent
         # if transforming_bijectors is a single bijector or merge_state_parts is explicitly set,
         # we construct a single component initial state, such that all parameters are considered dependent
-        if isinstance(self.transforming_bijectors, tfb.Bijector):
+        if hasattr(self.transition_kernel, 'transforming_bijector') and \
+                isinstance(self.transition_kernel.transforming_bijector, tfb.Bijector):
             merge_state_parts = True
 
         if merge_state_parts:
@@ -155,37 +130,20 @@ class MCMC(Inference):
             )
 
         # build given Markov transition kernel
-        kernel = self.transition_kernel(target_log_prob_fn)
-        # add transition kernels trace_fn to list of trace functions (for later composition)
-        trace_fns = [self.transition_kernel.trace_fn]
+        kernel, trace_fns, trace_metrics = self.transition_kernel(target_log_prob_fn)
 
-        # wrap `TransitionKernel` in a `StepSizeAdaptationKernel` if one is provided
-        if self.step_size_adaptation_kernel:
-            kernel = self.step_size_adaptation_kernel(inner_kernel=kernel)
-            # append another trace function reaching through to the inner kernel
-            trace_fns.append(self.step_size_adaptation_kernel.trace_fn)
-
+        # wrap transition kernel to generate markov chains in unconstrained space
         kernel = tfp.mcmc.TransformedTransitionKernel(
             inner_kernel=kernel,
             bijector=constraining_bijector
         )
         trace_fns.append(lambda _, pkr: (_, pkr.inner_results))
 
-        if self.transforming_bijectors:
-            # wrap in another `TransformedTransitionKernel`,
-            kernel = tfp.mcmc.TransformedTransitionKernel(
-                inner_kernel=kernel,
-                bijector=self.transforming_bijectors
-            )
-            # append another trace function reaching through to the inner kernel
-            trace_fns.append(lambda _, pkr: (_, pkr.inner_results))
-
-
         if progress_bar:
-            pbar = tfp.experimental.mcmc.ProgressBarReducer(num_samples, progress_bar_fn=lambda n: iter(fastprogress.progress_bar(range(n))))
+            pbar = tfp.experimental.mcmc.ProgressBarReducer(num_samples, progress_bar_fn=lambda n: iter(
+                fastprogress.progress_bar(range(n))))
             kernel = tfp.experimental.mcmc.WithReductions(kernel, pbar)
             trace_fns.append(lambda _, pkr: (_, pkr.inner_results))
-
 
         # define `trace_fn` for Markov chain as composition of all defined trace functions
         trace_fn = compose(list(reversed(trace_fns)))
@@ -204,9 +162,11 @@ class MCMC(Inference):
             samples = self.model.reshape_flat_constrained_sample(
                 self.model.split_constrained_bijector.forward(samples)
             )
+        trace_dict = {name: values[0] if isinstance(values, list) else values for name, values in
+                      zip(trace_metrics, trace)}
 
         # return `SampleResult` object containing samples, trace
-        return SampleResult(samples, trace)
+        return SampleResult(samples, trace_dict)
 
     @staticmethod
     @tf.function(autograph=False)

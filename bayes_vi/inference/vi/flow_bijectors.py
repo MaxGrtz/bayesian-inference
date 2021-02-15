@@ -1,6 +1,8 @@
-import tensorflow_probability as tfp
-import tensorflow as tf
 import functools
+
+import tensorflow as tf
+import tensorflow_probability as tfp
+
 from bayes_vi.utils.leapfrog_integrator import LeapfrogIntegrator
 
 tfk = tf.keras
@@ -47,7 +49,6 @@ class AffineFlow(tfb.Bijector):
     def inverse_log_det_jacobian(self, y, event_ndims, name='inverse_log_det_jacobian', **kwargs):
         return self.bijector.inverse_log_det_jacobian(y, event_ndims)
 
-
     @classmethod
     def _is_increasing(cls, **kwargs):
         return False
@@ -56,7 +57,7 @@ class AffineFlow(tfb.Bijector):
 class HamiltonianFlow(tfb.Bijector):
 
     def __init__(self, event_dims, potential_energy_fn=None, kinetic_energy_fn=None,
-                 symplectic_integrator=LeapfrogIntegrator(), step_sizes=None, num_integration_steps=3,
+                 symplectic_integrator=LeapfrogIntegrator(), step_sizes=0.01, num_integration_steps=5,
                  hidden_layers=None, validate_args=False, name='hamiltonian_flow'):
         super(HamiltonianFlow, self).__init__(is_constant_jacobian=True,
                                               validate_args=validate_args,
@@ -75,17 +76,16 @@ class HamiltonianFlow(tfb.Bijector):
         self.symplectic_integrator = symplectic_integrator
         self.num_integration_steps = num_integration_steps
         self.step_sizes = step_sizes
-        if self.step_sizes is None:
-            self.step_sizes = tf.constant(0.01)
-
 
     def _forward(self, x):
         return self.symplectic_integrator.solve(self.potential_energy_fn, self.kinetic_energy_fn, initial_state=x,
-                                                step_sizes=self.step_sizes, num_integration_steps=self.num_integration_steps)
+                                                step_sizes=self.step_sizes,
+                                                num_integration_steps=self.num_integration_steps)
 
     def _inverse(self, y):
         return self.symplectic_integrator.solve(self.potential_energy_fn, self.kinetic_energy_fn, initial_state=y,
-                                                step_sizes=-self.step_sizes, num_integration_steps=self.num_integration_steps)
+                                                step_sizes=-self.step_sizes,
+                                                num_integration_steps=self.num_integration_steps)
 
     def _forward_log_det_jacobian(self, x):
         return tf.constant(0., x.dtype)

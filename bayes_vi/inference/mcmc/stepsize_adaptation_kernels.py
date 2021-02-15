@@ -59,10 +59,6 @@ class SimpleStepSizeAdaptation(StepSizeAdaptationKernel):
     def __call__(self, inner_kernel):
         return self.kernel(inner_kernel)
 
-    @staticmethod
-    def trace_fn(_, pkr):
-        return _, pkr.inner_results
-
 
 class DualAveragingStepSizeAdaptation(StepSizeAdaptationKernel):
     """Implements the DualAveragingStepSizeAdaptation kernel.
@@ -105,7 +101,3 @@ class DualAveragingStepSizeAdaptation(StepSizeAdaptationKernel):
 
     def __call__(self, inner_kernel):
         return self.kernel(inner_kernel)
-
-    @staticmethod
-    def trace_fn(_, pkr):
-        return _, pkr.inner_results

@@ -12,6 +12,22 @@ tfd = tfp.distributions
 tfb = tfp.bijectors
 
 
+def independent(f, reinterpreted_batch_ndims=1):
+    @functools.wraps(f)
+    def likelihood(*args, **kwargs):
+        llh = f(*args, **kwargs)
+        return tfd.Independent(llh, reinterpreted_batch_ndims=reinterpreted_batch_ndims)
+    return likelihood
+
+
+def sample(f, sample_shape=()):
+    @functools.wraps(f)
+    def likelihood(*args, **kwargs):
+        llh = f(*args, **kwargs)
+        return tfd.Sample(llh, sample_shape=sample_shape)
+    return likelihood
+
+
 class Model:
     """A probabilistic model in the Bayesian sense.
 
@@ -296,10 +312,6 @@ class Model:
     def update_posterior_distribution_by_distribution(self, posterior_distribution):
         """Updates the `posteriors` and the `posterior_distribution` based on a `posterior_distribution`.
 
-        TODO: This should allow multivariate distributions in general (not only joint distributions).
-              - approx marginal distributions with samples and use them to construct `tfp.distributions.Empirical`
-                distributions and in turn a joint distribution ???
-
         Parameters
         ----------
         posterior_distribution: `tfp.distributions.JointDistributionNamed`
@@ -456,159 +468,3 @@ class Model:
             )
         )
         return posterior_model.sample(shape)['y']
-
-    def transform_sample_forward(self, sample):
-        """Convenience function to transform an unconstrained sample into a constrained sample.
-
-        Note: this transformation retains the input structure.
-
-        Parameters
-        ----------
-        sample: `tf.Tensor` or `list` of `tf.Tensor` or `collection.OrderedDict[str, tf.Tensor]`
-            A prior sample in unconstrained space, either split into parts or merged.
-
-        Returns
-        -------
-        `tf.Tensor` or `list` of `tf.Tensor` or `collections.OrderedDict[str, tf.Tensor]`
-            The constrained sample, either merged or as a list or ordered mapping of its parts.
-        """
-        if isinstance(sample, collections.OrderedDict):
-            sample_ = list(sample.values())
-            to_dict = True
-        elif isinstance(sample, (collections.abc.Iterable, tf.Tensor, tf.Variable)):
-            sample_ = sample
-            to_dict = False
-        else:
-            raise TypeError("`sample` has to be a tf.Tensor or a collections.OrderedDict or list thereof.")
-
-        if isinstance(sample_, (tf.Tensor, tf.Variable)):
-            # for merged unconstrained sample
-            sample_ = self.blockwise_constraining_bijector.forward(sample_)
-        else:
-            try:
-                # for flattened unconstrained sample parts
-                sample_ = self.reshape_constrain_sample(sample_)
-            except:
-                # for non flattened unconstrained sample parts
-                sample_ = self.constrain_sample(sample_)
-
-        if to_dict:
-            return to_ordered_dict(self.param_names, sample_)
-        else:
-            return sample_
-
-    def target_log_prob_correction_forward(self, sample):
-        """Compute the log det Jacobian correction for `transform_sample_forward`.
-
-        Parameters
-        ----------
-        sample: `tf.Tensor` or `list` of `tf.Tensor` or `collection.OrderedDict[str, tf.Tensor]`
-            A prior sample in unconstrained space, either split into parts or merged.
-
-        Returns
-        -------
-        `tf.Tensor` with the log det Jacobian correction with sample shape of sample.
-        """
-        if isinstance(sample, collections.OrderedDict):
-            sample_ = list(sample.values())
-        elif isinstance(sample, (collections.abc.Iterable, tf.Tensor, tf.Variable)):
-            sample_ = sample
-        else:
-            raise TypeError("`sample` has to be a tf.Tensor or a collections.OrderedDict or list thereof.")
-
-        if isinstance(sample_, (tf.Tensor, tf.Variable)):
-            # for merged unconstrained sample
-            return self.blockwise_constraining_bijector.forward_log_det_jacobian(sample_, event_ndims=1)
-        else:
-            try:
-                # for flattened unconstrained sample parts
-                return sum(
-                    bij.forward_log_det_jacobian(x, event_ndims=1)
-                    for bij, x in zip(self.reshape_constraining_bijectors, sample_)
-                )
-            except:
-                # for non flattened unconstrained sample parts
-                return sum(
-                    bij.forward_log_det_jacobian(x, event_ndims=len(event_shape))
-                    for bij, x, event_shape in zip(self.constraining_bijectors, sample_,
-                                                   self.unconstrained_event_shapes)
-                )
-
-    def transform_sample_inverse(self, sample):
-        """Convenience function to transform a constrained sample into an unconstrained sample.
-
-        Note: This is the inverse to `transform_sample_forward`.
-
-        Parameters
-        ----------
-        sample: `tf.Tensor` or `list` of `tf.Tensor` or `collection.OrderedDict[str, tf.Tensor]`
-            A prior sample in constrained space, either split into parts or merged.
-
-        Returns
-        -------
-        `tf.Tensor` or `list` of `tf.Tensor` or `collections.OrderedDict[str, tf.Tensor]`
-            The unconstrained sample, either merged or as a list or ordered mapping of its parts.
-        """
-        if isinstance(sample, collections.OrderedDict):
-            sample_ = list(sample.values())
-            to_dict = True
-        elif isinstance(sample, (collections.abc.Iterable, tf.Tensor, tf.Variable)):
-            sample_ = sample
-            to_dict = False
-        else:
-            raise TypeError("`sample` has to be a tf.Tensor or a collections.OrderedDict or list thereof.")
-
-        if isinstance(sample_, (tf.Tensor, tf.Variable)):
-            # for merged constrained sample
-            sample_ = self.split_unconstrained_bijector.inverse(
-                self.reshape_unconstrain_sample(self.split_constrained_bijector.forward(sample_))
-            )
-        else:
-            try:
-                # for flattened constrained sample parts
-                sample_ = self.reshape_unconstrain_sample(sample_)
-            except:
-                # for non flattened constrained sample parts
-                sample_ = self.unconstrain_sample(sample_)
-
-        if to_dict:
-            return to_ordered_dict(self.param_names, sample_)
-        else:
-            return sample_
-
-    def target_log_prob_correction_inverse(self, sample):
-        """Compute the log det Jacobian correction for `transform_sample_inverse`.
-
-        Parameters
-        ----------
-        sample: `tf.Tensor` or `list` of `tf.Tensor` or `collection.OrderedDict[str, tf.Tensor]`
-            A prior sample in constrained space, either split into parts or merged.
-
-        Returns
-        -------
-        `tf.Tensor` with the log det Jacobian correction with sample shape of sample.
-        """
-        if isinstance(sample, collections.OrderedDict):
-            sample_ = list(sample.values())
-        elif isinstance(sample, (collections.abc.Iterable, tf.Tensor, tf.Variable)):
-            sample_ = sample
-        else:
-            raise TypeError("`sample` has to be a tf.Tensor or a collections.OrderedDict or list thereof.")
-
-        if isinstance(sample_, (tf.Tensor, tf.Variable)):
-            # for merged constrained sample
-            return self.blockwise_constraining_bijector.inverse_log_det_jacobian(sample_, event_ndims=1)
-        else:
-            try:
-                # for flattened constrained sample parts
-                return sum(
-                    bij.inverse_log_det_jacobian(x, event_ndims=1)
-                    for bij, x in zip(self.reshape_constraining_bijectors, sample_)
-                )
-            except:
-                # for non flattened constrained sample parts
-                return sum(
-                    bij.inverse_log_det_jacobian(x, event_ndims=len(event_shape))
-                    for bij, x, event_shape in zip(self.constraining_bijectors, sample_,
-                                                   self.prior_distribution.event_shape.values())
-                )

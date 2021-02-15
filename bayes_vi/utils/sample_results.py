@@ -1,9 +1,4 @@
-import collections
-
-import numpy as np
-import pandas as pd
 import tensorflow as tf
-import tensorflow_probability as tfp
 
 
 class SampleResult:
@@ -13,8 +8,10 @@ class SampleResult:
 
     Attributes
     ----------
-    trace: `list` of `tf.Tensor`
-        Traced values defined in the Transition kernels.
+    samples: `list` of `tf.Tensor`
+        The sample results from MCMC or MCMC-like sampling algorithm.
+    trace: `dict[str, tf.Tensor]`
+        Mapping from names of traced metrics to traced values defined in the Transition kernels.
     accept_ratios: `list` of `tf.Tensor`
         Per chain ratio of accepted samples in the sampling process.
     """
@@ -26,13 +23,12 @@ class SampleResult:
         ----------
         samples: `list` of `tf.Tensor`
             The sample results from MCMC or MCMC-like sampling algorithm.
-        trace: `list` of `tf.Tensor`
-            Traced values defined in the Transition kernels.
+        trace: `dict[str, tf.Tensor]`
+            Mapping from names of traced metrics to traced values defined in the Transition kernels.
         """
         self.samples = samples
         self.trace = trace
 
         # summary statistics
         if self.trace is not None:
-            self.accept_ratios = tf.reduce_mean(tf.cast(self.trace[0], tf.float32), axis=0)
-
+            self.accept_ratios = tf.reduce_mean(tf.cast(self.trace['is_accepted'], tf.float32), axis=0)

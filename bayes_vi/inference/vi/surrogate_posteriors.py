@@ -5,7 +5,6 @@ import tensorflow_probability as tfp
 
 from bayes_vi.utils import to_ordered_dict
 from bayes_vi.utils.bijectors import CustomBlockwise
-from bayes_vi.inference.vi.flow_bijectors import make_shift_fn, make_scale_fn
 
 tfd = tfp.distributions
 tfb = tfp.bijectors
@@ -25,13 +24,6 @@ class SurrogatePosterior:
              in zip(reshaped_samples.items(), self.model.prior_distribution.event_shape.values())]
         )
         return tfd.JointDistributionNamedAutoBatched(posteriors)
-
-    def posterior_stats(self, num_samples=10000):
-        joint_marginals = self.approx_joint_marginal_posteriors()
-        samples = joint_marginals.sample(num_samples)
-        # compute stats
-        raise NotImplementedError('Posterior statistics computation is not yet implemented!')
-
 
     def reshape_sample(self, sample):
         return to_ordered_dict(
@@ -163,7 +155,8 @@ class AugmentedNormalizingFlow(SurrogatePosterior):
         def target_log_prob_fn(sample):
             q, a = tf.split(sample, num_or_size_splits=[sample.shape[-1] - self.extra_dims, self.extra_dims], axis=-1)
             log_prob_q = target_log_prob(self.reshape_sample(q))
-            log_prob_a = self.posterior_lift_distribution(self.model.blockwise_constraining_bijector.inverse(q)).log_prob(a)
+            log_prob_a = self.posterior_lift_distribution(
+                self.model.blockwise_constraining_bijector.inverse(q)).log_prob(a)
             return log_prob_q + log_prob_a
 
         return target_log_prob_fn

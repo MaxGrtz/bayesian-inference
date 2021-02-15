@@ -2,6 +2,10 @@ import functools
 
 import tensorflow_probability as tfp
 
+from bayes_vi.inference.mcmc.stepsize_adaptation_kernels import StepSizeAdaptationKernel
+
+tfb = tfp.bijectors
+
 
 class TransitionKernel:
     """Base class for Markov transition Kernels."""
@@ -15,8 +19,21 @@ class TransitionKernel:
             ', '.join('%s=%s' % item for item in vars(self).items())
         )
 
-    def __call__(self, *args, **kwargs):
-        raise NotImplementedError('Not yet Implemented')
+    def __call__(self, target_log_prob_fn):
+        kernel = self.kernel(target_log_prob_fn)
+        trace_fns = [self.trace_fn]
+        if hasattr(self, 'stepsize_adaptation_kernel') \
+                and isinstance(self.stepsize_adaptation_kernel, StepSizeAdaptationKernel):
+            kernel = self.stepsize_adaptation_kernel(kernel)
+            trace_fns.append(lambda _, pkr: (_, pkr.inner_results))
+        if hasattr(self, 'transforming_bijector') \
+                and isinstance(self.transforming_bijector, tfb.Bijector):
+            kernel = tfp.mcmc.TransformedTransitionKernel(
+                inner_kernel=kernel,
+                bijector=self.transforming_bijector
+            )
+            trace_fns.append(lambda _, pkr: (_, pkr.inner_results))
+        return kernel, trace_fns, self.trace_fn_metrics
 
 
 class HamiltonianMonteCarlo(TransitionKernel):
@@ -40,6 +57,14 @@ class HamiltonianMonteCarlo(TransitionKernel):
     kernel: `callable`
         A callable taking a target_log_prob_fn and returning
         `tfp.mcmc.HamiltonianMonteCarlo` with the specified parameters.
+    step_size_adaptation_kernel: `bayes_vi.inference.mcmc.stepsize_adaptation_kernels.StepSizeAdaptationKernel`
+        A stepsize adaptation kernel to wrap the transition kernel and optimize stepsize in burnin phase.
+        (Default: `None`)
+    transforming_bijectors: `tfp.bijectors.Bijector` or `list` of `tfp.bijectors.Bijector`
+        A single or per state part transforming bijector to transform the generated samples.
+        This allows trainable bijectors to be applied to achieve decorrelation between parameters and simplifying
+        the target distribution for more efficient sampling.
+        In the context of HMC this is approximately Riemannian-HMC (RHMC).
     state_gradients_are_stopped: `bool`
         A boolean indicating that the proposed
         new state be run through `tf.stop_gradient`. This is particularly useful
@@ -50,7 +75,9 @@ class HamiltonianMonteCarlo(TransitionKernel):
         (Default: `None` (i.e., 'hmc_kernel')).
     """
 
-    def __init__(self, step_size, num_leapfrog_steps, state_gradients_are_stopped=False, name=None):
+    def __init__(self, step_size, num_leapfrog_steps,
+                 transforming_bijector=None, stepsize_adaptation_kernel=None,
+                 state_gradients_are_stopped=False, name=None):
         """Initializes the HMC kernel.
 
         Parameters
@@ -66,6 +93,14 @@ class HamiltonianMonteCarlo(TransitionKernel):
             Number of steps to run the leapfrog integrator for.
             Total progress per HMC step is roughly proportional to
             `step_size * num_leapfrog_steps`.
+        step_size_adaptation_kernel: `bayes_vi.inference.mcmc.stepsize_adaptation_kernels.StepSizeAdaptationKernel`
+            A stepsize adaptation kernel to wrap the transition kernel and optimize stepsize in burnin phase.
+            (Default: `None`)
+        transforming_bijectors: `tfp.bijectors.Bijector` or `list` of `tfp.bijectors.Bijector`
+            A single or per state part transforming bijector to transform the generated samples.
+            This allows trainable bijectors to be applied to achieve decorrelation between parameters and simplifying
+            the target distribution for more efficient sampling.
+            In the context of HMC this is approximately Riemannian-HMC (RHMC).
         state_gradients_are_stopped: `bool`
             A boolean indicating that the proposed
             new state be run through `tf.stop_gradient`. This is particularly useful
@@ -75,21 +110,27 @@ class HamiltonianMonteCarlo(TransitionKernel):
             Name prefixed to Ops created by this function.
             (Default: `None` (i.e., 'hmc_kernel'))."""
         super(HamiltonianMonteCarlo, self).__init__(name)
+        self.transforming_bijector = transforming_bijector
+        self.stepsize_adaptation_kernel = stepsize_adaptation_kernel
         self.step_size = step_size
         self.num_leapfrog_steps = num_leapfrog_steps
         self.state_gradients_are_stopped = state_gradients_are_stopped
-        self.kernel = functools.partial(tfp.mcmc.HamiltonianMonteCarlo,
-                                        step_size=step_size,
-                                        num_leapfrog_steps=num_leapfrog_steps,
-                                        state_gradients_are_stopped=state_gradients_are_stopped,
-                                        name=name)
-
-    def __call__(self, target_log_prob_fn):
-        return self.kernel(target_log_prob_fn)
+        self.kernel = functools.partial(
+            tfp.mcmc.HamiltonianMonteCarlo,
+            step_size=step_size,
+            num_leapfrog_steps=num_leapfrog_steps,
+            state_gradients_are_stopped=state_gradients_are_stopped,
+            name=name
+        )
+        self.trace_fn_metrics = ['is_accepted', 'target_log_prob', 'step_size']
 
     @staticmethod
     def trace_fn(_, pkr):
-        return (pkr.is_accepted,)
+        return (
+            pkr.is_accepted,
+            pkr.accepted_results.target_log_prob,
+            pkr.accepted_results.step_size
+        )
 
 
 class NoUTurnSampler(TransitionKernel):
@@ -126,13 +167,22 @@ class NoUTurnSampler(TransitionKernel):
     kernel: `callable`
         A callable taking a target_log_prob_fn and returning
         `tfp.mcmc.NoUTurnSampler` with the specified parameters.
+    step_size_adaptation_kernel: `bayes_vi.inference.mcmc.stepsize_adaptation_kernels.StepSizeAdaptationKernel`
+        A stepsize adaptation kernel to wrap the transition kernel and optimize stepsize in burnin phase.
+        (Default: `None`)
+    transforming_bijectors: `tfp.bijectors.Bijector` or `list` of `tfp.bijectors.Bijector`
+        A single or per state part transforming bijector to transform the generated samples.
+        This allows trainable bijectors to be applied to achieve decorrelation between parameters and simplifying
+        the target distribution for more efficient sampling.
+        In the context of HMC this is approximately Riemannian-HMC (RHMC).
     name: `str`
         Name prefixed to Ops created by this function.
         (Default: `None` (i.e., 'nuts_kernel')).
     """
 
     def __init__(self, step_size, max_tree_depth=10, max_energy_diff=1000.0,
-                 unrolled_leapfrog_steps=1, parallel_iterations=10, name=None):
+                 unrolled_leapfrog_steps=1, parallel_iterations=10,
+                 transforming_bijector=None, stepsize_adaptation_kernel=None, name=None):
         """Initializes the NoUTurnSampler kernel.
 
         Parameters
@@ -161,30 +211,52 @@ class NoUTurnSampler(TransitionKernel):
             Number of iterations allowed to run in parallel.
             It must be a positive integer. See `tf.while_loop` for more details.
             (Default: `10`).
+        step_size_adaptation_kernel: `bayes_vi.inference.mcmc.stepsize_adaptation_kernels.StepSizeAdaptationKernel`
+            A stepsize adaptation kernel to wrap the transition kernel and optimize stepsize in burnin phase.
+            (Default: `None`)
+        transforming_bijectors: `tfp.bijectors.Bijector` or `list` of `tfp.bijectors.Bijector`
+            A single or per state part transforming bijector to transform the generated samples.
+            This allows trainable bijectors to be applied to achieve decorrelation between parameters and simplifying
+            the target distribution for more efficient sampling.
+            In the context of HMC this is approximately Riemannian-HMC (RHMC).
         name: `str`
             Name prefixed to Ops created by this function.
             (Default: `None` (i.e., 'nuts_kernel')).
         """
         super(NoUTurnSampler, self).__init__(name)
+        self.transforming_bijector = transforming_bijector
+        self.stepsize_adaptation_kernel = stepsize_adaptation_kernel
         self.step_size = step_size
         self.max_tree_depth = max_tree_depth
         self.max_energy_diff = max_energy_diff
         self.unrolled_leapfrog_steps = unrolled_leapfrog_steps
         self.parallel_iterations = parallel_iterations
-        self.kernel = functools.partial(tfp.mcmc.NoUTurnSampler,
-                                        step_size=step_size,
-                                        max_tree_depth=max_tree_depth,
-                                        max_energy_diff=max_energy_diff,
-                                        unrolled_leapfrog_steps=unrolled_leapfrog_steps,
-                                        parallel_iterations=parallel_iterations,
-                                        name=name)
+        self.kernel = functools.partial(
+            tfp.mcmc.NoUTurnSampler,
+            step_size=step_size,
+            max_tree_depth=max_tree_depth,
+            max_energy_diff=max_energy_diff,
+            unrolled_leapfrog_steps=unrolled_leapfrog_steps,
+            parallel_iterations=parallel_iterations,
+            name=name
+        )
+        self.trace_fn_metrics = [
+            'is_accepted', 'target_log_prob', 'log_accept_ratio', 'step_size',
+            'leapfrogs_taken', 'has_divergence', 'energy'
+        ]
 
-    def __call__(self, target_log_prob_fn):
-        return self.kernel(target_log_prob_fn)
 
     @staticmethod
     def trace_fn(_, pkr):
-        return (pkr.is_accepted,)
+        return (
+            pkr.is_accepted,
+            pkr.target_log_prob,
+            pkr.log_accept_ratio,
+            pkr.step_size,
+            pkr.leapfrogs_taken,
+            pkr.has_divergence,
+            pkr.energy
+        )
 
 
 class RandomWalkMetropolis(TransitionKernel):
@@ -194,6 +266,11 @@ class RandomWalkMetropolis(TransitionKernel):
 
     Attributes
     ----------
+    transforming_bijectors: `tfp.bijectors.Bijector` or `list` of `tfp.bijectors.Bijector`
+        A single or per state part transforming bijector to transform the generated samples.
+        This allows trainable bijectors to be applied to achieve decorrelation between parameters and simplifying
+        the target distribution for more efficient sampling.
+        In the context of HMC this is approximately Riemannian-HMC (RHMC).
     new_state_fn: `callable`
         Callable which takes a list of state parts and a seed;
         returns a same-type `list` of `Tensor`s, each being a perturbation
@@ -208,11 +285,16 @@ class RandomWalkMetropolis(TransitionKernel):
         (Default: `None` (i.e., 'rwm_kernel')).
     """
 
-    def __init__(self, new_state_fn=None, name=None):
+    def __init__(self, transforming_bijector=None, new_state_fn=None, name=None):
         """Initializes the RandomWalkMetropolis kernel.
 
         Attributes
         ----------
+        transforming_bijectors: `tfp.bijectors.Bijector` or `list` of `tfp.bijectors.Bijector`
+            A single or per state part transforming bijector to transform the generated samples.
+            This allows trainable bijectors to be applied to achieve decorrelation between parameters and simplifying
+            the target distribution for more efficient sampling.
+            In the context of HMC this is approximately Riemannian-HMC (RHMC).
         new_state_fn: `callable`
             Callable which takes a list of state parts and a seed;
             returns a same-type `list` of `Tensor`s, each being a perturbation
@@ -225,92 +307,12 @@ class RandomWalkMetropolis(TransitionKernel):
 
         """
         super(RandomWalkMetropolis, self).__init__(name)
+        self.transforming_bijector = transforming_bijector
         self.new_state_fn = new_state_fn
         self.kernel = functools.partial(tfp.mcmc.RandomWalkMetropolis,
                                         new_state_fn=new_state_fn,
                                         name=name)
-
-    def __call__(self, target_log_prob_fn):
-        return self.kernel(target_log_prob_fn)
-
-    @staticmethod
-    def trace_fn(_, pkr):
-        return (pkr.is_accepted,)
-
-
-class MetropolisAdjustedLangevinAlgorithm(TransitionKernel):
-    """Implementation of the MetropolisAdjustedLangevinAlgorithm.
-
-    Note: This is a wrapper around `tfp.mcmc.MetropolisAdjustedLangevinAlgorithm`
-
-    Attributes
-    ----------
-    step_size: `float` or `list` of `float`
-        Representing the step size for the leapfrog integrator.
-        Must broadcast with the shape of current state.
-        Larger step sizes lead to faster progress, but too-large step sizes
-        make rejection exponentially more likely. When possible,
-        it's often helpful to match per-variable step sizes to the
-        standard deviations of the target distribution in each variable.
-    volatility_fn: `callable`
-        Callable which takes an argument like current state
-        (or `*current_state` if it's a list) and returns
-        volatility value at current state. Should return a `Tensor` or Python
-        `list` of `Tensor`s that must broadcast with the shape of
-        current state Defaults to the identity function.
-        (Default: `None`).
-    parallel_iterations: `int`
-        Number of coordinates for which the gradients of
-        the volatility matrix `volatility_fn` can be computed in parallel.
-        (Default: `10`).
-    kernel: `callable`
-        A callable taking a target_log_prob_fn and returning
-        `tfp.mcmc.MetropolisAdjustedLangevinAlgorithm` with the specified parameters.
-    name: `str`
-        Name prefixed to Ops created by this function.
-        (Default: `None` (i.e., 'mala_kernel')).
-    """
-
-    def __init__(self, step_size, volatility_fn=None, parallel_iterations=10, name=None):
-        """Initializes the MetropolisAdjustedLangevinAlgorithm.
-
-        Parameters
-        ----------
-        step_size: `float` or `list` of `float`
-            Representing the step size for the leapfrog integrator.
-            Must broadcast with the shape of current state.
-            Larger step sizes lead to faster progress, but too-large step sizes
-            make rejection exponentially more likely. When possible,
-            it's often helpful to match per-variable step sizes to the
-            standard deviations of the target distribution in each variable.
-        volatility_fn: `callable`
-            Callable which takes an argument like current state
-            (or `*current_state` if it's a list) and returns
-            volatility value at current state. Should return a `Tensor` or Python
-            `list` of `Tensor`s that must broadcast with the shape of
-            current state Defaults to the identity function.
-            (Default: `None`).
-        parallel_iterations: `int`
-            Number of coordinates for which the gradients of
-            the volatility matrix `volatility_fn` can be computed in parallel.
-            (Default: `10`).
-        name: `str`
-            Name prefixed to Ops created by this function.
-            (Default: `None` (i.e., 'mala_kernel')).
-
-        """
-        super(MetropolisAdjustedLangevinAlgorithm, self).__init__(name)
-        self.step_size = step_size
-        self.volatility_fn = volatility_fn
-        self.parallel_iterations = parallel_iterations
-        self.kernel = functools.partial(tfp.mcmc.MetropolisAdjustedLangevinAlgorithm,
-                                        step_size=step_size,
-                                        volatility_fn=volatility_fn,
-                                        parallel_iterations=parallel_iterations,
-                                        name=name)
-
-    def __call__(self, target_log_prob_fn):
-        return self.kernel(target_log_prob_fn)
+        self.trace_fn_metrics = ['is_accepted']
 
     @staticmethod
     def trace_fn(_, pkr):
