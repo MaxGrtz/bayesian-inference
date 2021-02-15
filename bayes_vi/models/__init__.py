@@ -120,7 +120,7 @@ class Model:
             in unconstrained space: split_unconstrained_bijector.inverse(flatten_unconstrained_sample(sample))
     """
 
-    def __init__(self, priors, likelihood, constraining_bijectors):
+    def __init__(self, priors, likelihood, constraining_bijectors=None):
         """Initializes the a `Model` instance.
 
         Parameters
@@ -155,7 +155,9 @@ class Model:
         self.update_posterior_distribution_by_distribution(self.prior_distribution)
 
         self.features = None
-        self.constraining_bijectors = constraining_bijectors
+        self.constraining_bijectors = constraining_bijectors \
+            if constraining_bijectors \
+            else list(self.prior_distribution.experimental_default_event_space_bijector().bijectors)
 
         prior_sample = list(self.prior_distribution.sample().values())
 

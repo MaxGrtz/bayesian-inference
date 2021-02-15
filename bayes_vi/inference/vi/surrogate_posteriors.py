@@ -145,7 +145,7 @@ class AugmentedNormalizingFlow(SurrogatePosterior):
         if not self.posterior_lift_distribution:
             self.posterior_lift_distribution = lambda _: tfd.MultivariateNormalDiag(
                 loc=tf.zeros_like(sample),
-                scale_identity_multiplier=1.,
+                scale_diag=tf.ones_like(sample),
             )
 
         constraining_bijector = CustomBlockwise(

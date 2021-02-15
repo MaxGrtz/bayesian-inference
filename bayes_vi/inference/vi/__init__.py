@@ -1,6 +1,7 @@
 import functools
-import tqdm
+from fastprogress import fastprogress
 
+import numpy as np
 import tensorflow as tf
 import tensorflow_probability as tfp
 from tensorflow.keras.metrics import Mean
@@ -33,64 +34,76 @@ class VI(Inference):
 
         self.discrepancy_fn = discrepancy_fn
 
+    def safe_discrepancy_fn(self, logu):
+        discrepancy = self.discrepancy_fn(logu)
+        return tf.boolean_mask(discrepancy, tf.math.is_finite(discrepancy))
 
-    def fit(self, optimizer=tf.optimizers.Adam(), num_steps=10000, sample_size=1, num_samples_to_approx_marginals=10000,
-            trace_fn=lambda trace: trace.loss, convergence_criterion=None, trainable_variables=None,
-            seed=None, name='fit_surrogate_posterior'):
+    @staticmethod
+    def make_optimizer_step_fn(loss_fn, optimizer):
+
+        @tf.function(autograph=False)
+        def optimizer_step():
+            with tf.GradientTape() as tape:
+                loss = loss_fn()
+
+            grads = tape.gradient(loss, tape.watched_variables())
+            clipped_grads, _ = tf.clip_by_global_norm(grads, 1.0)
+
+            optimizer.apply_gradients(zip(clipped_grads, tape.watched_variables()))
+            return loss
+
+        return optimizer_step
+
+    def fit(self, optimizer=tf.optimizers.Adam(), num_steps=10000, sample_size=1,
+            num_samples_to_approx_marginals=10000, progress_bar=True):
+
+        losses = np.zeros(num_steps)
+
+        def loss_fn():
+            return tfp.vi.monte_carlo_variational_loss(
+                target_log_prob_fn=self.target_log_prob_fn,
+                surrogate_posterior=self.surrogate_posterior.posterior_distribution,
+                discrepancy_fn=self.safe_discrepancy_fn,
+                use_reparameterization=True,
+                sample_size=sample_size
+            )
+
+        if progress_bar:
+            steps = fastprogress.progress_bar(range(num_steps))
+        else:
+            steps = range(num_steps)
+
+        optimizer_step = self.make_optimizer_step_fn(loss_fn, optimizer)
+
+        for i in steps:
+            loss = optimizer_step()
+            losses[i] = loss
+            if i % 10 == 0 and hasattr(steps, "comment"):
+                steps.comment = "avg loss: {:.3f}".format(losses[max(0, i-100):i+1].mean())
+
+        approx_posterior = self.surrogate_posterior.approx_joint_marginal_posteriors(num_samples_to_approx_marginals)
+        return approx_posterior, losses
+
+
+    def tfp_fit(self, optimizer=tf.optimizers.Adam(), num_steps=10000, sample_size=1, num_samples_to_approx_marginals=10000,
+                trace_fn=lambda trace: trace.loss, convergence_criterion=None, trainable_variables=None,
+                seed=None, name='fit_surrogate_posterior'):
         loss_fn = functools.partial(
             tfp.vi.monte_carlo_variational_loss, discrepancy_fn=self.discrepancy_fn, use_reparameterization=True
         )
-        trace = self._fit(self.target_log_prob_fn, self.surrogate_posterior.posterior_distribution,
-                          optimizer, num_steps, convergence_criterion, loss_fn, sample_size, trace_fn,
-                          trainable_variables, seed, name)
+        trace = self._tfp_fit(self.target_log_prob_fn, self.surrogate_posterior.posterior_distribution,
+                              optimizer, num_steps, convergence_criterion, loss_fn, sample_size, trace_fn,
+                              trainable_variables, seed, name)
         approx_posterior = self.surrogate_posterior.approx_joint_marginal_posteriors(num_samples_to_approx_marginals)
         return approx_posterior, trace
 
 
     @staticmethod
     @tf.function
-    def _fit(target_log_prob_fn, surrogate_posterior, optimizer, num_steps, convergence_criterion,
-             loss, sample_size, trace_fn, trainable_variables, seed, name):
+    def _tfp_fit(target_log_prob_fn, surrogate_posterior, optimizer, num_steps, convergence_criterion,
+                 loss, sample_size, trace_fn, trainable_variables, seed, name):
         return tfp.vi.fit_surrogate_posterior(
             target_log_prob_fn, surrogate_posterior, optimizer, num_steps, sample_size=sample_size,
             convergence_criterion=convergence_criterion, variational_loss_fn=loss, trace_fn=trace_fn,
             trainable_variables=trainable_variables, seed=seed, name=name
         )
-
-
-
-    def custom_fit(self, optimizer=tf.optimizers.Adam(), num_steps=10000, sample_size=1,
-                   num_samples_to_approx_marginals=10000, mle_fit=False):
-        losses = []
-        loss_mean = Mean()
-
-        if mle_fit:
-            loss_fn = lambda q_samples: - tf.reduce_mean(
-                self.target_log_prob_fn(q_samples)
-            )
-        else:
-            divergence_fn = lambda q_samples: self.discrepancy_fn(
-                    self.target_log_prob_fn(q_samples) - self.surrogate_posterior.posterior_distribution.log_prob(q_samples)
-                )
-            loss_fn = lambda q_samples: tfp.monte_carlo.expectation(
-                f=divergence_fn,
-                samples=q_samples,
-                use_reparameterization=True)
-
-        t = tqdm.trange(num_steps)
-        for _ in t:
-            t.set_postfix(loss=loss_mean.result().numpy())
-            with tf.GradientTape() as tape:
-                samples = self.surrogate_posterior.posterior_distribution.sample(sample_size)
-                loss = loss_fn(samples)
-            losses.append(loss)
-            loss_mean(loss)
-
-            # compute gradients
-            grads = tape.gradient(loss, tape.watched_variables())
-            clipped_grads = [tf.clip_by_norm(g, 1.0) for g in grads]
-
-            # adjust variables by applying gradient descent update
-            optimizer.apply_gradients(zip(clipped_grads, tape.watched_variables()))
-        approx_posterior = self.surrogate_posterior.approx_joint_marginal_posteriors(num_samples_to_approx_marginals)
-        return approx_posterior, losses

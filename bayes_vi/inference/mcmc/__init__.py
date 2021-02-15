@@ -1,5 +1,7 @@
 import collections
 import functools
+from fastprogress import fastprogress
+
 
 import tensorflow as tf
 import tensorflow_probability as tfp
@@ -80,7 +82,7 @@ class MCMC(Inference):
         self.transforming_bijectors = transforming_bijectors
 
     def fit(self, initial_state=None, jitter=0.0001, num_chains=4, num_samples=4000,
-            num_burnin_steps=1000, merge_state_parts=False):
+            num_burnin_steps=1000, merge_state_parts=False, progress_bar=False):
         """Fits the Bayesian model to the dataset.
 
         Parameters
@@ -178,6 +180,13 @@ class MCMC(Inference):
             # append another trace function reaching through to the inner kernel
             trace_fns.append(lambda _, pkr: (_, pkr.inner_results))
 
+
+        if progress_bar:
+            pbar = tfp.experimental.mcmc.ProgressBarReducer(num_samples, progress_bar_fn=lambda n: iter(fastprogress.progress_bar(range(n))))
+            kernel = tfp.experimental.mcmc.WithReductions(kernel, pbar)
+            trace_fns.append(lambda _, pkr: (_, pkr.inner_results))
+
+
         # define `trace_fn` for Markov chain as composition of all defined trace functions
         trace_fn = compose(list(reversed(trace_fns)))
 
@@ -196,11 +205,11 @@ class MCMC(Inference):
                 self.model.split_constrained_bijector.forward(samples)
             )
 
-        # return `SampleResult` object containing samples, trace and statistics
-        return SampleResult(self.model, samples, trace)
+        # return `SampleResult` object containing samples, trace
+        return SampleResult(samples, trace)
 
     @staticmethod
-    @tf.function
+    @tf.function(autograph=False)
     def sample_chain(num_results, num_burnin_steps, current_state, kernel, trace_fn):
         """wraps `tfp.mcmc.sample_chain`."""
         return tfp.mcmc.sample_chain(
