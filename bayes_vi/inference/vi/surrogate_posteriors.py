@@ -14,36 +14,46 @@ class SurrogatePosterior:
 
     def __init__(self, model):
         self.model = model
-        self.posterior_distribution = None
+        self.distribution = None
+        self.reshape_sample_bijector = tfb.Chain([
+            model.reshape_flat_param_bijector, model.split_flat_param_bijector
+        ])
+        self.unconstrained_event_ndims = model.flat_unconstrained_param_event_ndims
+        self.event_ndims = model.flat_param_event_ndims
+        dtypes = list(model.dtypes.values())
+        if len(set(set(dtypes))) == 1:
+            self.dtype = dtypes[0]
+        else:
+            raise ValueError('Model has incompatible dtypes: {}'.format(set(dtypes)))
 
     def approx_joint_marginal_posteriors(self, num_samples_to_approx_marginals):
-        reshaped_samples = self.reshape_sample(self.posterior_distribution.sample(num_samples_to_approx_marginals))
-        posteriors = collections.OrderedDict(
-            [(name, tfd.Empirical(tf.reshape(part, shape=(-1, *list(event_shape))), event_ndims=len(event_shape)))
-             for (name, part), event_shape
-             in zip(reshaped_samples.items(), self.model.prior_distribution.event_shape.values())]
-        )
+        q = self.distribution.sample(num_samples_to_approx_marginals)
+        if hasattr(self, 'extra_ndims') and self.extra_ndims > 0:
+            q, a = tf.split(q, num_or_size_splits=[self.event_ndims, self.extra_ndims], axis=-1)
+        posterior_samples = self.reshape_sample_bijector.forward(q)
+        posteriors = self.model.get_param_distributions(param_samples=posterior_samples)
         return tfd.JointDistributionNamedAutoBatched(posteriors)
 
-    def reshape_sample(self, sample):
-        return to_ordered_dict(
-            self.model.param_names,
-            self.model.reshape_flat_constrained_sample(
-                self.model.split_constrained_bijector.forward(sample)
-            )
-        )
 
-    def unconstrain_flatten_and_merge(self, sample):
-        return self.model.split_unconstrained_bijector.inverse(
-            self.model.flatten_unconstrained_sample(
-                self.model.unconstrain_sample(sample.values())
-            )
-        )
+    def get_corrected_target_log_prob_fn(self, target_log_prob_fn):
+        if hasattr(self, 'extra_ndims') and self.extra_ndims > 0:
 
-    def get_target_log_prob_fn(self, target_log_prob):
-        return lambda sample: target_log_prob(
-            self.reshape_sample(sample)
-        )
+            def corrected_target_log_prob_fn(sample):
+                q, a = tf.split(
+                    sample,
+                    num_or_size_splits=[self.event_ndims, self.extra_ndims],
+                    axis=-1
+                )
+                log_prob_q = target_log_prob_fn(self.reshape_sample_bijector.forward(q))
+                log_prob_a = self.posterior_lift_distribution(
+                    self.model.blockwise_constraining_bijector.inverse(q)).log_prob(a)
+                return log_prob_q + log_prob_a
+        else:
+
+            def corrected_target_log_prob_fn(sample):
+                return target_log_prob_fn(self.reshape_sample_bijector.forward(sample))
+
+        return corrected_target_log_prob_fn
 
 
 class ADVI(SurrogatePosterior):
@@ -51,123 +61,67 @@ class ADVI(SurrogatePosterior):
     def __init__(self, model, mean_field=False):
         super(ADVI, self).__init__(model=model)
 
-        sample = self.unconstrain_flatten_and_merge(self.model.prior_distribution.sample())
-
-        loc = tf.Variable(
-            tf.random.normal(sample.shape, dtype=sample.dtype),
-            name='meanfield_mu',
-            dtype=sample.dtype)
+        loc = tf.Variable(tf.random.normal(shape=(self.unconstrained_event_ndims,), dtype=self.dtype), dtype=self.dtype)
 
         if mean_field:
             scale = tfp.util.TransformedVariable(
-                tf.fill(sample.shape, value=tf.constant(0.5, sample.dtype)),
-                tfb.Softplus(),
-                name='meanfield_scale',
+                tf.ones_like(loc),
+                bijector=tfb.Softplus(),
             )
-            self.posterior_distribution = tfd.TransformedDistribution(
+            self.distribution = tfd.TransformedDistribution(
                 tfd.MultivariateNormalDiag(loc=loc, scale_diag=scale),
                 bijector=self.model.blockwise_constraining_bijector
             )
 
         else:
-            bij = tfb.Chain([
-                tfb.TransformDiagonal(tfb.Softplus()),
-                tfb.FillTriangular()])
             scale_tril = tfp.util.TransformedVariable(
-                tf.linalg.diag(tf.fill(sample.shape, value=tf.constant(0.5, sample.dtype))),
-                bijector=bij,
-                name='meanfield_scale',
+                tf.eye(self.unconstrained_event_ndims, dtype=self.dtype),
+                bijector=tfb.FillScaleTriL(diag_bijector=tfb.Softplus(), diag_shift=1e-5),
+                dtype=self.dtype
             )
-            self.posterior_distribution = tfd.TransformedDistribution(
+            self.distribution = tfd.TransformedDistribution(
                 tfd.MultivariateNormalTriL(loc=loc, scale_tril=scale_tril),
-                bijector=model.blockwise_constraining_bijector
+                bijector=self.model.blockwise_constraining_bijector
             )
 
 
 class NormalizingFlow(SurrogatePosterior):
 
-    def __init__(self, model, flow_bijector):
+    def __init__(self, model, flow_bijector, extra_ndims=None, posterior_lift_distribution=None):
         super(NormalizingFlow, self).__init__(model=model)
         self.flow_bijector = flow_bijector
 
-        sample = self.unconstrain_flatten_and_merge(self.model.prior_distribution.sample())
-
-        loc = tf.zeros_like(sample)
-
-        scale = tf.ones(shape=sample.shape, dtype=sample.dtype)
-
-        base_dist = tfd.MultivariateNormalDiag(loc=loc, scale_diag=scale)
-
-        transformed = tfd.TransformedDistribution(
-            distribution=base_dist, bijector=self.flow_bijector
-        )
-
-        self.posterior_distribution = tfd.TransformedDistribution(
-            distribution=transformed, bijector=self.model.blockwise_constraining_bijector
-        )
-
-
-class AugmentedNormalizingFlow(SurrogatePosterior):
-
-    def __init__(self, model, flow_bijector, extra_dims=None, posterior_lift_distribution=None):
-        super(AugmentedNormalizingFlow, self).__init__(model=model)
-
-        if extra_dims and extra_dims <= 0:
-            raise ValueError('`extra_dims` have to be `None` or  `> 0`.')
-
-        self.flow_bijector = flow_bijector
-        sample = self.unconstrain_flatten_and_merge(self.model.prior_distribution.sample())
-        self.dims = sample.shape[0]
-        if not extra_dims:
-            self.extra_dims = self.dims
+        if extra_ndims and extra_ndims < 0:
+            raise ValueError('`extra_dims` have to be `None` or  `>=0`.')
         else:
-            self.extra_dims = extra_dims
+            self.extra_ndims = extra_ndims if extra_ndims else 0
 
-        loc = tf.zeros(shape=(self.dims + self.extra_dims), dtype=sample.dtype)
+        loc = tf.zeros(shape=(self.unconstrained_event_ndims + self.extra_ndims,), dtype=self.dtype)
 
-        scale = tf.ones(shape=(self.dims + self.extra_dims), dtype=sample.dtype)
+        scale = tf.ones_like(loc)
 
         base_dist = tfd.MultivariateNormalDiag(loc=loc, scale_diag=scale)
 
         transformed = tfd.TransformedDistribution(
             distribution=base_dist, bijector=self.flow_bijector
+        )
+
+        if self.extra_ndims > 0:
+            blockwise_constraining_bijector = tfb.Chain([
+                tfb.Invert(tfb.Split([self.event_ndims, self.extra_ndims])),
+                tfb.JointMap(bijectors=[self.model.blockwise_constraining_bijector, tfb.Identity()]),
+                tfb.Split([self.unconstrained_event_ndims, self.extra_ndims])
+            ])
+        else:
+            blockwise_constraining_bijector = self.model.blockwise_constraining_bijector
+
+        self.distribution = tfd.TransformedDistribution(
+            distribution=transformed, bijector=blockwise_constraining_bijector
         )
 
         self.posterior_lift_distribution = posterior_lift_distribution
-        if not self.posterior_lift_distribution:
+        if self.extra_ndims > 0 and not self.posterior_lift_distribution:
             self.posterior_lift_distribution = lambda _: tfd.MultivariateNormalDiag(
-                loc=tf.zeros_like(sample),
-                scale_diag=tf.ones_like(sample),
+                loc=tf.zeros(shape=(self.extra_ndims,), dtype=self.dtype),
+                scale_diag=tf.ones(shape=(self.extra_ndims,), dtype=self.dtype),
             )
-
-        constraining_bijector = CustomBlockwise(
-            input_block_sizes=[self.dims, self.extra_dims],
-            output_block_sizes=[self.model.blockwise_constraining_bijector.output_event_shape[0], self.extra_dims],
-            bijectors=[self.model.blockwise_constraining_bijector, tfb.Identity()]
-        )
-
-        self.posterior_distribution = tfd.TransformedDistribution(
-            distribution=transformed, bijector=constraining_bijector
-        )
-
-    def get_target_log_prob_fn(self, target_log_prob):
-
-        def target_log_prob_fn(sample):
-            q, a = tf.split(sample, num_or_size_splits=[sample.shape[-1] - self.extra_dims, self.extra_dims], axis=-1)
-            log_prob_q = target_log_prob(self.reshape_sample(q))
-            log_prob_a = self.posterior_lift_distribution(
-                self.model.blockwise_constraining_bijector.inverse(q)).log_prob(a)
-            return log_prob_q + log_prob_a
-
-        return target_log_prob_fn
-
-    def approx_joint_marginal_posteriors(self, num_samples_to_approx_marginals):
-        samples = self.posterior_distribution.sample(num_samples_to_approx_marginals)
-        q, a = tf.split(samples, num_or_size_splits=[samples.shape[-1] - self.extra_dims, self.extra_dims], axis=-1)
-        reshaped_samples = self.reshape_sample(q)
-        posteriors = collections.OrderedDict(
-            [(name, tfd.Empirical(tf.reshape(part, shape=(-1, *list(event_shape))), event_ndims=len(event_shape)))
-             for (name, part), event_shape
-             in zip(reshaped_samples.items(), self.model.prior_distribution.event_shape.values())]
-        )
-        return tfd.JointDistributionNamedAutoBatched(posteriors)

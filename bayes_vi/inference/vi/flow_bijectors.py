@@ -109,23 +109,23 @@ def make_energy_fn(event_dims, hidden_layers=None):
     return energy_fn
 
 
-def make_scale_fn(in_dims, out_dims, hidden_layers=None):
+def make_scale_fn(event_ndims, hidden_layers=None):
     if hidden_layers is None:
         hidden_layers = [32]
     scale_fn = tfk.Sequential()
     for n in hidden_layers:
         scale_fn.add(tfk.layers.Dense(n, activation=functools.partial(tf.keras.activations.relu, max_value=6)))
-    scale_fn.add(tfk.layers.Dense(out_dims, activation=tf.keras.activations.softplus))
-    scale_fn.build((None,) + (in_dims,))
+    scale_fn.add(tfk.layers.Dense(event_ndims, activation=tf.keras.activations.softplus))
+    scale_fn.build((None,) + (event_ndims,))
     return scale_fn
 
 
-def make_shift_fn(in_dims, out_dims, hidden_layers=None):
+def make_shift_fn(event_ndims, hidden_layers=None):
     if hidden_layers is None:
         hidden_layers = [32]
     shift_fn = tfk.Sequential()
     for n in hidden_layers:
         shift_fn.add(tfk.layers.Dense(n, activation=functools.partial(tf.keras.activations.relu, max_value=6)))
-    shift_fn.add(tfk.layers.Dense(out_dims, activation=tf.keras.activations.linear))
-    shift_fn.build((None,) + (in_dims,))
+    shift_fn.add(tfk.layers.Dense(event_ndims, activation=tf.keras.activations.linear))
+    shift_fn.build((None,) + (event_ndims,))
     return shift_fn

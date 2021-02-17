@@ -52,12 +52,20 @@ class MCMC(Inference):
         super(MCMC, self).__init__(model=model, dataset=dataset)
         # take num_datapoints as a single batch and extract features and targets
         self.features, self.targets = list(dataset.batch(dataset.cardinality()).take(1))[0]
+        self.targets = self.targets if model.is_generative_model else tf.expand_dims(self.targets, axis=0)
 
         # condition model on features
-        self.model(features=self.features)
+        self.model = model
+        self.distribution = model.get_joint_distribution(targets=self.targets, features=self.features)
+
+        self.target_log_prob_fn = lambda state, targets: self.distribution.log_prob(
+                **to_ordered_dict(model.param_names, state), y=targets
+            )
 
         # define target_log_prob_fn as the log probability of the model, being the unnormalized log posterior
-        self.target_log_prob = functools.partial(self.model.unnormalized_log_posterior, targets=self.targets)
+        self.target_log_prob = tf.function(
+            functools.partial(self.target_log_prob_fn, targets=self.targets)
+        )
 
         self.transition_kernel = transition_kernel
 
@@ -93,16 +101,16 @@ class MCMC(Inference):
         # generate initial state for markov chain
         if initial_state is None:
             # sample uniform [-2,2] in unconstrained space
-            uniform_sample = [tf.random.uniform([num_chains] + shape) for shape in
-                              self.model.unconstrained_event_shapes]
-            initial_state = [
-                bij.forward(part) for part, bij in zip(uniform_sample, self.model.constraining_bijectors)
+            uniform_sample = [
+                tf.random.uniform([num_chains] + shape, minval=-1., maxval=1.)
+                for shape in self.model.unconstrained_param_event_shape
             ]
-        elif isinstance(initial_state, collections.OrderedDict):
+            initial_state = self.model.joint_constraining_bijector.forward(uniform_sample)
+        elif isinstance(initial_state, (list, collections.OrderedDict)):
             # define initial state based on given OrderedDict with explicit values for each parameter
-            initial_state = list(initial_state.values())
+            initial_state = initial_state if isinstance(initial_state, list) else list(initial_state.values())
         else:
-            raise ValueError("`initial_state` has to be in [None, 'ones', collections.OrderedDict]; "
+            raise ValueError("`initial_state` has to be in [None, list, collections.OrderedDict]; "
                              "was {}".foramt(initial_state))
 
         # components of `initial_state` are considered independent
@@ -113,24 +121,21 @@ class MCMC(Inference):
             merge_state_parts = True
 
         if merge_state_parts:
-            initial_state = self.model.split_constrained_bijector.inverse(
-                self.model.flatten_constrained_sample(initial_state)
+            initial_state = self.model.split_flat_param_bijector.inverse(
+                self.model.reshape_flat_param_bijector.inverse(initial_state)
             )
             constraining_bijector = self.model.blockwise_constraining_bijector
-            target_log_prob_fn = lambda *state: self.target_log_prob(
-                to_ordered_dict(
-                    self.model.param_names,
-                    self.model.reshape_flat_constrained_sample(self.model.split_constrained_bijector(state[0]))
+            target_log_prob = lambda *state: self.target_log_prob(
+                self.model.reshape_flat_param_bijector.forward(
+                    self.model.split_flat_param_bijector.forward(state[0])
                 )
             )
         else:
             constraining_bijector = self.model.constraining_bijectors
-            target_log_prob_fn = lambda *state: self.target_log_prob(
-                to_ordered_dict(self.model.param_names, state)
-            )
+            target_log_prob = lambda *state: self.target_log_prob(state)
 
         # build given Markov transition kernel
-        kernel, trace_fns, trace_metrics = self.transition_kernel(target_log_prob_fn)
+        kernel, trace_fns, trace_metrics = self.transition_kernel(target_log_prob)
 
         # wrap transition kernel to generate markov chains in unconstrained space
         kernel = tfp.mcmc.TransformedTransitionKernel(
@@ -159,8 +164,8 @@ class MCMC(Inference):
         )
 
         if merge_state_parts:
-            samples = self.model.reshape_flat_constrained_sample(
-                self.model.split_constrained_bijector.forward(samples)
+            samples = self.model.reshape_flat_param_bijector.forward(
+                self.model.split_flat_param_bijector.forward(samples)
             )
         trace_dict = {name: values[0] if isinstance(values, list) else values for name, values in
                       zip(trace_metrics, trace)}

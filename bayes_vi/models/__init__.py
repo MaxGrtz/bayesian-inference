@@ -1,6 +1,7 @@
 import collections
 import functools
 import inspect
+import decorator
 
 import tensorflow as tf
 import tensorflow_probability as tfp
@@ -12,20 +13,10 @@ tfd = tfp.distributions
 tfb = tfp.bijectors
 
 
-def independent(f, reinterpreted_batch_ndims=1):
-    @functools.wraps(f)
-    def likelihood(*args, **kwargs):
-        llh = f(*args, **kwargs)
-        return tfd.Independent(llh, reinterpreted_batch_ndims=reinterpreted_batch_ndims)
-    return likelihood
-
-
-def sample(f, sample_shape=()):
-    @functools.wraps(f)
-    def likelihood(*args, **kwargs):
-        llh = f(*args, **kwargs)
-        return tfd.Sample(llh, sample_shape=sample_shape)
-    return likelihood
+@decorator.decorator
+def sample(f, sample_shape=(), *args, **kwargs):
+    llh = f(*args, **kwargs)
+    return tfd.Sample(llh, sample_shape=sample_shape, name='Sample_Likelihood')
 
 
 class Model:
@@ -154,317 +145,109 @@ class Model:
             such that the inverse transformation of each bijector unconstrains a parameter sample,
             while the forward transformation constrains the parameter sample to the allowed range.
         """
-        self.param_names = list(priors.keys())
-        self.priors = collections.OrderedDict(priors)
-        self.prior_distribution = tfd.JointDistributionNamedAutoBatched(self.priors)
         self.likelihood = likelihood
-        self.distribution = tfd.JointDistributionNamedAutoBatched(
-            collections.OrderedDict(
-                **self.priors,
-                y=likelihood,
-            )
-        )
         self.is_generative_model = 'features' not in inspect.signature(likelihood).parameters.keys()
 
-        self.posteriors = None
-        self.posterior_distribution = None
-        self.update_posterior_distribution_by_distribution(self.prior_distribution)
+        self.param_names = list(priors.keys())
+        self.priors = collections.OrderedDict(priors)
+        self.dtypes = collections.OrderedDict([(k, v.dtype) for k, v in priors.items()])
+        self.prior_distribution = tfd.JointDistributionNamedAutoBatched(self.priors)
+        self.constraining_bijectors = constraining_bijectors
 
-        self.features = None
-        self.constraining_bijectors = constraining_bijectors \
-            if constraining_bijectors \
-            else list(self.prior_distribution.experimental_default_event_space_bijector().bijectors)
+        if not self.constraining_bijectors:
+            self.constraining_bijectors = list(
+                self.prior_distribution.experimental_default_event_space_bijector().bijectors
+            )
+        self.joint_constraining_bijector = tfb.JointMap(self.constraining_bijectors)
+
+        self.param_event_shape = list(self.prior_distribution.event_shape.values())
+        self.unconstrained_param_event_shape = self.joint_constraining_bijector.inverse_event_shape(
+            self.param_event_shape
+        )
+
+        self.reshape_flat_param_bijector = tfb.JointMap([
+            tfb.Reshape(event_shape_out=shape, event_shape_in=(-1,)) for shape in self.param_event_shape
+        ])
+        self.reshape_flat_unconstrained_param_bijector = tfb.JointMap([
+            tfb.Reshape(event_shape_out=shape, event_shape_in=(-1,)) for shape in self.unconstrained_param_event_shape
+        ])
 
         prior_sample = list(self.prior_distribution.sample().values())
 
-        # shapes of each sample part in unconstrained sample space
-        self.unconstrained_event_shapes = [
-            bij.inverse(part).shape
-            for part, bij in zip(prior_sample, self.constraining_bijectors)
+        self.flat_param_event_shape = [
+            part.shape for part in self.reshape_flat_param_bijector.inverse(
+                prior_sample
+            )
         ]
 
-        # reshaping bijector from flat to unconstrained sample shape
-        self.reshaping_unconstrained_bijectors = [
-            tfb.Reshape(event_shape_out=shape, event_shape_in=(-1,))
-            for shape in self.unconstrained_event_shapes
+        self.flat_unconstrained_param_event_shape = [
+            part.shape for part in self.reshape_flat_unconstrained_param_bijector.inverse(
+                 self.joint_constraining_bijector.inverse(prior_sample)
+             )
         ]
 
-        # reshaping bijector from flat to constrained sample shape
-        self.reshaping_constrained_bijectors = [
-            tfb.Reshape(event_shape_out=shape, event_shape_in=(-1,))
-            for shape in self.prior_distribution.event_shape.values()
-        ]
+        block_sizes = [shape[-1] for shape in self.flat_param_event_shape]
+        unconstrained_block_sizes = [shape[-1] for shape in self.flat_unconstrained_param_event_shape]
 
-        # reshape flattened unconstrained sample, constrain sample and flatten constrained sample
-        self.reshape_constraining_bijectors = [
-            tfb.Chain([tfb.Invert(reshape_constrained), constrain, reshape_unconstrained])
-            for reshape_constrained, constrain, reshape_unconstrained
-            in zip(self.reshaping_constrained_bijectors,
-                   self.constraining_bijectors,
-                   self.reshaping_unconstrained_bijectors)
-        ]
-
-        self.flatten_constrained_sample = make_transform_fn(
-            self.reshaping_constrained_bijectors, direction='inverse'
-        )
-        self.flatten_unconstrained_sample = make_transform_fn(
-            self.reshaping_unconstrained_bijectors, direction='inverse'
+        self.split_flat_param_bijector = tfb.Split(
+            block_sizes
         )
 
-        self.reshape_flat_constrained_sample = make_transform_fn(
-            self.reshaping_constrained_bijectors, direction='forward'
-        )
-        self.reshape_flat_unconstrained_sample = make_transform_fn(
-            self.reshaping_unconstrained_bijectors, direction='forward'
+        self.split_flat_unconstrained_param_bijector = tfb.Split(
+            unconstrained_block_sizes
         )
 
-        self.constrain_sample = make_transform_fn(
-            self.constraining_bijectors, direction='forward'
-        )
-        self.unconstrain_sample = make_transform_fn(
-            self.constraining_bijectors, direction='inverse'
-        )
+        self.blockwise_constraining_bijector = tfb.Chain([
+            tfb.Invert(self.split_flat_param_bijector),
+            tfb.Invert(self.reshape_flat_param_bijector),
+            self.joint_constraining_bijector,
+            self.reshape_flat_unconstrained_param_bijector,
+            self.split_flat_unconstrained_param_bijector
+        ])
 
-        self.reshape_constrain_sample = make_transform_fn(
-            self.reshape_constraining_bijectors, direction='forward'
-        )
-        self.reshape_unconstrain_sample = make_transform_fn(
-            self.reshape_constraining_bijectors, direction='inverse'
+        self.flat_param_event_ndims = sum(
+            block_sizes
         )
 
-        input_block_sizes = [part.shape[-1]
-                             for part in self.flatten_unconstrained_sample(self.unconstrain_sample(prior_sample))]
-
-        output_block_sizes = [part.shape[-1]
-                              for part in self.flatten_constrained_sample(prior_sample)]
-
-        self.blockwise_constraining_bijector = CustomBlockwise(
-            input_block_sizes=input_block_sizes,
-            output_block_sizes=output_block_sizes,
-            bijectors=self.reshape_constraining_bijectors
+        self.flat_unconstrained_param_event_ndims = sum(
+            unconstrained_block_sizes
         )
 
-        self.split_unconstrained_bijector = tfb.Split(
-            input_block_sizes
-        )
-        self.split_constrained_bijector = tfb.Split(
-            output_block_sizes
-        )
 
-        self.unconstrained_event_dims = sum(input_block_sizes)
-
-        self.constrained_event_dims = sum(output_block_sizes)
-
-    def __call__(self, features):
-        """Conditions the `Model` on `features` and updates the joint `distribution`.
-
-        Parameters
-        ----------
-        features: `tf.Tensor` or `dict[str, tf.Tensor]`
-            A single `tf.Tensor` of all features of the dataset of shape (N,m),
-            where N is the number of examples in the dataset (or batch) and m is the the number of features.
-            Or a mapping from feature names to a `tf.Tensor` of shape (N,1).
-
-        Returns
-        -------
-        `Model`
-            The `Model` instance conditioned on `features`.
-
-        """
+    def _get_joint_distribution(self, param_distributions, targets=None, features=None):
         if not self.is_generative_model:
-            self.features = features
-
-            likelihood = functools.partial(self.likelihood, features=self.features)
-
-            # update the joint distribution defining the Bayesian model
-            self.distribution = tfd.JointDistributionNamedAutoBatched(
-                collections.OrderedDict(
-                    **self.priors,
-                    y=likelihood,
-                )
+            llh = functools.partial(self.likelihood, features=features)
+        else:
+            if targets is not None:
+                llh = sample(self.likelihood, sample_shape=targets.shape[0])
+            else:
+                llh = self.likelihood
+        return tfd.JointDistributionNamedAutoBatched(
+                collections.OrderedDict(**param_distributions, y=llh)
             )
 
-    def update_posterior_distribution_by_samples(self, posterior_samples):
-        """Updates the `posteriors` and the `posterior_distribution` based on `posterior_samples`.
+    def get_param_distributions(self, joint_param_distribution=None, param_samples=None):
+        if isinstance(joint_param_distribution, (tfd.JointDistributionNamed, tfd.JointDistributionNamedAutoBatched)):
+            param_dists, _ = joint_param_distribution.sample_distributions()
+        elif isinstance(param_samples, (list, collections.OrderedDict)):
+            if isinstance(param_samples, list):
+                param_samples = to_ordered_dict(self.param_names, param_samples)
+            param_dists = collections.OrderedDict(
+                [(name, tfd.Empirical(tf.reshape(part, shape=(-1, *list(event_shape))), event_ndims=len(event_shape)))
+                 for (name, part), event_shape
+                 in zip(param_samples.items(), self.param_event_shape)]
+            )
+        else:
+            raise ValueError('You have to provide either a joint distribution or param samples.')
+        return param_dists
 
-        Parameters
-        ----------
-        posterior_samples: `list` of `tf.Tensor` or `collections.OrderedDict[str, tf.Tensor]`
-            A list or ordered mapping of posterior samples for each parameter.
-            E.g. obtained via MCMC or other inference algorithms.
-            Providing a single sample for each parameter is also valid
-            and corresponds to a point estimate for the parameters.
-            The samples are used to construct `tfp.distributions.Empirical` distributions
-            for each parameter and the corresponding `tfp.distributions.JointDistributionNamedAutoBatched`.
-        """
-        if isinstance(posterior_samples, list):
-            posterior_samples = to_ordered_dict(self.param_names, posterior_samples)
-        if not isinstance(posterior_samples, collections.OrderedDict):
-            raise TypeError("`posterior_samples` have to be of type `list` or `collections.OrderedDict`.")
+    def get_joint_distribution(self, targets=None, features=None):
+        return self._get_joint_distribution(self.priors, targets=targets, features=features)
 
-        self.posteriors = collections.OrderedDict(
-            [(name, tfd.Empirical(tf.reshape(part, shape=(-1, *list(event_shape))), event_ndims=len(event_shape)))
-             for (name, part), event_shape
-             in zip(posterior_samples.items(), self.prior_distribution.event_shape.values())]
+
+    def get_posterior_predictive_distribution(self, posterior_distribution=None, posterior_samples=None, targets=None, features=None):
+        posteriors = self.get_param_distributions(
+            joint_param_distribution=posterior_distribution,
+            param_samples=posterior_samples
         )
-        self.posterior_distribution = tfd.JointDistributionNamedAutoBatched(self.posteriors)
-
-    def update_posterior_distribution_by_distribution(self, posterior_distribution):
-        """Updates the `posteriors` and the `posterior_distribution` based on a `posterior_distribution`.
-
-        Parameters
-        ----------
-        posterior_distribution: `tfp.distributions.JointDistributionNamed`
-            A joint named distribution (may be auto-batched) e.g. obtained from a variational inference
-            algorithm. The joint distribution is used to obtain the component `posteriors`.
-        """
-        if not isinstance(posterior_distribution, (tfd.JointDistributionNamed, tfd.JointDistributionNamedAutoBatched)):
-            raise TypeError("The `posterior_distribution` has to be a `tfp.distributions.JointDistributionNamed` "
-                            "or a `tfp.distributions.JointDistributionNamedAutoBatched`.")
-        self.posterior_distribution = posterior_distribution
-
-        self.posteriors, _ = self.posterior_distribution.sample_distributions()
-
-    @tf.function
-    def unnormalized_log_posterior_parts(self, prior_sample, targets):
-        """Computes the unnormalized log posterior parts (prior log prob, data log prob).
-
-        Parameters
-        ----------
-        prior_sample: `collections.OrderedDict[str, tf.Tensor]`
-            A sample from `prior_distribution` with sample_shape=S.
-            That is, `prior_sample` has shape=(S,B,E), where B are the batch
-            and E the event dimensions.
-        targets: `tf.Tensor`
-            A `tf.Tensor` of all target variables of shape (N,r),
-            where N is the number of examples in the dataset (or batch) and r is the number of targets.
-
-        Returns
-        -------
-        `tuple` of `tf.Tensor`
-            A tuple consisting of the prior and data log probabilities of the `Model`, all of shape (S).
-        """
-        state = prior_sample.copy()
-
-        event_shape_ndims_first_param = len(list(self.distribution.event_shape.values())[0])
-
-        if event_shape_ndims_first_param > 0:
-            sample_shape = list(state.values())[0].shape[:-event_shape_ndims_first_param]
-        else:
-            sample_shape = list(state.values())[0].shape
-
-        if self.features is None:
-            state.update(
-                y=tf.reshape(targets, shape=[targets.shape[0]] + [1] * len(sample_shape) + targets.shape[1:])
-            )
-            log_prob_data = tf.reduce_sum(self.distribution.log_prob_parts(state)['y'], axis=0)
-            return self.prior_distribution.log_prob(prior_sample), tf.reshape(log_prob_data, shape=sample_shape)
-        else:
-            state.update(
-                y=tf.reshape(targets, shape=[1] * len(sample_shape) + targets.shape)
-            )
-            log_prob_data = self.distribution.log_prob_parts(state)['y']
-            return self.prior_distribution.log_prob(prior_sample), tf.reshape(log_prob_data, shape=sample_shape)
-
-    @tf.function
-    def unnormalized_log_posterior(self, prior_sample, targets):
-        """Computes the unnormalized log posterior.
-
-        Note: this just sums the results of `unnormalized_log_posterior_parts` (prior log prob + data log prob)
-
-        Parameters
-        ----------
-        prior_sample: `collections.OrderedDict[str, tf.Tensor]`
-            A sample from `prior_distribution` with sample_shape=(S).
-            That is, `prior_sample` has shape=(S,B,E), where B are the batch
-            and E the event dimensions.
-        targets: `tf.Tensor`
-            A `tf.Tensor` of all target variables of shape (N,r),
-            where N is the number of examples in the dataset (or batch) and r is the number of targets.
-
-        Returns
-        -------
-        `tf.Tensor`
-            The unnormalized log posterior probability of the `Model` of shape (S).
-        """
-        return tf.reduce_sum(list(self.unnormalized_log_posterior_parts(prior_sample, targets)), axis=0)
-
-    @tf.function
-    def log_likelihood(self, prior_sample, targets):
-        """Computes the log likelihood (data log prob).
-
-        Parameters
-        ----------
-        prior_sample: `collections.OrderedDict[str, tf.Tensor]`
-            A sample from `prior_distribution` with sample_shape=(S).
-            That is, `prior_sample` has shape=(S,B,E), where B are the batch
-            and E the event dimensions.
-        targets: `tf.Tensor`
-            A `tf.Tensor` of all target variables of shape (N,r),
-            where N is the number of examples in the dataset (or batch) and r is the number of targets.
-
-        Returns
-        -------
-        `tf.Tensor`
-            The log likelihood of the `Model` of shape (S).
-        """
-        state = prior_sample.copy()
-
-        event_shape_ndims_first_param = len(list(self.distribution.event_shape.values())[0])
-
-        if event_shape_ndims_first_param > 0:
-            sample_shape = list(state.values())[0].shape[:-event_shape_ndims_first_param]
-        else:
-            sample_shape = list(state.values())[0].shape
-
-        if self.features is None:
-            state.update(
-                y=tf.reshape(targets, shape=[targets.shape[0]] + [1] * len(sample_shape) + targets.shape[1:])
-            )
-            return tf.reshape(tf.reduce_sum(self.distribution.log_prob_parts(state)['y'], axis=0), shape=sample_shape)
-        else:
-            state.update(
-                y=tf.reshape(targets, shape=[1] * len(sample_shape) + targets.shape)
-            )
-            return tf.reshape(self.distribution.log_prob_parts(state)['y'], shape=sample_shape)
-
-    def sample_prior_predictive(self, shape=()):
-        """Generates prior predictive samples.
-
-        Parameters
-        ----------
-        shape: `tuple`
-            Shape of the prior predictive samples to generate.
-
-        Returns
-        -------
-        `tf.Tensor`
-            prior predictive samples of the specified sample shape.
-        """
-        return self.distribution.sample(shape)['y']
-
-    def sample_posterior_predictive(self, shape=()):
-        """Generates posterior predictive samples.
-
-        Parameters
-        ----------
-        shape: `tuple`
-            Shape of the posterior predictive samples to generate.
-
-        Returns
-        -------
-        `tf.Tensor`
-            posterior predictive samples of the specified sample shape.
-        """
-        if not self.is_generative_model:
-            likelihood = functools.partial(self.likelihood, features=self.features)
-        else:
-            likelihood = self.likelihood
-
-        posterior_model = tfd.JointDistributionNamedAutoBatched(
-            collections.OrderedDict(
-                **self.posteriors,
-                y=likelihood,
-            )
-        )
-        return posterior_model.sample(shape)['y']
+        return self._get_joint_distribution(posteriors, targets=targets, features=features)
