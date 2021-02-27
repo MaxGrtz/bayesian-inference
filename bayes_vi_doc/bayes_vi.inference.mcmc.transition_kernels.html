@@ -1,0 +1,377 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Python: module bayes_vi.inference.mcmc.transition_kernels</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head><body bgcolor="#f0f0f8">
+
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
+<tr bgcolor="#7799ee">
+<td valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong><a href="bayes_vi.html"><font color="#ffffff">bayes_vi</font></a>.<a href="bayes_vi.inference.html"><font color="#ffffff">inference</font></a>.<a href="bayes_vi.inference.mcmc.html"><font color="#ffffff">mcmc</font></a>.transition_kernels</strong></big></big></font></td
+><td align=right valign=bottom
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/Users/mgartz/Life/1-University/Bachelor-Thesis/code/bayesian-inference/bayes_vi/inference/mcmc/transition_kernels.py">/Users/mgartz/Life/1-University/Bachelor-Thesis/code/bayesian-inference/bayes_vi/inference/mcmc/transition_kernels.py</a></font></td></tr></table>
+    <p></p>
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#aa55cc">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Modules</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="functools.html">functools</a><br>
+</td><td width="25%" valign=top><a href="tensorflow_probability.python.bijectors.html">tensorflow_probability.python.bijectors</a><br>
+</td><td width="25%" valign=top><a href="tensorflow_probability.html">tensorflow_probability</a><br>
+</td><td width="25%" valign=top></td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ee77aa">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Classes</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#ee77aa"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl>
+<dt><font face="helvetica, arial"><a href="builtins.html#object">builtins.object</a>
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="bayes_vi.inference.mcmc.transition_kernels.html#TransitionKernel">TransitionKernel</a>
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="bayes_vi.inference.mcmc.transition_kernels.html#HamiltonianMonteCarlo">HamiltonianMonteCarlo</a>
+</font></dt><dt><font face="helvetica, arial"><a href="bayes_vi.inference.mcmc.transition_kernels.html#NoUTurnSampler">NoUTurnSampler</a>
+</font></dt><dt><font face="helvetica, arial"><a href="bayes_vi.inference.mcmc.transition_kernels.html#RandomWalkMetropolis">RandomWalkMetropolis</a>
+</font></dt></dl>
+</dd>
+</dl>
+</dd>
+</dl>
+ <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="HamiltonianMonteCarlo">class <strong>HamiltonianMonteCarlo</strong></a>(<a href="bayes_vi.inference.mcmc.transition_kernels.html#TransitionKernel">TransitionKernel</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt><a href="#HamiltonianMonteCarlo">HamiltonianMonteCarlo</a>(step_size,&nbsp;num_leapfrog_steps,&nbsp;transforming_bijector=None,&nbsp;stepsize_adaptation_kernel=None,&nbsp;state_gradients_are_stopped=False,&nbsp;name=None)<br>
+&nbsp;<br>
+Implements&nbsp;HMC&nbsp;transition&nbsp;kernel.<br>
+&nbsp;<br>
+Note:&nbsp;This&nbsp;is&nbsp;a&nbsp;wrapper&nbsp;around&nbsp;`tfp.mcmc.<a href="#HamiltonianMonteCarlo">HamiltonianMonteCarlo</a>`.<br>
+&nbsp;<br>
+Attributes<br>
+----------<br>
+step_size:&nbsp;`float`&nbsp;or&nbsp;`list`&nbsp;of&nbsp;`float`<br>
+&nbsp;&nbsp;&nbsp;&nbsp;representing&nbsp;the&nbsp;step&nbsp;size&nbsp;for&nbsp;the&nbsp;leapfrog&nbsp;integrator.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Must&nbsp;broadcast&nbsp;with&nbsp;the&nbsp;shape&nbsp;of&nbsp;the&nbsp;state.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Larger&nbsp;step&nbsp;sizes&nbsp;lead&nbsp;to&nbsp;faster&nbsp;progress,&nbsp;but&nbsp;too-large&nbsp;step&nbsp;sizes&nbsp;make<br>
+&nbsp;&nbsp;&nbsp;&nbsp;rejection&nbsp;exponentially&nbsp;more&nbsp;likely.&nbsp;When&nbsp;possible,&nbsp;it's&nbsp;often&nbsp;helpful<br>
+&nbsp;&nbsp;&nbsp;&nbsp;to&nbsp;match&nbsp;per-variable&nbsp;step&nbsp;sizes&nbsp;to&nbsp;the&nbsp;standard&nbsp;deviations&nbsp;of&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;target&nbsp;distribution&nbsp;in&nbsp;each&nbsp;variable.<br>
+num_leapfrog_steps:&nbsp;`int`<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Number&nbsp;of&nbsp;steps&nbsp;to&nbsp;run&nbsp;the&nbsp;leapfrog&nbsp;integrator&nbsp;for.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Total&nbsp;progress&nbsp;per&nbsp;HMC&nbsp;step&nbsp;is&nbsp;roughly&nbsp;proportional&nbsp;to<br>
+&nbsp;&nbsp;&nbsp;&nbsp;`step_size&nbsp;*&nbsp;num_leapfrog_steps`.<br>
+kernel:&nbsp;`callable`<br>
+&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;callable&nbsp;taking&nbsp;a&nbsp;target_log_prob_fn&nbsp;and&nbsp;returning<br>
+&nbsp;&nbsp;&nbsp;&nbsp;`tfp.mcmc.<a href="#HamiltonianMonteCarlo">HamiltonianMonteCarlo</a>`&nbsp;with&nbsp;the&nbsp;specified&nbsp;parameters.<br>
+step_size_adaptation_kernel:&nbsp;`bayes_vi.inference.mcmc.stepsize_adaptation_kernels.StepSizeAdaptationKernel`<br>
+&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;stepsize&nbsp;adaptation&nbsp;kernel&nbsp;to&nbsp;wrap&nbsp;the&nbsp;transition&nbsp;kernel&nbsp;and&nbsp;optimize&nbsp;stepsize&nbsp;in&nbsp;burnin&nbsp;phase.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;(Default:&nbsp;`None`)<br>
+transforming_bijectors:&nbsp;`tfp.bijectors.Bijector`&nbsp;or&nbsp;`list`&nbsp;of&nbsp;`tfp.bijectors.Bijector`<br>
+&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;single&nbsp;or&nbsp;per&nbsp;state&nbsp;part&nbsp;transforming&nbsp;bijector&nbsp;to&nbsp;transform&nbsp;the&nbsp;generated&nbsp;samples.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;This&nbsp;allows&nbsp;trainable&nbsp;bijectors&nbsp;to&nbsp;be&nbsp;applied&nbsp;to&nbsp;achieve&nbsp;decorrelation&nbsp;between&nbsp;parameters&nbsp;and&nbsp;simplifying<br>
+&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;target&nbsp;distribution&nbsp;for&nbsp;more&nbsp;efficient&nbsp;sampling.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;In&nbsp;the&nbsp;context&nbsp;of&nbsp;HMC&nbsp;this&nbsp;is&nbsp;approximately&nbsp;Riemannian-HMC&nbsp;(RHMC).<br>
+state_gradients_are_stopped:&nbsp;`bool`<br>
+&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;boolean&nbsp;indicating&nbsp;that&nbsp;the&nbsp;proposed<br>
+&nbsp;&nbsp;&nbsp;&nbsp;new&nbsp;state&nbsp;be&nbsp;run&nbsp;through&nbsp;`tf.stop_gradient`.&nbsp;This&nbsp;is&nbsp;particularly&nbsp;useful<br>
+&nbsp;&nbsp;&nbsp;&nbsp;when&nbsp;combining&nbsp;optimization&nbsp;over&nbsp;samples&nbsp;from&nbsp;the&nbsp;HMC&nbsp;chain.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;(Default:&nbsp;`False`&nbsp;(i.e.,&nbsp;do&nbsp;not&nbsp;apply&nbsp;`stop_gradient`)).<br>
+name:&nbsp;`str`<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Name&nbsp;prefixed&nbsp;to&nbsp;Ops&nbsp;created&nbsp;by&nbsp;this&nbsp;function.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;(Default:&nbsp;`None`&nbsp;(i.e.,&nbsp;'hmc_kernel')).<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="bayes_vi.inference.mcmc.transition_kernels.html#HamiltonianMonteCarlo">HamiltonianMonteCarlo</a></dd>
+<dd><a href="bayes_vi.inference.mcmc.transition_kernels.html#TransitionKernel">TransitionKernel</a></dd>
+<dd><a href="builtins.html#object">builtins.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="HamiltonianMonteCarlo-__init__"><strong>__init__</strong></a>(self, step_size, num_leapfrog_steps, transforming_bijector=None, stepsize_adaptation_kernel=None, state_gradients_are_stopped=False, name=None)</dt><dd><tt>Initializes&nbsp;the&nbsp;HMC&nbsp;kernel.<br>
+&nbsp;<br>
+Note:&nbsp;This&nbsp;is&nbsp;a&nbsp;wrapper&nbsp;around&nbsp;`tfp.mcmc.<a href="#HamiltonianMonteCarlo">HamiltonianMonteCarlo</a>`<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+step_size:&nbsp;`float`&nbsp;or&nbsp;`list`&nbsp;of&nbsp;`float`<br>
+&nbsp;&nbsp;&nbsp;&nbsp;representing&nbsp;the&nbsp;step&nbsp;size&nbsp;for&nbsp;the&nbsp;leapfrog&nbsp;integrator.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Must&nbsp;broadcast&nbsp;with&nbsp;the&nbsp;shape&nbsp;of&nbsp;the&nbsp;state.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Larger&nbsp;step&nbsp;sizes&nbsp;lead&nbsp;to&nbsp;faster&nbsp;progress,&nbsp;but&nbsp;too-large&nbsp;step&nbsp;sizes&nbsp;make<br>
+&nbsp;&nbsp;&nbsp;&nbsp;rejection&nbsp;exponentially&nbsp;more&nbsp;likely.&nbsp;When&nbsp;possible,&nbsp;it's&nbsp;often&nbsp;helpful<br>
+&nbsp;&nbsp;&nbsp;&nbsp;to&nbsp;match&nbsp;per-variable&nbsp;step&nbsp;sizes&nbsp;to&nbsp;the&nbsp;standard&nbsp;deviations&nbsp;of&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;target&nbsp;distribution&nbsp;in&nbsp;each&nbsp;variable.<br>
+num_leapfrog_steps:&nbsp;`int`<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Number&nbsp;of&nbsp;steps&nbsp;to&nbsp;run&nbsp;the&nbsp;leapfrog&nbsp;integrator&nbsp;for.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Total&nbsp;progress&nbsp;per&nbsp;HMC&nbsp;step&nbsp;is&nbsp;roughly&nbsp;proportional&nbsp;to<br>
+&nbsp;&nbsp;&nbsp;&nbsp;`step_size&nbsp;*&nbsp;num_leapfrog_steps`.<br>
+step_size_adaptation_kernel:&nbsp;`bayes_vi.inference.mcmc.stepsize_adaptation_kernels.StepSizeAdaptationKernel`<br>
+&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;stepsize&nbsp;adaptation&nbsp;kernel&nbsp;to&nbsp;wrap&nbsp;the&nbsp;transition&nbsp;kernel&nbsp;and&nbsp;optimize&nbsp;stepsize&nbsp;in&nbsp;burnin&nbsp;phase.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;(Default:&nbsp;`None`)<br>
+transforming_bijector:&nbsp;`tfp.bijectors.Bijector`&nbsp;or&nbsp;`list`&nbsp;of&nbsp;`tfp.bijectors.Bijector`<br>
+&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;single&nbsp;or&nbsp;per&nbsp;state&nbsp;part&nbsp;transforming&nbsp;bijector&nbsp;to&nbsp;transform&nbsp;the&nbsp;generated&nbsp;samples.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;This&nbsp;allows&nbsp;trainable&nbsp;bijectors&nbsp;to&nbsp;be&nbsp;applied&nbsp;to&nbsp;achieve&nbsp;decorrelation&nbsp;between&nbsp;parameters&nbsp;and&nbsp;simplifying<br>
+&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;target&nbsp;distribution&nbsp;for&nbsp;more&nbsp;efficient&nbsp;sampling.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;In&nbsp;the&nbsp;context&nbsp;of&nbsp;HMC&nbsp;this&nbsp;is&nbsp;corresponds&nbsp;to&nbsp;Riemannian-HMC&nbsp;(RHMC).<br>
+state_gradients_are_stopped:&nbsp;`bool`<br>
+&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;boolean&nbsp;indicating&nbsp;that&nbsp;the&nbsp;proposed<br>
+&nbsp;&nbsp;&nbsp;&nbsp;new&nbsp;state&nbsp;be&nbsp;run&nbsp;through&nbsp;`tf.stop_gradient`.&nbsp;This&nbsp;is&nbsp;particularly&nbsp;useful<br>
+&nbsp;&nbsp;&nbsp;&nbsp;when&nbsp;combining&nbsp;optimization&nbsp;over&nbsp;samples&nbsp;from&nbsp;the&nbsp;HMC&nbsp;chain.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;(Default:&nbsp;`False`&nbsp;(i.e.,&nbsp;do&nbsp;not&nbsp;apply&nbsp;`stop_gradient`)).<br>
+name:&nbsp;`str`<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Name&nbsp;prefixed&nbsp;to&nbsp;Ops&nbsp;created&nbsp;by&nbsp;this&nbsp;function.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;(Default:&nbsp;`None`&nbsp;(i.e.,&nbsp;'hmc_kernel')).</tt></dd></dl>
+
+<hr>
+Static methods defined here:<br>
+<dl><dt><a name="HamiltonianMonteCarlo-trace_fn"><strong>trace_fn</strong></a>(_, pkr)</dt></dl>
+
+<hr>
+Methods inherited from <a href="bayes_vi.inference.mcmc.transition_kernels.html#TransitionKernel">TransitionKernel</a>:<br>
+<dl><dt><a name="HamiltonianMonteCarlo-__call__"><strong>__call__</strong></a>(self, target_log_prob_fn)</dt><dd><tt>Call&nbsp;self&nbsp;as&nbsp;a&nbsp;function.</tt></dd></dl>
+
+<dl><dt><a name="HamiltonianMonteCarlo-__str__"><strong>__str__</strong></a>(self)</dt><dd><tt>Return&nbsp;str(self).</tt></dd></dl>
+
+<hr>
+Data descriptors inherited from <a href="bayes_vi.inference.mcmc.transition_kernels.html#TransitionKernel">TransitionKernel</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="NoUTurnSampler">class <strong>NoUTurnSampler</strong></a>(<a href="bayes_vi.inference.mcmc.transition_kernels.html#TransitionKernel">TransitionKernel</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt><a href="#NoUTurnSampler">NoUTurnSampler</a>(step_size,&nbsp;max_tree_depth=10,&nbsp;max_energy_diff=1000.0,&nbsp;unrolled_leapfrog_steps=1,&nbsp;parallel_iterations=10,&nbsp;transforming_bijector=None,&nbsp;stepsize_adaptation_kernel=None,&nbsp;name=None)<br>
+&nbsp;<br>
+Implementation&nbsp;of&nbsp;the&nbsp;<a href="#NoUTurnSampler">NoUTurnSampler</a>.<br>
+&nbsp;<br>
+Note:&nbsp;This&nbsp;is&nbsp;a&nbsp;wrapper&nbsp;around&nbsp;`tfp.mcmc.<a href="#NoUTurnSampler">NoUTurnSampler</a>`.<br>
+&nbsp;<br>
+Attributes<br>
+----------<br>
+step_size:&nbsp;`float`&nbsp;or&nbsp;`list`&nbsp;of&nbsp;`float`<br>
+&nbsp;&nbsp;&nbsp;&nbsp;representing&nbsp;the&nbsp;step&nbsp;size&nbsp;for&nbsp;the&nbsp;leapfrog&nbsp;integrator.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Must&nbsp;broadcast&nbsp;with&nbsp;the&nbsp;shape&nbsp;of&nbsp;the&nbsp;state.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Larger&nbsp;step&nbsp;sizes&nbsp;lead&nbsp;to&nbsp;faster&nbsp;progress,&nbsp;but&nbsp;too-large&nbsp;step&nbsp;sizes&nbsp;make<br>
+&nbsp;&nbsp;&nbsp;&nbsp;rejection&nbsp;exponentially&nbsp;more&nbsp;likely.&nbsp;When&nbsp;possible,&nbsp;it's&nbsp;often&nbsp;helpful<br>
+&nbsp;&nbsp;&nbsp;&nbsp;to&nbsp;match&nbsp;per-variable&nbsp;step&nbsp;sizes&nbsp;to&nbsp;the&nbsp;standard&nbsp;deviations&nbsp;of&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;target&nbsp;distribution&nbsp;in&nbsp;each&nbsp;variable.<br>
+max_tree_depth:&nbsp;`int`<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Maximum&nbsp;depth&nbsp;of&nbsp;the&nbsp;tree&nbsp;implicitly&nbsp;built&nbsp;by&nbsp;NUTS.&nbsp;The<br>
+&nbsp;&nbsp;&nbsp;&nbsp;maximum&nbsp;number&nbsp;of&nbsp;leapfrog&nbsp;steps&nbsp;is&nbsp;bounded&nbsp;by&nbsp;`2**max_tree_depth`&nbsp;i.e.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;number&nbsp;of&nbsp;nodes&nbsp;in&nbsp;a&nbsp;binary&nbsp;tree&nbsp;`max_tree_depth`&nbsp;nodes&nbsp;deep.&nbsp;The<br>
+&nbsp;&nbsp;&nbsp;&nbsp;default&nbsp;setting&nbsp;of&nbsp;10&nbsp;takes&nbsp;up&nbsp;to&nbsp;1024&nbsp;leapfrog&nbsp;steps.&nbsp;(Default:&nbsp;`10`)<br>
+max_energy_diff:&nbsp;`float`<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Threshold&nbsp;of&nbsp;energy&nbsp;differences&nbsp;at&nbsp;each&nbsp;leapfrog,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;divergence&nbsp;samples&nbsp;are&nbsp;defined&nbsp;as&nbsp;leapfrog&nbsp;steps&nbsp;that&nbsp;exceed&nbsp;this<br>
+&nbsp;&nbsp;&nbsp;&nbsp;threshold.&nbsp;(Default:&nbsp;`1000`).<br>
+unrolled_leapfrog_steps:&nbsp;`int`<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Number&nbsp;of&nbsp;leapfrogs&nbsp;to&nbsp;unroll&nbsp;per&nbsp;tree&nbsp;expansion&nbsp;step.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Applies&nbsp;a&nbsp;direct&nbsp;linear&nbsp;multiplier&nbsp;to&nbsp;the&nbsp;maximum<br>
+&nbsp;&nbsp;&nbsp;&nbsp;trajectory&nbsp;length&nbsp;implied&nbsp;by&nbsp;max_tree_depth.&nbsp;(Default:&nbsp;`1`).<br>
+parallel_iterations:&nbsp;`int`<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Number&nbsp;of&nbsp;iterations&nbsp;allowed&nbsp;to&nbsp;run&nbsp;in&nbsp;parallel.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;It&nbsp;must&nbsp;be&nbsp;a&nbsp;positive&nbsp;integer.&nbsp;See&nbsp;`tf.while_loop`&nbsp;for&nbsp;more&nbsp;details.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;(Default:&nbsp;`10`).<br>
+kernel:&nbsp;`callable`<br>
+&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;callable&nbsp;taking&nbsp;a&nbsp;target_log_prob_fn&nbsp;and&nbsp;returning<br>
+&nbsp;&nbsp;&nbsp;&nbsp;`tfp.mcmc.<a href="#NoUTurnSampler">NoUTurnSampler</a>`&nbsp;with&nbsp;the&nbsp;specified&nbsp;parameters.<br>
+step_size_adaptation_kernel:&nbsp;`bayes_vi.inference.mcmc.stepsize_adaptation_kernels.StepSizeAdaptationKernel`<br>
+&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;stepsize&nbsp;adaptation&nbsp;kernel&nbsp;to&nbsp;wrap&nbsp;the&nbsp;transition&nbsp;kernel&nbsp;and&nbsp;optimize&nbsp;stepsize&nbsp;in&nbsp;burnin&nbsp;phase.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;(Default:&nbsp;`None`)<br>
+transforming_bijector:&nbsp;`tfp.bijectors.Bijector`&nbsp;or&nbsp;`list`&nbsp;of&nbsp;`tfp.bijectors.Bijector`<br>
+&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;single&nbsp;or&nbsp;per&nbsp;state&nbsp;part&nbsp;transforming&nbsp;bijector&nbsp;to&nbsp;transform&nbsp;the&nbsp;generated&nbsp;samples.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;This&nbsp;allows&nbsp;trainable&nbsp;bijectors&nbsp;to&nbsp;be&nbsp;applied&nbsp;to&nbsp;achieve&nbsp;decorrelation&nbsp;between&nbsp;parameters&nbsp;and&nbsp;simplifying<br>
+&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;target&nbsp;distribution&nbsp;for&nbsp;more&nbsp;efficient&nbsp;sampling.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;In&nbsp;the&nbsp;context&nbsp;of&nbsp;HMC&nbsp;this&nbsp;is&nbsp;approximately&nbsp;Riemannian-HMC&nbsp;(RHMC).<br>
+name:&nbsp;`str`<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Name&nbsp;prefixed&nbsp;to&nbsp;Ops&nbsp;created&nbsp;by&nbsp;this&nbsp;function.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;(Default:&nbsp;`None`&nbsp;(i.e.,&nbsp;'nuts_kernel')).<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="bayes_vi.inference.mcmc.transition_kernels.html#NoUTurnSampler">NoUTurnSampler</a></dd>
+<dd><a href="bayes_vi.inference.mcmc.transition_kernels.html#TransitionKernel">TransitionKernel</a></dd>
+<dd><a href="builtins.html#object">builtins.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="NoUTurnSampler-__init__"><strong>__init__</strong></a>(self, step_size, max_tree_depth=10, max_energy_diff=1000.0, unrolled_leapfrog_steps=1, parallel_iterations=10, transforming_bijector=None, stepsize_adaptation_kernel=None, name=None)</dt><dd><tt>Initializes&nbsp;the&nbsp;<a href="#NoUTurnSampler">NoUTurnSampler</a>&nbsp;kernel.<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+step_size:&nbsp;`float`&nbsp;or&nbsp;`list`&nbsp;of&nbsp;`float`<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Representing&nbsp;the&nbsp;step&nbsp;size&nbsp;for&nbsp;the&nbsp;leapfrog&nbsp;integrator.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Must&nbsp;broadcast&nbsp;with&nbsp;the&nbsp;shape&nbsp;of&nbsp;the&nbsp;state.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Larger&nbsp;step&nbsp;sizes&nbsp;lead&nbsp;to&nbsp;faster&nbsp;progress,&nbsp;but&nbsp;too-large&nbsp;step&nbsp;sizes&nbsp;make<br>
+&nbsp;&nbsp;&nbsp;&nbsp;rejection&nbsp;exponentially&nbsp;more&nbsp;likely.&nbsp;When&nbsp;possible,&nbsp;it's&nbsp;often&nbsp;helpful<br>
+&nbsp;&nbsp;&nbsp;&nbsp;to&nbsp;match&nbsp;per-variable&nbsp;step&nbsp;sizes&nbsp;to&nbsp;the&nbsp;standard&nbsp;deviations&nbsp;of&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;target&nbsp;distribution&nbsp;in&nbsp;each&nbsp;variable.<br>
+max_tree_depth:&nbsp;`int`<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Maximum&nbsp;depth&nbsp;of&nbsp;the&nbsp;tree&nbsp;implicitly&nbsp;built&nbsp;by&nbsp;NUTS.&nbsp;The<br>
+&nbsp;&nbsp;&nbsp;&nbsp;maximum&nbsp;number&nbsp;of&nbsp;leapfrog&nbsp;steps&nbsp;is&nbsp;bounded&nbsp;by&nbsp;`2**max_tree_depth`&nbsp;i.e.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;number&nbsp;of&nbsp;nodes&nbsp;in&nbsp;a&nbsp;binary&nbsp;tree&nbsp;`max_tree_depth`&nbsp;nodes&nbsp;deep.&nbsp;The<br>
+&nbsp;&nbsp;&nbsp;&nbsp;default&nbsp;setting&nbsp;of&nbsp;10&nbsp;takes&nbsp;up&nbsp;to&nbsp;1024&nbsp;leapfrog&nbsp;steps.&nbsp;(Default:&nbsp;`10`)<br>
+max_energy_diff:&nbsp;`float`<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Threshold&nbsp;of&nbsp;energy&nbsp;differences&nbsp;at&nbsp;each&nbsp;leapfrog,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;divergence&nbsp;samples&nbsp;are&nbsp;defined&nbsp;as&nbsp;leapfrog&nbsp;steps&nbsp;that&nbsp;exceed&nbsp;this<br>
+&nbsp;&nbsp;&nbsp;&nbsp;threshold.&nbsp;(Default:&nbsp;`1000`).<br>
+unrolled_leapfrog_steps:&nbsp;`int`<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Number&nbsp;of&nbsp;leapfrogs&nbsp;to&nbsp;unroll&nbsp;per&nbsp;tree&nbsp;expansion&nbsp;step.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Applies&nbsp;a&nbsp;direct&nbsp;linear&nbsp;multiplier&nbsp;to&nbsp;the&nbsp;maximum<br>
+&nbsp;&nbsp;&nbsp;&nbsp;trajectory&nbsp;length&nbsp;implied&nbsp;by&nbsp;max_tree_depth.&nbsp;(Default:&nbsp;`1`).<br>
+parallel_iterations:&nbsp;`int`<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Number&nbsp;of&nbsp;iterations&nbsp;allowed&nbsp;to&nbsp;run&nbsp;in&nbsp;parallel.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;It&nbsp;must&nbsp;be&nbsp;a&nbsp;positive&nbsp;integer.&nbsp;See&nbsp;`tf.while_loop`&nbsp;for&nbsp;more&nbsp;details.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;(Default:&nbsp;`10`).<br>
+step_size_adaptation_kernel:&nbsp;`bayes_vi.inference.mcmc.stepsize_adaptation_kernels.StepSizeAdaptationKernel`<br>
+&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;stepsize&nbsp;adaptation&nbsp;kernel&nbsp;to&nbsp;wrap&nbsp;the&nbsp;transition&nbsp;kernel&nbsp;and&nbsp;optimize&nbsp;stepsize&nbsp;in&nbsp;burnin&nbsp;phase.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;(Default:&nbsp;`None`)<br>
+transforming_bijectors:&nbsp;`tfp.bijectors.Bijector`&nbsp;or&nbsp;`list`&nbsp;of&nbsp;`tfp.bijectors.Bijector`<br>
+&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;single&nbsp;or&nbsp;per&nbsp;state&nbsp;part&nbsp;transforming&nbsp;bijector&nbsp;to&nbsp;transform&nbsp;the&nbsp;generated&nbsp;samples.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;This&nbsp;allows&nbsp;trainable&nbsp;bijectors&nbsp;to&nbsp;be&nbsp;applied&nbsp;to&nbsp;achieve&nbsp;decorrelation&nbsp;between&nbsp;parameters&nbsp;and&nbsp;simplifying<br>
+&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;target&nbsp;distribution&nbsp;for&nbsp;more&nbsp;efficient&nbsp;sampling.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;In&nbsp;the&nbsp;context&nbsp;of&nbsp;HMC&nbsp;this&nbsp;is&nbsp;approximately&nbsp;Riemannian-HMC&nbsp;(RHMC).<br>
+name:&nbsp;`str`<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Name&nbsp;prefixed&nbsp;to&nbsp;Ops&nbsp;created&nbsp;by&nbsp;this&nbsp;function.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;(Default:&nbsp;`None`&nbsp;(i.e.,&nbsp;'nuts_kernel')).</tt></dd></dl>
+
+<hr>
+Static methods defined here:<br>
+<dl><dt><a name="NoUTurnSampler-trace_fn"><strong>trace_fn</strong></a>(_, pkr)</dt></dl>
+
+<hr>
+Methods inherited from <a href="bayes_vi.inference.mcmc.transition_kernels.html#TransitionKernel">TransitionKernel</a>:<br>
+<dl><dt><a name="NoUTurnSampler-__call__"><strong>__call__</strong></a>(self, target_log_prob_fn)</dt><dd><tt>Call&nbsp;self&nbsp;as&nbsp;a&nbsp;function.</tt></dd></dl>
+
+<dl><dt><a name="NoUTurnSampler-__str__"><strong>__str__</strong></a>(self)</dt><dd><tt>Return&nbsp;str(self).</tt></dd></dl>
+
+<hr>
+Data descriptors inherited from <a href="bayes_vi.inference.mcmc.transition_kernels.html#TransitionKernel">TransitionKernel</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="RandomWalkMetropolis">class <strong>RandomWalkMetropolis</strong></a>(<a href="bayes_vi.inference.mcmc.transition_kernels.html#TransitionKernel">TransitionKernel</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt><a href="#RandomWalkMetropolis">RandomWalkMetropolis</a>(transforming_bijector=None,&nbsp;new_state_fn=None,&nbsp;name=None)<br>
+&nbsp;<br>
+Implementation&nbsp;of&nbsp;the&nbsp;<a href="#RandomWalkMetropolis">RandomWalkMetropolis</a>&nbsp;kernel.<br>
+&nbsp;<br>
+Note:&nbsp;This&nbsp;is&nbsp;a&nbsp;wrapper&nbsp;around&nbsp;`tfp.mcmc.<a href="#RandomWalkMetropolis">RandomWalkMetropolis</a>`<br>
+&nbsp;<br>
+Attributes<br>
+----------<br>
+transforming_bijectors:&nbsp;`tfp.bijectors.Bijector`&nbsp;or&nbsp;`list`&nbsp;of&nbsp;`tfp.bijectors.Bijector`<br>
+&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;single&nbsp;or&nbsp;per&nbsp;state&nbsp;part&nbsp;transforming&nbsp;bijector&nbsp;to&nbsp;transform&nbsp;the&nbsp;generated&nbsp;samples.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;This&nbsp;allows&nbsp;trainable&nbsp;bijectors&nbsp;to&nbsp;be&nbsp;applied&nbsp;to&nbsp;achieve&nbsp;decorrelation&nbsp;between&nbsp;parameters&nbsp;and&nbsp;simplifying<br>
+&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;target&nbsp;distribution&nbsp;for&nbsp;more&nbsp;efficient&nbsp;sampling.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;In&nbsp;the&nbsp;context&nbsp;of&nbsp;HMC&nbsp;this&nbsp;is&nbsp;approximately&nbsp;Riemannian-HMC&nbsp;(RHMC).<br>
+new_state_fn:&nbsp;`callable`<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Callable&nbsp;which&nbsp;takes&nbsp;a&nbsp;list&nbsp;of&nbsp;state&nbsp;parts&nbsp;and&nbsp;a&nbsp;seed;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;returns&nbsp;a&nbsp;same-type&nbsp;`list`&nbsp;of&nbsp;`Tensor`s,&nbsp;each&nbsp;being&nbsp;a&nbsp;perturbation<br>
+&nbsp;&nbsp;&nbsp;&nbsp;of&nbsp;the&nbsp;input&nbsp;state&nbsp;parts.&nbsp;The&nbsp;perturbation&nbsp;distribution&nbsp;is&nbsp;assumed&nbsp;to&nbsp;be<br>
+&nbsp;&nbsp;&nbsp;&nbsp;a&nbsp;symmetric&nbsp;distribution&nbsp;centered&nbsp;at&nbsp;the&nbsp;input&nbsp;state&nbsp;part.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;(Default:&nbsp;`None`&nbsp;which&nbsp;is&nbsp;mapped&nbsp;to&nbsp;`tfp.mcmc.random_walk_normal_fn()`).<br>
+kernel:&nbsp;`callable`<br>
+&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;callable&nbsp;taking&nbsp;a&nbsp;target_log_prob_fn&nbsp;and&nbsp;returning<br>
+&nbsp;&nbsp;&nbsp;&nbsp;`tfp.mcmc.<a href="#RandomWalkMetropolis">RandomWalkMetropolis</a>`&nbsp;with&nbsp;the&nbsp;specified&nbsp;parameters.<br>
+transforming_bijectors:&nbsp;`tfp.bijectors.Bijector`&nbsp;or&nbsp;`list`&nbsp;of&nbsp;`tfp.bijectors.Bijector`<br>
+&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;single&nbsp;or&nbsp;per&nbsp;state&nbsp;part&nbsp;transforming&nbsp;bijector&nbsp;to&nbsp;transform&nbsp;the&nbsp;generated&nbsp;samples.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;This&nbsp;allows&nbsp;trainable&nbsp;bijectors&nbsp;to&nbsp;be&nbsp;applied&nbsp;to&nbsp;achieve&nbsp;decorrelation&nbsp;between&nbsp;parameters&nbsp;and&nbsp;simplifying<br>
+&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;target&nbsp;distribution&nbsp;for&nbsp;more&nbsp;efficient&nbsp;sampling.<br>
+name:&nbsp;`str`<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Name&nbsp;prefixed&nbsp;to&nbsp;Ops&nbsp;created&nbsp;by&nbsp;this&nbsp;function.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;(Default:&nbsp;`None`&nbsp;(i.e.,&nbsp;'rwm_kernel')).<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="bayes_vi.inference.mcmc.transition_kernels.html#RandomWalkMetropolis">RandomWalkMetropolis</a></dd>
+<dd><a href="bayes_vi.inference.mcmc.transition_kernels.html#TransitionKernel">TransitionKernel</a></dd>
+<dd><a href="builtins.html#object">builtins.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="RandomWalkMetropolis-__init__"><strong>__init__</strong></a>(self, transforming_bijector=None, new_state_fn=None, name=None)</dt><dd><tt>Initializes&nbsp;the&nbsp;<a href="#RandomWalkMetropolis">RandomWalkMetropolis</a>&nbsp;kernel.<br>
+&nbsp;<br>
+Attributes<br>
+----------<br>
+transforming_bijector:&nbsp;`tfp.bijectors.Bijector`&nbsp;or&nbsp;`list`&nbsp;of&nbsp;`tfp.bijectors.Bijector`<br>
+&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;single&nbsp;or&nbsp;per&nbsp;state&nbsp;part&nbsp;transforming&nbsp;bijector&nbsp;to&nbsp;transform&nbsp;the&nbsp;generated&nbsp;samples.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;This&nbsp;allows&nbsp;trainable&nbsp;bijectors&nbsp;to&nbsp;be&nbsp;applied&nbsp;to&nbsp;achieve&nbsp;decorrelation&nbsp;between&nbsp;parameters&nbsp;and&nbsp;simplifying<br>
+&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;target&nbsp;distribution&nbsp;for&nbsp;more&nbsp;efficient&nbsp;sampling.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;In&nbsp;the&nbsp;context&nbsp;of&nbsp;HMC&nbsp;this&nbsp;is&nbsp;approximately&nbsp;Riemannian-HMC&nbsp;(RHMC).<br>
+new_state_fn:&nbsp;`callable`<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Callable&nbsp;which&nbsp;takes&nbsp;a&nbsp;list&nbsp;of&nbsp;state&nbsp;parts&nbsp;and&nbsp;a&nbsp;seed;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;returns&nbsp;a&nbsp;same-type&nbsp;`list`&nbsp;of&nbsp;`Tensor`s,&nbsp;each&nbsp;being&nbsp;a&nbsp;perturbation<br>
+&nbsp;&nbsp;&nbsp;&nbsp;of&nbsp;the&nbsp;input&nbsp;state&nbsp;parts.&nbsp;The&nbsp;perturbation&nbsp;distribution&nbsp;is&nbsp;assumed&nbsp;to&nbsp;be<br>
+&nbsp;&nbsp;&nbsp;&nbsp;a&nbsp;symmetric&nbsp;distribution&nbsp;centered&nbsp;at&nbsp;the&nbsp;input&nbsp;state&nbsp;part.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;(Default:&nbsp;`None`&nbsp;which&nbsp;is&nbsp;mapped&nbsp;to&nbsp;`tfp.mcmc.random_walk_normal_fn()`).<br>
+name:&nbsp;`str`<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Name&nbsp;prefixed&nbsp;to&nbsp;Ops&nbsp;created&nbsp;by&nbsp;this&nbsp;function.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;(Default:&nbsp;`None`&nbsp;(i.e.,&nbsp;'rwm_kernel')).</tt></dd></dl>
+
+<hr>
+Static methods defined here:<br>
+<dl><dt><a name="RandomWalkMetropolis-trace_fn"><strong>trace_fn</strong></a>(_, pkr)</dt></dl>
+
+<hr>
+Methods inherited from <a href="bayes_vi.inference.mcmc.transition_kernels.html#TransitionKernel">TransitionKernel</a>:<br>
+<dl><dt><a name="RandomWalkMetropolis-__call__"><strong>__call__</strong></a>(self, target_log_prob_fn)</dt><dd><tt>Call&nbsp;self&nbsp;as&nbsp;a&nbsp;function.</tt></dd></dl>
+
+<dl><dt><a name="RandomWalkMetropolis-__str__"><strong>__str__</strong></a>(self)</dt><dd><tt>Return&nbsp;str(self).</tt></dd></dl>
+
+<hr>
+Data descriptors inherited from <a href="bayes_vi.inference.mcmc.transition_kernels.html#TransitionKernel">TransitionKernel</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="TransitionKernel">class <strong>TransitionKernel</strong></a>(<a href="builtins.html#object">builtins.object</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt><a href="#TransitionKernel">TransitionKernel</a>(name=None)<br>
+&nbsp;<br>
+Base&nbsp;class&nbsp;for&nbsp;Markov&nbsp;transition&nbsp;Kernels.<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="TransitionKernel-__call__"><strong>__call__</strong></a>(self, target_log_prob_fn)</dt><dd><tt>Call&nbsp;self&nbsp;as&nbsp;a&nbsp;function.</tt></dd></dl>
+
+<dl><dt><a name="TransitionKernel-__init__"><strong>__init__</strong></a>(self, name=None)</dt><dd><tt>Initialize&nbsp;self.&nbsp;&nbsp;See&nbsp;help(type(self))&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
+
+<dl><dt><a name="TransitionKernel-__str__"><strong>__str__</strong></a>(self)</dt><dd><tt>Return&nbsp;str(self).</tt></dd></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+</td></tr></table></td></tr></table>
+</body></html>

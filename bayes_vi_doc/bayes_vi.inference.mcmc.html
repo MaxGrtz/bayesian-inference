@@ -1,0 +1,122 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Python: package bayes_vi.inference.mcmc</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head><body bgcolor="#f0f0f8">
+
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
+<tr bgcolor="#7799ee">
+<td valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong><a href="bayes_vi.html"><font color="#ffffff">bayes_vi</font></a>.<a href="bayes_vi.inference.html"><font color="#ffffff">inference</font></a>.mcmc</strong></big></big></font></td
+><td align=right valign=bottom
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/Users/mgartz/Life/1-University/Bachelor-Thesis/code/bayesian-inference/bayes_vi/inference/mcmc/__init__.py">/Users/mgartz/Life/1-University/Bachelor-Thesis/code/bayesian-inference/bayes_vi/inference/mcmc/__init__.py</a></font></td></tr></table>
+    <p></p>
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#aa55cc">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Package Contents</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="bayes_vi.inference.mcmc.stepsize_adaptation_kernels.html">stepsize_adaptation_kernels</a><br>
+</td><td width="25%" valign=top><a href="bayes_vi.inference.mcmc.transition_kernels.html">transition_kernels</a><br>
+</td><td width="25%" valign=top></td><td width="25%" valign=top></td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ee77aa">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Classes</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#ee77aa"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl>
+<dt><font face="helvetica, arial"><a href="bayes_vi.inference.html#Inference">bayes_vi.inference.Inference</a>(<a href="builtins.html#object">builtins.object</a>)
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="bayes_vi.inference.mcmc.html#MCMC">MCMC</a>
+</font></dt></dl>
+</dd>
+</dl>
+ <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="MCMC">class <strong>MCMC</strong></a>(<a href="bayes_vi.inference.html#Inference">bayes_vi.inference.Inference</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt><a href="#MCMC">MCMC</a>(model,&nbsp;dataset,&nbsp;transition_kernel=&amp;lt;bayes_vi.inference.mcmc.transition_kernels.RandomWalkMetropolis&nbsp;object&nbsp;at&nbsp;0x7fd5a139e370&amp;gt;)<br>
+&nbsp;<br>
+Implementation&nbsp;of&nbsp;<a href="#MCMC">MCMC</a>&nbsp;to&nbsp;generate&nbsp;posterior&nbsp;samples.<br>
+&nbsp;<br>
+Attributes<br>
+----------<br>
+features:&nbsp;`tf.Tensor`&nbsp;or&nbsp;`dict[str,&nbsp;tf.Tensor]`<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;features&nbsp;contained&nbsp;in&nbsp;`dataset`.<br>
+targets:&nbsp;`tf.Tensor`<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;targets&nbsp;contained&nbsp;in&nbsp;`dataset`.<br>
+distribution:&nbsp;`tf.distributions.JointDistributionNamedAutoBatched`<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;joint&nbsp;distribution&nbsp;of&nbsp;the&nbsp;model&nbsp;(conditioned&nbsp;on&nbsp;features&nbsp;if&nbsp;regression&nbsp;model)<br>
+target_log_prob:&nbsp;`callable`<br>
+&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;callable&nbsp;taking&nbsp;a&nbsp;constrained&nbsp;parameter&nbsp;sample&nbsp;as&nbsp;a&nbsp;list<br>
+&nbsp;&nbsp;&nbsp;&nbsp;and&nbsp;returning&nbsp;the&nbsp;unnormalized&nbsp;log&nbsp;posterior&nbsp;of&nbsp;the&nbsp;`model`.<br>
+transition_kernel:&nbsp;`bayes_vi.inference.mcmc.transition_kernels.TransitionKernel`<br>
+&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;Markov&nbsp;transition&nbsp;kernel&nbsp;to&nbsp;define&nbsp;transition&nbsp;between&nbsp;states.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;(Default:&nbsp;`bayes_vi.inference.mcmc.transition_kernels.RandomWalkMetropolis`).<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="bayes_vi.inference.mcmc.html#MCMC">MCMC</a></dd>
+<dd><a href="bayes_vi.inference.html#Inference">bayes_vi.inference.Inference</a></dd>
+<dd><a href="builtins.html#object">builtins.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="MCMC-__init__"><strong>__init__</strong></a>(self, model, dataset, transition_kernel=&lt;bayes_vi.inference.mcmc.transition_kernels.RandomWalkMetropolis object at 0x7fd5a139e370&gt;)</dt><dd><tt>Initializes&nbsp;<a href="#MCMC">MCMC</a>.<br>
+&nbsp;<br>
+model:&nbsp;`Model`<br>
+&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;Bayesian&nbsp;probabilistic&nbsp;`Model`.<br>
+dataset:&nbsp;`tf.data.Dataset`<br>
+&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;`tf.data.Dataset`&nbsp;consisting&nbsp;of&nbsp;features&nbsp;(if&nbsp;regression&nbsp;model)&nbsp;and&nbsp;targets.<br>
+transition_kernel:&nbsp;`bayes_vi.inference.mcmc.transition_kernels.TransitionKernel`<br>
+&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;Markov&nbsp;transition&nbsp;kernel&nbsp;to&nbsp;define&nbsp;transition&nbsp;between&nbsp;states.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;(Default:&nbsp;`bayes_vi.inference.mcmc.transition_kernels.RandomWalkMetropolis`).</tt></dd></dl>
+
+<dl><dt><a name="MCMC-fit"><strong>fit</strong></a>(self, initial_state=None, num_chains=4, num_samples=4000, num_burnin_steps=1000, merge_state_parts=False, progress_bar=True)</dt><dd><tt>Fits&nbsp;the&nbsp;Bayesian&nbsp;model&nbsp;to&nbsp;the&nbsp;dataset.<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+initial_state:&nbsp;`list`&nbsp;of&nbsp;`tf.Tensor`&nbsp;or&nbsp;`collection.OrderedDict[str,&nbsp;tf.Tensor]`<br>
+&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;parameter&nbsp;sample&nbsp;of&nbsp;some&nbsp;sample&nbsp;shape,&nbsp;where&nbsp;the&nbsp;sample&nbsp;shape&nbsp;induces&nbsp;parallel&nbsp;runs<br>
+&nbsp;&nbsp;&nbsp;&nbsp;(in&nbsp;this&nbsp;case&nbsp;`num_chains`&nbsp;is&nbsp;ignored).<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Special&nbsp;values:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;`None`:&nbsp;samples&nbsp;initial&nbsp;state&nbsp;uniformly&nbsp;from&nbsp;[-1,1]&nbsp;in&nbsp;unconstrained&nbsp;space.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;(Default:&nbsp;`None`).<br>
+num_chains:&nbsp;`int`<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Number&nbsp;of&nbsp;chains&nbsp;to&nbsp;run&nbsp;in&nbsp;parallel.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Is&nbsp;ignored&nbsp;if&nbsp;initial&nbsp;state&nbsp;is&nbsp;provided&nbsp;explicitly.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;(Default:&nbsp;`4`).<br>
+num_samples:&nbsp;`int`<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Number&nbsp;of&nbsp;samples&nbsp;to&nbsp;generate&nbsp;per&nbsp;chain.&nbsp;(Default:&nbsp;`4000`).<br>
+num_burnin_steps:&nbsp;`int`<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Number&nbsp;of&nbsp;burnin&nbsp;steps&nbsp;before&nbsp;starting&nbsp;to&nbsp;generate&nbsp;`num_samples`.&nbsp;(Default:&nbsp;`1000`).<br>
+merge_state_parts:&nbsp;`bool`<br>
+&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;boolean&nbsp;indicator&nbsp;whether&nbsp;or&nbsp;not&nbsp;to&nbsp;merge&nbsp;the&nbsp;state&nbsp;parts&nbsp;into&nbsp;a&nbsp;single&nbsp;state.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;(Default:&nbsp;`False`).<br>
+progress_bar:&nbsp;`bool`<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Boolean&nbsp;indicator&nbsp;whether&nbsp;or&nbsp;not&nbsp;to&nbsp;show&nbsp;a&nbsp;progress&nbsp;bar&nbsp;(Default:&nbsp;True).<br>
+&nbsp;<br>
+Returns<br>
+-------<br>
+`bayes_vi.utils.sample_results.SampleResult`<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;sample&nbsp;results&nbsp;containing&nbsp;generated&nbsp;posterior&nbsp;samples&nbsp;and&nbsp;traced&nbsp;metrics.</tt></dd></dl>
+
+<hr>
+Static methods defined here:<br>
+<dl><dt><a name="MCMC-sample_chain"><strong>sample_chain</strong></a>(num_results, num_burnin_steps, current_state, kernel, trace_fn, return_final_kernel_results=False)</dt><dd><tt>wraps&nbsp;`tfp.mcmc.sample_chain`.</tt></dd></dl>
+
+<hr>
+Data descriptors inherited from <a href="bayes_vi.inference.html#Inference">bayes_vi.inference.Inference</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+</td></tr></table></td></tr></table>
+</body></html>
