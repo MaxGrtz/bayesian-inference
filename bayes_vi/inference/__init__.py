@@ -1,7 +1,6 @@
 import tensorflow as tf
 
 from bayes_vi.models import Model
-from bayes_vi.utils import to_ordered_dict
 
 
 class Inference:
@@ -19,12 +18,8 @@ class Inference:
         A Bayesian probabilistic `Model`.
     dataset: `tf.data.Dataset`
         A `tf.data.Dataset` consisting of features (if regression model) and targets.
-    num_examples: `int`
+    num_datapoints: `int`
         Number of examples (i.e. datapoints) in the dataset.
-    unconstrain_flatten_and_merge: `callable`
-        Callable that takes a constrained parameter sample from `model`, unconstrains, flattens and merges it.
-    split_reshape_constrain_and_to_dict: `callable`
-        Callable that takes an unconstrained parameter sample from `model`, splits, reshapes and constrains it.
     """
 
     def __init__(self, model, dataset):
@@ -39,20 +34,7 @@ class Inference:
         """
         self.model = model
         self.dataset = dataset
-        self.num_examples = int(self.dataset.cardinality())
-        self.unconstrain_flatten_and_merge = lambda state: self.model.split_unconstrained_bijector.inverse(
-            self.model.flatten_unconstrained_sample(
-                self.model.unconstrain_sample(state.values())
-            )
-        )
-        self.split_reshape_constrain_and_to_dict = lambda state: to_ordered_dict(
-            self.model.param_names,
-            self.model.constrain_sample(
-                self.model.reshape_flat_unconstrained_sample(
-                    self.model.split_unconstrained_bijector.forward(state)
-                )
-            )
-        )
+        self.num_datapoints = int(self.dataset.cardinality())
 
     def fit(self, *args, **kwargs):
         """Fits the Bayesian model to the dataset.

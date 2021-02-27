@@ -2,13 +2,17 @@ import tensorflow as tf
 
 
 class LeapfrogIntegrator:
+    """Symplectic Leapfrog integrator."""
 
     def __init__(self):
         pass
 
     @tf.function
     def solve(self, potential_energy_fn, kinetic_energy_fn, initial_state, step_sizes, num_integration_steps):
-
+        """
+        Applies leapfrog integration computing the evolution of
+        a Hamiltonian system defined by a kinetic and potential energy
+        """
         # unpack initial state into initial position q and initial momentum p
         try:
             q, p = tf.split(initial_state, num_or_size_splits=2, axis=-1)

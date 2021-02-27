@@ -1,13 +1,12 @@
 import collections
 import functools
 import inspect
-import decorator
 
+import decorator
 import tensorflow as tf
 import tensorflow_probability as tfp
 
-from bayes_vi.utils import make_transform_fn, to_ordered_dict
-from bayes_vi.utils.bijectors import CustomBlockwise
+from bayes_vi.utils import to_ordered_dict
 
 tfd = tfp.distributions
 tfb = tfp.bijectors
@@ -25,106 +24,59 @@ class Model:
     A Bayesian `Model` consists of:
         an `collections.OrderedDict` of prior `tfp.distributions.Distribution`,
         a likelihood function (conditional distribution of the data) and
-        a list of constraining `tfp.bijectors.Bijector` (can possibly be inferred in later versions).
+        a list of constraining `tfp.bijectors.Bijector`.
 
     Note: There are various additional attributes derived from those fundamental components.
 
     Attributes
     ----------
-    param_names: `list` of `str`
-        A list of the ordered parameter names derived from `priors`.
-    priors: `collections.OrderedDict[str, tfp.distributions.Distribution]`
-        An ordered mapping from parameter names `str` to `tfp.distributions.Distribution`s
-        or callables returning a `tfp.distributions.Distribution` (conditional distributions).
-    prior_distribution: `tfp.distributions.JointDistributionNamedAutoBatched`
-        A joint distribution of the `priors`.
     likelihood: `callable`
         A `callable` taking the model parameters (and `features` of the dataset for regression models)
-        and returning a `tfp.distributions.Distribution` of the data. The distribution has to be
-        at least 1-dimensional.
-    distribution: `tfp.distributions.JointDistributionNamedAutoBatched`
-        A joint distribution of the `priors` and the `likelihood`, defining the Bayesian model.
+        and returning a `tfp.distributions.Distribution` of the data.
     is_generative_model: `bool`
         A `bool` indicator whether or not the `Model` is a generative model,
         i.e. the likelihood function has no `features` argument.
-    posteriors: `collections.OrderedDict[str, tfp.distributions.Distribution]`
-        An ordered mapping from parameter names `str` to posterior `tfp.distributions.Distribution`s.
-        The distributions are either variational distributions or `tfp.distributions.Empirical` distributions
-        derived from samples. Initialized to be equivalent to the priors. Has to be updated via:
-        `update_posterior_distribution_by_samples` or `update_posterior_distribution_by_distribution`.
-    posterior_distribution: `tfp.distributions.JointDistributionNamedAutoBatched`
-        A joint distribution of the `posteriors`, i.e. the `prior_distribution` conditioned on data.
-        Initialized to be equivalent to the `prior_distribution`. Has to be updated via:
-        `update_posterior_distribution_by_samples` or `update_posterior_distribution_by_distribution`.
-    features: `tf.Tensor` or `dict[str, tf.Tensor]`
-        A single `tf.Tensor` of all features of the dataset of shape (N,m),
-        where N is the number of examples in the dataset (or batch) and m is the the number of features.
-        Or a mapping from feature names to a `tf.Tensor` of shape (N,1). Initialized to None.
-        The `Model` instance is callable, taking features as an input. This conditions the model on the features
-        and updated the attribute `features`.
+    priors: `collections.OrderedDict[str, tfp.distributions.Distribution]`
+        An ordered mapping from parameter names `str` to `tfp.distributions.Distribution`s
+        or callables returning a `tfp.distributions.Distribution` (conditional distributions).
+    param_names: `list` of `str`
+        A list of the ordered parameter names derived from `priors`.
+    dtypes: `list` of `tf.dtype`
+        A list of the dtype of each parameter.
+    prior_distribution: `tfp.distributions.JointDistributionNamedAutoBatched`
+        A joint distribution of the `priors`.
     constraining_bijectors: `list` of `tfp.bijectors.Bijector`
         A list of diffeomorphisms defined as `tfp.bijectors.Bijector`
         to transform each parameter into unconstrained space R^n. The semantics are chosen,
         such that the inverse transformation of each bijector unconstrains a parameter sample,
         while the forward transformation constrains the parameter sample to the allowed range.
-    unconstrained_event_shapes: `list` of `TensorShape`
-        The event shape of each parameter sample in unconstrained space
-        (after applying the corresponding bijector inverse transformation).
-    reshaping_unconstrained_bijectors: `list` of `tfp.bijectors.Reshape`
-        A list of reshape bijectors, that flatten and reshape parameter samples in unconstrained space.
-    reshaping_constrained_bijectors: `list` of `tfp.bijectors.Reshape`
-        A list of reshape bijectors, that flatten and reshape parameter samples in constrained space.
-    reshape_constraining_bijectors: `list` of `tfp.bijectors.Bijector`
-        A list of bijectors, chaining the corresponding `constraining_bijectors` and reshaping bijectors.
-        I.e. tfp.bijectors.Chain([tfb.Invert(reshaping_constrained_bij), constrain, reshaping_unconstrained_bij])
-        for each parameter. The inverse transformation thus reshapes a flattened sample in constrained space,
-        unconstrains it and then flattens it in unconstrained space. The forward transformation first reshapes
-        the sample in unconstrained space, constrains it and then flattens it in constrained space.
-    flatten_constrained_sample: `callable`
-        A `callable`, flattening a constrained parameter sample of the model by applying
-        the inverse transformations of `reshaping_constrained_bijectors` to the corresponding
-        parameter sample parts.
-    flatten_unconstrained_sample: `callable`
-        A `callable`, flattening an unconstrained parameter sample of the model by applying
-        the inverse transformations of `reshaping_unconstrained_bijectors` to the corresponding
-        parameter sample parts.
-    reshape_flat_constrained_sample:
-        A `callable`, reshaping a flattened constrained parameter sample of the model by applying
-        the forward transformations of `reshaping_constrained_bijectors` to the corresponding
-        parameter sample parts.
-    reshape_flat_unconstrained_sample:
-        A `callable`, reshaping a flattened unconstrained parameter sample of the model by applying
-        the forward transformations of `reshaping_unconstrained_bijectors` to the corresponding
-        parameter sample parts.
-    constrain_sample: `callable`
-        A `callable`, transforming an unconstrained parameter sample of the model
-        into constrained space by applying the forward transformations of
-        `constraining_bijectors` to the corresponding parameter sample parts.
-    unconstrain_sample: `callable`
-        A `callable`, transforming a constrained parameter sample of the model
-        into unconstrained space by applying the inverse transformations of
-        `constraining_bijectors` to the corresponding parameter sample parts.
-    reshape_constrain_sample: `callable`
-        A `callable`, transforming a flattened unconstrained parameter sample of the model
-        into constrained space by applying the forward transformations of
-        `reshape_constraining_bijectors` to the corresponding parameter sample parts.
-    reshape_unconstrain_sample: `callable`
-        A `callable`, transforming a flattened constrained parameter sample of the model
-        into unconstrained space by applying the inverse transformations of
-        `reshape_constraining_bijectors` to the corresponding parameter sample parts.
-    split_unconstrained_bijector: `tfp.bijectors.Split`
-        A bijector, whose forward transform splits a `tf.Tensor` into a `list` of `tf.Tensor`,
-        and whose inverse transform merges a `list` of `tf.Tensor` into a single `tf.Tensor`.
-        This is used to merge flattened sample parts into a single merged sample in unconstrained space.
-    split_constrained_bijector: `tfp.bijectors.Split`
-        A bijector, whose forward transform splits a `tf.Tensor` into a `list` of `tf.Tensor`,
-        and whose inverse transform merges a `list` of `tf.Tensor` into a single `tf.Tensor`.
-        This is used to merge flattened sample parts into a single merged sample in constrained space.
-    blockwise_constraining_bijector: `bayes_vi.utils.bijectors.CustomBlockwise`
-        A modification of `tfp.bijectors.Blockwise`. This bijectors allows constraining/unconstraining
-        a merged parameter sample. Here, a merged parameter sample corresponds to:
-            in constrained space:   split_constrained_bijector.inverse(flatten_constrained_sample(sample))
-            in unconstrained space: split_unconstrained_bijector.inverse(flatten_unconstrained_sample(sample))
+    joint_constraining_bijector: `tfp.bijectors.JointMap`
+        A bijector which applies the constraining bijectors to the respective parameters in parallel.
+    param_event_shape: `list` of `tf.TensorShape`
+        A list of the event shapes of each prior distribution.
+    unconstrained_param_event_shape: `list` of `tf.TensorShape`
+        A list of the prior distributions event shapes in unconstrained space.
+    reshape_flat_param_bijector: `tfp.bijectors.JointMap`
+        A bijector which reshapes (forward) and flattens (inverse) a parameter samples in constrained space.
+    reshape_flat_unconstrained_param_bijector: `tfp.bijectors.JointMap`
+        A bijector which reshapes (forward) and flattens (inverse) a parameter samples in unconstrained space.
+    flat_param_event_shape: `list` of `tf.TensorShape`
+        A list of flattened parameter event shapes in constrained space.
+    flat_unconstrained_param_event_shape: `list` of `tf.TensorShape`
+        A list of flattened parameter event shapes in unconstrained space.
+    split_flat_param_bijector: `tfp.bijectors.Split`
+        A bijector which concatenates (inverse) a the parts of a parameter sample and
+        splits (forward) such a merged sample in constrained space.
+    split_flat_unconstrained_param_bijector: `tfp.bijectors.Split`
+        A bijector which concatenates (inverse) a the parts of a parameter sample and
+        splits (forward) such a merged sample in unconstrained space.
+    blockwise_constraining_bijector: `tfp.bijectors.Chain`
+        A chain of bijectors, that splits, reshapes, constrains, flattens and concatenates
+        a merged sample on the forward transformation.
+    flat_param_event_ndims: `int`
+        The dimension of the constrained parameter space.
+    flat_unconstrained_param_event_ndims: `int`
+        The dimension of the unconstrained parameter space.
     """
 
     def __init__(self, priors, likelihood, constraining_bijectors=None):
@@ -137,13 +89,13 @@ class Model:
             or callables returning a `tfp.distributions.Distribution` (conditional distributions).
         likelihood: `callable`
             A `callable` taking the model parameters (and `features` of the dataset for regression models)
-            and returning a `tfp.distributions.Distribution` of the data. The distribution has to be
-            at least 1-dimensional.
+            and returning a `tfp.distributions.Distribution` of the data.
         constraining_bijectors: `list` of `tfp.bijectors.Bijector`
             A list of diffeomorphisms defined as `tfp.bijectors.Bijector`
             to transform each parameter into unconstrained space R^n. The semantics are chosen,
             such that the inverse transformation of each bijector unconstrains a parameter sample,
             while the forward transformation constrains the parameter sample to the allowed range.
+            If no list is provided, default bijectors are used.
         """
         self.likelihood = likelihood
         self.is_generative_model = 'features' not in inspect.signature(likelihood).parameters.keys()
@@ -182,8 +134,8 @@ class Model:
 
         self.flat_unconstrained_param_event_shape = [
             part.shape for part in self.reshape_flat_unconstrained_param_bijector.inverse(
-                 self.joint_constraining_bijector.inverse(prior_sample)
-             )
+                self.joint_constraining_bijector.inverse(prior_sample)
+            )
         ]
 
         block_sizes = [shape[-1] for shape in self.flat_param_event_shape]
@@ -213,20 +165,57 @@ class Model:
             unconstrained_block_sizes
         )
 
+    def _get_joint_distribution(self, param_distributions, num_samples=None, features=None):
+        """Utility function returning the joint distribution of the model.
 
-    def _get_joint_distribution(self, param_distributions, targets=None, features=None):
+        This function is primarily for internal use.
+        It handles the differences between generative and regression models.
+        If generative model -> provide `num_samples` over which to construct the product joint distribution.
+        If regression model -> provide `features` to condition the model on.
+
+        Parameters
+        ----------
+        param_distributions: `collections.OrderedDict[str, tfp.distributions.Distribution]`
+            An ordered mapping from parameter names `str` to `tfp.distributions.Distribution`s
+            or callables returning a `tfp.distributions.Distribution` (conditional distributions).
+        num_samples: `int`
+            The number of samples over which to construct the product joint distribution.
+        features: `tf.Tensor` or `dict[str, tf.Tensor]`
+            The features on which to condition the model.
+
+        Returns
+        -------
+        `tfp.distributions.JointDistributionNamedAutoBatched`
+            The respective joint distribution of the model conditioned on `features` if provided.
+        """
         if not self.is_generative_model:
             llh = functools.partial(self.likelihood, features=features)
         else:
-            if targets is not None:
-                llh = sample(self.likelihood, sample_shape=targets.shape[0])
+            if num_samples is not None:
+                llh = sample(self.likelihood, sample_shape=num_samples)
             else:
                 llh = self.likelihood
         return tfd.JointDistributionNamedAutoBatched(
-                collections.OrderedDict(**param_distributions, y=llh)
-            )
+            collections.OrderedDict(**param_distributions, y=llh)
+        )
 
     def get_param_distributions(self, joint_param_distribution=None, param_samples=None):
+        """Utility function returning the marginal parameter distributions given a joint distribution or samples.
+
+        This function is primarily for internal use.
+
+        Parameters
+        ----------
+        joint_param_distribution: `tfp.distributions.JointDistributionNamed` or `tfp.distributions.JointDistributionNamedAutoBatched`
+            A joint distribution over the model parameters (e.g. prior or posterior)
+        param_samples: `list` of `tf.Tensor` or `collections.OrderedDict[str, tf.Tensor]`
+            A list or collections.OrderedDict of parameter samples.
+
+        Returns
+        -------
+        `collections.OrderedDict[str, tfp.distributions.Distribution]`
+            A mapping from parameter names to their marginal distributions.
+        """
         if isinstance(joint_param_distribution, (tfd.JointDistributionNamed, tfd.JointDistributionNamedAutoBatched)):
             param_dists, _ = joint_param_distribution.sample_distributions()
         elif isinstance(param_samples, (list, collections.OrderedDict)):
@@ -241,13 +230,45 @@ class Model:
             raise ValueError('You have to provide either a joint distribution or param samples.')
         return param_dists
 
-    def get_joint_distribution(self, targets=None, features=None):
-        return self._get_joint_distribution(self.priors, targets=targets, features=features)
+    def get_joint_distribution(self, num_samples=None, features=None):
+        """Constructs the joint distribution of the model.
 
+        Parameters
+        ----------
+        num_samples: `int`
+            The number of samples over which to construct the product joint distribution.
+        features: `tf.Tensor` or `dict[str, tf.Tensor]`
+            The features on which to condition the model.
 
-    def get_posterior_predictive_distribution(self, posterior_distribution=None, posterior_samples=None, targets=None, features=None):
+        Returns
+        -------
+        `tfp.distributions.JointDistributionNamedAutoBatched`
+            The respective joint distribution of the model conditioned on `features` if provided.
+        """
+        return self._get_joint_distribution(self.priors, num_samples=num_samples, features=features)
+
+    def get_posterior_predictive_distribution(self, posterior_distribution=None, posterior_samples=None,
+                                              num_samples=None, features=None):
+        """Constructs the posterior predictive distribution of the model.
+
+        Parameters
+        ----------
+        posterior_distribution: `tfp.distributions.JointDistributionNamed` or `tfp.distributions.JointDistributionNamedAutoBatched`
+            A joint distribution over the model parameters (e.g. prior or posterior)
+        posterior_samples: `list` of `tf.Tensor` or `collections.OrderedDict[str, tf.Tensor]`
+            A list or collections.OrderedDict of parameter samples.
+        num_samples: `int`
+            The number of samples over which to construct the product joint distribution.
+        features: `tf.Tensor` or `dict[str, tf.Tensor]`
+            The features on which to condition the model.
+
+        Returns
+        -------
+        `tfp.distributions.JointDistributionNamedAutoBatched`
+            The posterior predictive distribution of the model conditioned on `features` if provided.
+        """
         posteriors = self.get_param_distributions(
             joint_param_distribution=posterior_distribution,
             param_samples=posterior_samples
         )
-        return self._get_joint_distribution(posteriors, targets=targets, features=features)
+        return self._get_joint_distribution(posteriors, num_samples=num_samples, features=features)

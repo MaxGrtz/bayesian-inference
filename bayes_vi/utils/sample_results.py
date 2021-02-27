@@ -4,8 +4,6 @@ import tensorflow as tf
 class SampleResult:
     """Wrapper for mcmc-like sample results.
 
-    This class precomputes various statistics and mcmc diagnostics.
-
     Attributes
     ----------
     samples: `list` of `tf.Tensor`

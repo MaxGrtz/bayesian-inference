@@ -80,6 +80,8 @@ class HamiltonianMonteCarlo(TransitionKernel):
                  state_gradients_are_stopped=False, name=None):
         """Initializes the HMC kernel.
 
+        Note: This is a wrapper around `tfp.mcmc.HamiltonianMonteCarlo`
+
         Parameters
         ----------
         step_size: `float` or `list` of `float`
@@ -96,11 +98,11 @@ class HamiltonianMonteCarlo(TransitionKernel):
         step_size_adaptation_kernel: `bayes_vi.inference.mcmc.stepsize_adaptation_kernels.StepSizeAdaptationKernel`
             A stepsize adaptation kernel to wrap the transition kernel and optimize stepsize in burnin phase.
             (Default: `None`)
-        transforming_bijectors: `tfp.bijectors.Bijector` or `list` of `tfp.bijectors.Bijector`
+        transforming_bijector: `tfp.bijectors.Bijector` or `list` of `tfp.bijectors.Bijector`
             A single or per state part transforming bijector to transform the generated samples.
             This allows trainable bijectors to be applied to achieve decorrelation between parameters and simplifying
             the target distribution for more efficient sampling.
-            In the context of HMC this is approximately Riemannian-HMC (RHMC).
+            In the context of HMC this is corresponds to Riemannian-HMC (RHMC).
         state_gradients_are_stopped: `bool`
             A boolean indicating that the proposed
             new state be run through `tf.stop_gradient`. This is particularly useful
@@ -170,7 +172,7 @@ class NoUTurnSampler(TransitionKernel):
     step_size_adaptation_kernel: `bayes_vi.inference.mcmc.stepsize_adaptation_kernels.StepSizeAdaptationKernel`
         A stepsize adaptation kernel to wrap the transition kernel and optimize stepsize in burnin phase.
         (Default: `None`)
-    transforming_bijectors: `tfp.bijectors.Bijector` or `list` of `tfp.bijectors.Bijector`
+    transforming_bijector: `tfp.bijectors.Bijector` or `list` of `tfp.bijectors.Bijector`
         A single or per state part transforming bijector to transform the generated samples.
         This allows trainable bijectors to be applied to achieve decorrelation between parameters and simplifying
         the target distribution for more efficient sampling.
@@ -245,7 +247,6 @@ class NoUTurnSampler(TransitionKernel):
             'leapfrogs_taken', 'has_divergence', 'energy'
         ]
 
-
     @staticmethod
     def trace_fn(_, pkr):
         return (
@@ -280,6 +281,10 @@ class RandomWalkMetropolis(TransitionKernel):
     kernel: `callable`
         A callable taking a target_log_prob_fn and returning
         `tfp.mcmc.RandomWalkMetropolis` with the specified parameters.
+    transforming_bijectors: `tfp.bijectors.Bijector` or `list` of `tfp.bijectors.Bijector`
+        A single or per state part transforming bijector to transform the generated samples.
+        This allows trainable bijectors to be applied to achieve decorrelation between parameters and simplifying
+        the target distribution for more efficient sampling.
     name: `str`
         Name prefixed to Ops created by this function.
         (Default: `None` (i.e., 'rwm_kernel')).
@@ -290,7 +295,7 @@ class RandomWalkMetropolis(TransitionKernel):
 
         Attributes
         ----------
-        transforming_bijectors: `tfp.bijectors.Bijector` or `list` of `tfp.bijectors.Bijector`
+        transforming_bijector: `tfp.bijectors.Bijector` or `list` of `tfp.bijectors.Bijector`
             A single or per state part transforming bijector to transform the generated samples.
             This allows trainable bijectors to be applied to achieve decorrelation between parameters and simplifying
             the target distribution for more efficient sampling.

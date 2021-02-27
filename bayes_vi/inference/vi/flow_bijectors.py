@@ -11,6 +11,7 @@ tfb = tfp.bijectors
 
 
 class AffineFlow(tfb.Bijector):
+    """Implements a trainable Affine Flow bijector."""
 
     def __init__(self, event_dims, validate_args=False, name='affine_flow'):
         super(AffineFlow, self).__init__(
@@ -55,9 +56,10 @@ class AffineFlow(tfb.Bijector):
 
 
 class HamiltonianFlow(tfb.Bijector):
+    """Implements a trainable Hamiltonian Flow bijector."""
 
     def __init__(self, event_dims, potential_energy_fn=None, kinetic_energy_fn=None,
-                 symplectic_integrator=LeapfrogIntegrator(), step_sizes=0.01, num_integration_steps=5,
+                 symplectic_integrator=LeapfrogIntegrator(), step_sizes=0.2, num_integration_steps=5,
                  hidden_layers=None, validate_args=False, name='hamiltonian_flow'):
         super(HamiltonianFlow, self).__init__(is_constant_jacobian=True,
                                               validate_args=validate_args,
@@ -99,6 +101,7 @@ class HamiltonianFlow(tfb.Bijector):
 
 
 def make_energy_fn(event_dims, hidden_layers=None):
+    """Utility function to construct a simple MLP energy function."""
     if hidden_layers is None:
         hidden_layers = [32, 32]
     energy_fn = tfk.Sequential()
@@ -110,6 +113,7 @@ def make_energy_fn(event_dims, hidden_layers=None):
 
 
 def make_scale_fn(event_ndims, hidden_layers=None):
+    """Utility function to construct a simple MLP function to parameterize a diagonal scale."""
     if hidden_layers is None:
         hidden_layers = [32]
     scale_fn = tfk.Sequential()
@@ -121,6 +125,7 @@ def make_scale_fn(event_ndims, hidden_layers=None):
 
 
 def make_shift_fn(event_ndims, hidden_layers=None):
+    """Utility function to construct a simple MLP shift function to parameterize a location."""
     if hidden_layers is None:
         hidden_layers = [32]
     shift_fn = tfk.Sequential()

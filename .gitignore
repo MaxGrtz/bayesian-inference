@@ -133,3 +133,4 @@ dmypy.json
 
 # jupyter lab
 test*.ipynb*
+test-experiments/generating-mnist-images-test.ipynb

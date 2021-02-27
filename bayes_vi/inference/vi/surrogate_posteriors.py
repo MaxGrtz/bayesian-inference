@@ -1,32 +1,30 @@
-import collections
-
 import tensorflow as tf
 import tensorflow_probability as tfp
-
-from bayes_vi.utils import to_ordered_dict
-from bayes_vi.utils.bijectors import CustomBlockwise
 
 tfd = tfp.distributions
 tfb = tfp.bijectors
 
 
 class SurrogatePosterior:
+    """Base Class for surrogate posteriors."""
 
     def __init__(self, model):
+        """Initializes surrogate posterior instance."""
         self.model = model
         self.distribution = None
         self.reshape_sample_bijector = tfb.Chain([
-            model.reshape_flat_param_bijector, model.split_flat_param_bijector
+            self.model.reshape_flat_param_bijector, self.model.split_flat_param_bijector
         ])
-        self.unconstrained_event_ndims = model.flat_unconstrained_param_event_ndims
-        self.event_ndims = model.flat_param_event_ndims
-        dtypes = list(model.dtypes.values())
+        self.unconstrained_event_ndims = self.model.flat_unconstrained_param_event_ndims
+        self.event_ndims = self.model.flat_param_event_ndims
+        dtypes = list(self.model.dtypes.values())
         if len(set(set(dtypes))) == 1:
             self.dtype = dtypes[0]
         else:
             raise ValueError('Model has incompatible dtypes: {}'.format(set(dtypes)))
 
     def approx_joint_marginal_posteriors(self, num_samples_to_approx_marginals):
+        """Approximates the marginal posterior distributions and returns them as a joint distribution."""
         q = self.distribution.sample(num_samples_to_approx_marginals)
         if hasattr(self, 'extra_ndims') and self.extra_ndims > 0:
             q, a = tf.split(q, num_or_size_splits=[self.event_ndims, self.extra_ndims], axis=-1)
@@ -34,8 +32,8 @@ class SurrogatePosterior:
         posteriors = self.model.get_param_distributions(param_samples=posterior_samples)
         return tfd.JointDistributionNamedAutoBatched(posteriors)
 
-
     def get_corrected_target_log_prob_fn(self, target_log_prob_fn):
+        """If the surrogate posterior has an Attribute `extra_ndims`, return the corrected `target_log_prob_fn`."""
         if hasattr(self, 'extra_ndims') and self.extra_ndims > 0:
 
             def corrected_target_log_prob_fn(sample):
@@ -57,6 +55,7 @@ class SurrogatePosterior:
 
 
 class ADVI(SurrogatePosterior):
+    """Implements Automatic Differentiation Variational Inference (ADVI) surrogate posterior."""
 
     def __init__(self, model, mean_field=False):
         super(ADVI, self).__init__(model=model)
@@ -86,6 +85,7 @@ class ADVI(SurrogatePosterior):
 
 
 class NormalizingFlow(SurrogatePosterior):
+    """Implements Normalizing Flow surrogate posterior."""
 
     def __init__(self, model, flow_bijector, extra_ndims=None, posterior_lift_distribution=None):
         super(NormalizingFlow, self).__init__(model=model)
