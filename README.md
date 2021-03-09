@@ -1,3 +1,18 @@
+# Get Started
+
+Install the package https://pypi.org/project/bayes-vi/ using pip:
+
+```bash
+pip install bayes-vi
+```
+
+Check out the documentation at https://maxgrtz.github.io/bayesian-inference/ !
+
+&nbsp;
+
+# Imports
+
+
 ```python
 import collections
 
@@ -15,12 +30,12 @@ plt.style.use('ggplot')
 import tensorflow as tf
 import tensorflow_probability as tfp
 
-# set tf logger to log level ERROR to avoid warnings
-tf.get_logger().setLevel('ERROR')
-
 tfd = tfp.distributions
 tfb = tfp.bijectors
 tfk = tf.keras
+
+# set tf logger to log level ERROR to avoid warnings
+tf.get_logger().setLevel('ERROR')
 ```
 
 
@@ -50,12 +65,16 @@ from bayes_vi.inference.vi.surrogate_posteriors import ADVI, NormalizingFlow
 from bayes_vi.inference.vi.flow_bijectors import HamiltonianFlow, AffineFlow, make_energy_fn, make_scale_fn, make_shift_fn
 ```
 
-## 1. Example Workflow
+&nbsp;
+
+# 1. Example Workflow
 
 A Bayesian modeling worklow using this package could look like this.
 
-### 1.1. Create a Dataset
-Create a `tf.data.Dataset` from your data. For this example consider some case some univariate Gaussian fake data.
+&nbsp;
+
+## 1.1. Create a Dataset
+Create a `tf.data.Dataset` from your data. For this example consider some univariate Gaussian fake data.
 
 
 ```python
@@ -81,11 +100,12 @@ ax = data.plot(kind='kde', title='Univariate Gaussian Test Data')
 
 
     
-![png](img/output_11_0.png)
+![png](https://github.com/MaxGrtz/bayesian-inference/tree/thesis/readme_images/output_15_0.png)
     
 
+&nbsp;
 
-### 1.2. Define a Bayesian Model
+## 1.2. Define a Bayesian Model
 
 To define a Bayesian `Model`, simply provide an `collections.OrderedDict` of prior distributions as `tfp.distribution.Distirbution`s and a likelihood function, which takes the parameters as inputs by name.
 
@@ -107,13 +127,17 @@ model = Model(priors=priors, likelihood=likelihood)
 
 It is possible to provide a list of constraining bijectors on construction of the model, which allows for computations on an unconstrained space.
 
-If no such list is defined, default bijectors for each prior are chosen.
+If no such list is defined, default bijectors for each parameter are chosen.
 
-### 1.3. Run Inference Algorithm of Choice
+&nbsp;
+
+## 1.3. Run Inference Algorithm of Choice
 
 With this simple setup, you can now use either MCMC or variational inference to do Bayesian inference.
 
-#### 1.3.1. Run MCMC (e.g. with No-U-Turn Sampler with dual averaging stepsize adaptation)
+&nbsp;
+
+### 1.3.1. Run MCMC (e.g. with No-U-Turn Sampler with dual averaging stepsize adaptation)
 
 Note that the transition kernel may have various additional parameters. Here we use just the defaults and only provide the stepsize adaptation kernel.
 
@@ -137,26 +161,9 @@ mcmc_result = mcmc.fit(
 )
 ```
 
-
-
 <div>
-    <style>
-        /* Turns off some styling */
-        progress {
-            /* gets rid of default border in Firefox and Opera. */
-            border: none;
-            /* Needs to be in here for Safari polyfill so background images work as expected. */
-            background-size: auto;
-        }
-        .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
-            background: #F44336;
-        }
-    </style>
-  <progress value='4978' class='' max='5000' style='width:300px; height:20px; vertical-align: middle;'></progress>
-  99.56% [4978/5000 00:14<00:00]
+  99.08% [5000/5000 00:15<00:00]
 </div>
-
-
 
 The `mcmc_result` is a wrapper containing the sample results `mcmc_result.samples` and additional traced metrics specific to the kernel `mcmc_result.trace`.
 
@@ -179,19 +186,6 @@ az.summary(posterior_samples)
 
 
 <div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
 <table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
@@ -212,30 +206,30 @@ az.summary(posterior_samples)
   <tbody>
     <tr>
       <th>loc</th>
-      <td>6.135</td>
-      <td>0.646</td>
-      <td>4.890</td>
-      <td>7.310</td>
-      <td>0.009</td>
-      <td>0.007</td>
-      <td>4897.0</td>
-      <td>4897.0</td>
-      <td>4967.0</td>
-      <td>4232.0</td>
+      <td>6.837</td>
+      <td>0.546</td>
+      <td>5.818</td>
+      <td>7.853</td>
+      <td>0.008</td>
+      <td>0.005</td>
+      <td>5210.0</td>
+      <td>5210.0</td>
+      <td>5240.0</td>
+      <td>4550.0</td>
       <td>1.0</td>
     </tr>
     <tr>
       <th>scale</th>
-      <td>2.833</td>
-      <td>0.514</td>
-      <td>1.989</td>
-      <td>3.828</td>
-      <td>0.008</td>
+      <td>2.444</td>
+      <td>0.426</td>
+      <td>1.708</td>
+      <td>3.216</td>
       <td>0.006</td>
-      <td>4597.0</td>
-      <td>4217.0</td>
-      <td>5307.0</td>
-      <td>3819.0</td>
+      <td>0.005</td>
+      <td>4639.0</td>
+      <td>4273.0</td>
+      <td>5315.0</td>
+      <td>4424.0</td>
       <td>1.0</td>
     </tr>
   </tbody>
@@ -251,11 +245,12 @@ ax = az.plot_trace(posterior_samples)
 
 
     
-![png](img/output_25_0.png)
+![png](https://github.com/MaxGrtz/bayesian-inference/tree/thesis/readme_images/output_29_0.png)
     
 
+&nbsp;
 
-#### 1.3.2. Run Variational Inference (e.g. meanfield ADVI)
+### 1.3.2. Run Variational Inference (e.g. meanfield ADVI)
 
 
 Instead of MCMC methods, we might want to use variational inference.
@@ -284,20 +279,7 @@ approx_posterior, meanfield_advi_losses = vi.fit(
 
 
 <div>
-    <style>
-        /* Turns off some styling */
-        progress {
-            /* gets rid of default border in Firefox and Opera. */
-            border: none;
-            /* Needs to be in here for Safari polyfill so background images work as expected. */
-            background-size: auto;
-        }
-        .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
-            background: #F44336;
-        }
-    </style>
-  <progress value='1000' class='' max='1000' style='width:300px; height:20px; vertical-align: middle;'></progress>
-  100.00% [1000/1000 00:02<00:00 avg loss: 52.846]
+  100.00% [1000/1000 00:02<00:00 avg loss: 50.336]
 </div>
 
 
@@ -309,7 +291,7 @@ ax = plt.plot(meanfield_advi_losses)
 
 
     
-![png](img/output_29_0.png)
+![png](https://github.com/MaxGrtz/bayesian-inference/tree/thesis/readme_images/output_33_0.png)
     
 
 
@@ -324,19 +306,6 @@ df.describe(percentiles=[0.03, 0.5, 0.97]).T
 
 
 <div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
 <table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
@@ -355,24 +324,24 @@ df.describe(percentiles=[0.03, 0.5, 0.97]).T
     <tr>
       <th>loc</th>
       <td>5000.0</td>
-      <td>6.104273</td>
-      <td>0.621283</td>
-      <td>3.760990</td>
-      <td>4.924492</td>
-      <td>6.115833</td>
-      <td>7.258379</td>
-      <td>8.165336</td>
+      <td>6.819653</td>
+      <td>0.511264</td>
+      <td>4.710279</td>
+      <td>5.844515</td>
+      <td>6.825340</td>
+      <td>7.793183</td>
+      <td>8.429766</td>
     </tr>
     <tr>
       <th>scale</th>
       <td>5000.0</td>
-      <td>2.807804</td>
-      <td>0.435924</td>
-      <td>1.296883</td>
-      <td>1.978388</td>
-      <td>2.813874</td>
-      <td>3.635254</td>
-      <td>4.231164</td>
+      <td>2.420403</td>
+      <td>0.367414</td>
+      <td>1.174533</td>
+      <td>1.760495</td>
+      <td>2.421083</td>
+      <td>3.117724</td>
+      <td>3.836521</td>
     </tr>
   </tbody>
 </table>
@@ -387,11 +356,12 @@ ax = df.plot(kind='kde')
 
 
     
-![png](img/output_31_0.png)
+![png](https://github.com/MaxGrtz/bayesian-inference/tree/thesis/readme_images/output_35_0.png)
     
 
+&nbsp;
 
-## 2. Normalizing Flows for Variational Inference
+# 2. Normalizing Flows for Variational Inference
 
 Continuing the simple example above, this is how you can flexibly define surrogate posteriors based on Normalizing flows for variational Bayesian inference.
 
@@ -405,7 +375,9 @@ You can construct more expressive flows by making use of the `tfp.bijectors.Chai
 ndims = model.flat_unconstrained_param_event_ndims # this is the number of dimensions of the unconstrained parameter space
 ```
 
-### 2.1. Affine Flows
+&nbsp;
+
+## 2.1. Affine Flows
 
 
 ```python
@@ -426,27 +398,16 @@ approx_posterior, affine_flow_losses = vi.fit(
 
 
 <div>
-    <style>
-        /* Turns off some styling */
-        progress {
-            /* gets rid of default border in Firefox and Opera. */
-            border: none;
-            /* Needs to be in here for Safari polyfill so background images work as expected. */
-            background-size: auto;
-        }
-        .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
-            background: #F44336;
-        }
-    </style>
-  <progress value='1000' class='' max='1000' style='width:300px; height:20px; vertical-align: middle;'></progress>
-  100.00% [1000/1000 00:03<00:00 avg loss: 52.864]
+  100.00% [1000/1000 00:02<00:00 avg loss: 50.336]
 </div>
 
 
 
 To define continuous normalizing flows, you may use is the `tfp.bijectors.FFJORD` bijector.
 
-### 2.2. Continuous Flows
+&nbsp;
+
+## 2.2. Continuous Flows
 
 
 ```python
@@ -477,25 +438,13 @@ approx_posterior, cnf_losses = vi.fit(
 
 
 <div>
-    <style>
-        /* Turns off some styling */
-        progress {
-            /* gets rid of default border in Firefox and Opera. */
-            border: none;
-            /* Needs to be in here for Safari polyfill so background images work as expected. */
-            background-size: auto;
-        }
-        .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
-            background: #F44336;
-        }
-    </style>
-  <progress value='1000' class='' max='1000' style='width:300px; height:20px; vertical-align: middle;'></progress>
-  100.00% [1000/1000 00:58<00:00 avg loss: 52.855]
+  100.00% [1000/1000 01:02<00:00 avg loss: 50.439]
 </div>
 
 
+&nbsp;
 
-### 2.3. Comparison
+## 2.3. Comparison
 
 Have a look at the optimzation behaviors in comparison.
 
@@ -506,15 +455,16 @@ ax = pd.DataFrame({'meanfield_advi': meanfield_advi_losses, 'affine_flow': affin
 
 
     
-![png](img/output_42_0.png)
+![png](https://github.com/MaxGrtz/bayesian-inference/tree/thesis/readme_images/output_46_0.png)
     
 
+&nbsp;
 
-## 3. Augmented Normalizing Flows for Variational Inference
+# 3. Augmented Normalizing Flows for Variational Inference
 
-The package allows to easily define augmented normalizing flows. This obviously has no advantages, at least for such a simple example model.
+The package allows to easily define augmented normalizing flows. This obviously has no advantages for such a simple example model.
 
-Simple choose a number of extra dimensions `extra_ndims` and define the flow bijector on the augmented space, i.e. on dimensions `ndims + extra_ndims`.
+Simply choose a number of extra dimensions `extra_ndims` and define the flow bijector on the augmented space, i.e. on dimensions `ndims + extra_ndims`.
 
 The optimization problem is solved on the augmented space by lifting the target distribution with the conditional `posterior_lift_distribution`, which by default is simply `lambda _: tfd.MultivariateNormalDiag(loc=tf.zeros(extra_ndims), scale_diag=tf.ones(extra_ndims))`.
 
@@ -544,20 +494,7 @@ approx_posterior, affine_flow_losses = vi.fit(
 
 
 <div>
-    <style>
-        /* Turns off some styling */
-        progress {
-            /* gets rid of default border in Firefox and Opera. */
-            border: none;
-            /* Needs to be in here for Safari polyfill so background images work as expected. */
-            background-size: auto;
-        }
-        .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
-            background: #F44336;
-        }
-    </style>
-  <progress value='1000' class='' max='1000' style='width:300px; height:20px; vertical-align: middle;'></progress>
-  100.00% [1000/1000 00:03<00:00 avg loss: 52.876]
+  100.00% [1000/1000 00:04<00:00 avg loss: 50.310]
 </div>
 
 
@@ -591,20 +528,7 @@ approx_posterior, cnf_losses = vi.fit(
 
 
 <div>
-    <style>
-        /* Turns off some styling */
-        progress {
-            /* gets rid of default border in Firefox and Opera. */
-            border: none;
-            /* Needs to be in here for Safari polyfill so background images work as expected. */
-            background-size: auto;
-        }
-        .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
-            background: #F44336;
-        }
-    </style>
-  <progress value='1000' class='' max='1000' style='width:300px; height:20px; vertical-align: middle;'></progress>
-  100.00% [1000/1000 01:03<00:00 avg loss: 53.075]
+  100.00% [1000/1000 01:08<00:00 avg loss: 50.633]
 </div>
 
 
@@ -616,11 +540,12 @@ ax = pd.DataFrame({'meanfield_advi': meanfield_advi_losses, 'affine_flow': affin
 
 
     
-![png](img/output_48_0.png)
+![png](https://github.com/MaxGrtz/bayesian-inference/tree/thesis/readme_images/output_52_0.png)
     
 
+&nbsp;
 
-## 4. Hamiltonian Normalizing Flows
+# 4. Hamiltonian Normalizing Flows
 
 As another example consider Hamiltonian Normalizing Flows (HNF) as motivated by Toth, P., Rezende, D. J., Jaegle, A., Racanière, S., Botev, A., & Higgins, I. (2019). Hamiltonian Generative Networks. ArXiv. http://arxiv.org/abs/1909.13789 .
 
@@ -630,7 +555,9 @@ To compute such dynamics, we use the symplectic leapfrog integrator.
 
 The package provides an implementation of a general Hamiltonian Flow bijector.
 
-### 4.1. Verify Hamiltonian Flow Bijector
+&nbsp;
+
+## 4.1. Verify Hamiltonian Flow Bijector
 To test the implementation the Hamiltonian Flow Bijector, consider the Hamiltonian of a 1d harmonic oscillator with mass $m=1$ and constant $k=1$:
 
 $H(q,p) = T(p) + U(q) = 0.5 p^2 + 0.5 q^2$.
@@ -642,7 +569,7 @@ We know that this should yield an oscillating dynamic, which manifests as a circ
 T = lambda p: 0.5*p**2
 U = lambda q: 0.5*q**2
 
-# event dims can be ignore in this example, because they are only used to construct trainable default energy function if none are provided explicitly
+# event dims can be ignored in this example, because they are only used to construct trainable default energy function if none are provided explicitly
 hamiltonian_flow = HamiltonianFlow(
     event_dims=1, 
     potential_energy_fn=U, 
@@ -674,11 +601,11 @@ plt.tight_layout()
 
 
     
-![png](img/output_54_0.png)
+![png](https://github.com/MaxGrtz/bayesian-inference/tree/thesis/readme_images/output_58_0.png)
     
+&nbsp;
 
-
-### 4.2. Hamiltonian Normalizing Flows
+## 4.2. Hamiltonian Normalizing Flows
 
 In the case of HNFs the augmentation space has the same dimension as the parameter space.
 
@@ -710,20 +637,7 @@ approx_posterior, hnf_losses = vi.fit(
 
 
 <div>
-    <style>
-        /* Turns off some styling */
-        progress {
-            /* gets rid of default border in Firefox and Opera. */
-            border: none;
-            /* Needs to be in here for Safari polyfill so background images work as expected. */
-            background-size: auto;
-        }
-        .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
-            background: #F44336;
-        }
-    </style>
-  <progress value='1000' class='' max='1000' style='width:300px; height:20px; vertical-align: middle;'></progress>
-  100.00% [1000/1000 00:06<00:00 avg loss: 55.220]
+  100.00% [1000/1000 00:07<00:00 avg loss: 54.512]
 </div>
 
 
@@ -735,7 +649,7 @@ ax = pd.DataFrame({'meanfield_advi': meanfield_advi_losses, 'affine_flow': affin
 
 
     
-![png](img/output_60_0.png)
+![png](https://github.com/MaxGrtz/bayesian-inference/tree/thesis/readme_images/output_64_0.png)
     
 
 
@@ -764,20 +678,7 @@ approx_posterior, hnf_losses = vi.fit(
 
 
 <div>
-    <style>
-        /* Turns off some styling */
-        progress {
-            /* gets rid of default border in Firefox and Opera. */
-            border: none;
-            /* Needs to be in here for Safari polyfill so background images work as expected. */
-            background-size: auto;
-        }
-        .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
-            background: #F44336;
-        }
-    </style>
-  <progress value='1000' class='' max='1000' style='width:300px; height:20px; vertical-align: middle;'></progress>
-  100.00% [1000/1000 00:06<00:00 avg loss: 53.273]
+  100.00% [1000/1000 00:07<00:00 avg loss: 50.746]
 </div>
 
 
@@ -789,15 +690,17 @@ ax = pd.DataFrame({'meanfield_advi': meanfield_advi_losses, 'affine_flow': affin
 
 
     
-![png](img/output_63_0.png)
+![png](https://github.com/MaxGrtz/bayesian-inference/tree/thesis/readme_images/output_67_0.png)
     
+&nbsp;
 
-
-## 5. Regression Model Example
+# 5. Regression Model Example
 
 As a final example, this is how to define regression models.
 
-### 5.1. Create a Dataset
+&nbsp;
+
+## 5.1. Create a Dataset
 Again, create a `tf.data.Dataset` from your data or, in this case, generate some fake dataset.
 
 
@@ -810,8 +713,6 @@ x = tf.random.normal((num_datapoints,), mean=0.0, stddev=10.0)
 true_dist = tfd.Normal(loc=beta0 + x*beta1, scale=scale)
 y = true_dist.sample()
 ```
-
-The package provides a utility function `make_dataset_from_df` for easy construction of a dataset from a `pd.DataFrame`.
 
 
 ```python
@@ -826,13 +727,14 @@ ax = data.plot(x='x', y='y', kind='scatter', title='Linear Regression Test Data'
 
 
     
-![png](img/output_70_0.png)
+![png](https://github.com/MaxGrtz/bayesian-inference/tree/thesis/readme_images/output_73_0.png)
     
 
+&nbsp;
 
-### 1.2. Define a Bayesian Model
+## 1.2. Define a Bayesian Model
 
-To define a Bayesian `Model`, simply provide an `collections.OrderedDict` of prior distributions as `tfp.distribution.Distirbution`s and a likelihood function, which takes the parameters and the features as inputs.
+To define the `Model`, again provide an `collections.OrderedDict` of prior distributions as `tfp.distribution.Distirbution`s and a likelihood function, which takes the parameters and the features as inputs.
 
 
 ```python
@@ -854,11 +756,15 @@ def likelihood(beta_0, beta_1, scale, features):
 model = Model(priors=priors, likelihood=likelihood)
 ```
 
-### 1.3. Run Inference Algorithm of Choice
+&nbsp;
+
+## 1.3. Run Inference Algorithm of Choice
 
 You can now again use either MCMC or variational inference to do Bayesian inference.
 
-#### 1.3.1. Run MCMC (e.g. with Random Walk Metropolis)
+&nbsp;
+
+### 1.3.1. Run MCMC (e.g. with Random Walk Metropolis kernel)
 
 
 ```python
@@ -882,29 +788,10 @@ mcmc_result = mcmc.fit(
 
 
 <div>
-    <style>
-        /* Turns off some styling */
-        progress {
-            /* gets rid of default border in Firefox and Opera. */
-            border: none;
-            /* Needs to be in here for Safari polyfill so background images work as expected. */
-            background-size: auto;
-        }
-        .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
-            background: #F44336;
-        }
-    </style>
-  <progress value='4689' class='' max='5000' style='width:300px; height:20px; vertical-align: middle;'></progress>
-  93.78% [4689/5000 00:01<00:00]
+  92.70% [4635/5000 00:01<00:00]
 </div>
 
 
-
-The `mcmc_result` is a wrapper containing the sample results `mcmc_result.samples` and additional traced metrics specific to the kernel `mcmc_result.trace`.
-
-To visualize the results, one can use existing libraries like arviz (https://arviz-devs.github.io/arviz/index.html).
-
-Later versions of this package should allow for a seamless integration with arviz, but for now we have to reformat the sample results to conform to arviz conventions.
 
 
 ```python
@@ -921,19 +808,6 @@ az.summary(posterior_samples)
 
 
 <div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
 <table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
@@ -954,44 +828,44 @@ az.summary(posterior_samples)
   <tbody>
     <tr>
       <th>beta_0</th>
-      <td>7.406</td>
-      <td>1.303</td>
-      <td>4.549</td>
-      <td>9.655</td>
-      <td>0.127</td>
-      <td>0.090</td>
-      <td>105.0</td>
-      <td>105.0</td>
-      <td>106.0</td>
-      <td>160.0</td>
-      <td>1.02</td>
-    </tr>
-    <tr>
-      <th>beta_1</th>
-      <td>2.808</td>
-      <td>0.139</td>
-      <td>2.559</td>
-      <td>3.075</td>
-      <td>0.006</td>
-      <td>0.004</td>
-      <td>623.0</td>
-      <td>614.0</td>
-      <td>611.0</td>
-      <td>588.0</td>
+      <td>6.744</td>
+      <td>1.296</td>
+      <td>4.561</td>
+      <td>9.264</td>
+      <td>0.124</td>
+      <td>0.088</td>
+      <td>109.0</td>
+      <td>109.0</td>
+      <td>110.0</td>
+      <td>146.0</td>
       <td>1.01</td>
     </tr>
     <tr>
+      <th>beta_1</th>
+      <td>2.859</td>
+      <td>0.144</td>
+      <td>2.570</td>
+      <td>3.110</td>
+      <td>0.006</td>
+      <td>0.004</td>
+      <td>596.0</td>
+      <td>591.0</td>
+      <td>600.0</td>
+      <td>689.0</td>
+      <td>1.00</td>
+    </tr>
+    <tr>
       <th>scale</th>
-      <td>9.705</td>
-      <td>0.851</td>
-      <td>8.384</td>
-      <td>11.415</td>
-      <td>0.052</td>
-      <td>0.037</td>
-      <td>270.0</td>
-      <td>270.0</td>
-      <td>268.0</td>
-      <td>333.0</td>
+      <td>9.217</td>
+      <td>0.924</td>
+      <td>7.724</td>
+      <td>10.978</td>
+      <td>0.063</td>
+      <td>0.045</td>
+      <td>215.0</td>
+      <td>214.0</td>
+      <td>220.0</td>
+      <td>395.0</td>
       <td>1.01</td>
     </tr>
   </tbody>
@@ -1007,11 +881,12 @@ ax = az.plot_trace(posterior_samples)
 
 
     
-![png](img/output_82_0.png)
+![png](https://github.com/MaxGrtz/bayesian-inference/tree/thesis/readme_images/output_84_0.png)
     
 
+&nbsp;
 
-#### 1.3.2. Run Variational Inference (e.g. full rank ADVI)
+### 1.3.2. Run Variational Inference (e.g. full rank ADVI)
 
 
 
@@ -1020,7 +895,7 @@ NUM_STEPS = 1000
 SAMPLE_SIZE = 10
 LEARNING_RATE = 1e-2
 
-surrogate_posterior = ADVI(model=model, mean_field=True)
+surrogate_posterior = ADVI(model=model)
 
 vi = VI(model=model, dataset=dataset, surrogate_posterior=surrogate_posterior, discrepancy_fn=tfp.vi.kl_reverse)
 
@@ -1036,20 +911,7 @@ approx_posterior, meanfield_advi_losses = vi.fit(
 
 
 <div>
-    <style>
-        /* Turns off some styling */
-        progress {
-            /* gets rid of default border in Firefox and Opera. */
-            border: none;
-            /* Needs to be in here for Safari polyfill so background images work as expected. */
-            background-size: auto;
-        }
-        .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
-            background: #F44336;
-        }
-    </style>
-  <progress value='1000' class='' max='1000' style='width:300px; height:20px; vertical-align: middle;'></progress>
-  100.00% [1000/1000 00:03<00:00 avg loss: 193.700]
+  100.00% [1000/1000 00:04<00:00 avg loss: 188.817]
 </div>
 
 
@@ -1061,7 +923,7 @@ ax = plt.plot(meanfield_advi_losses)
 
 
     
-![png](img/output_85_0.png)
+![png](https://github.com/MaxGrtz/bayesian-inference/tree/thesis/readme_images/output_87_0.png)
     
 
 
@@ -1076,19 +938,6 @@ df.describe(percentiles=[0.03, 0.5, 0.97]).T
 
 
 <div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
 <table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
@@ -1107,35 +956,35 @@ df.describe(percentiles=[0.03, 0.5, 0.97]).T
     <tr>
       <th>beta_0</th>
       <td>5000.0</td>
-      <td>7.412712</td>
-      <td>1.148661</td>
-      <td>2.865888</td>
-      <td>5.230334</td>
-      <td>7.409355</td>
-      <td>9.530113</td>
-      <td>11.454782</td>
+      <td>6.877542</td>
+      <td>1.259172</td>
+      <td>2.323422</td>
+      <td>4.499239</td>
+      <td>6.854323</td>
+      <td>9.263641</td>
+      <td>11.693712</td>
     </tr>
     <tr>
       <th>beta_1</th>
       <td>5000.0</td>
-      <td>2.827650</td>
-      <td>0.125789</td>
-      <td>2.361377</td>
-      <td>2.593280</td>
-      <td>2.827903</td>
-      <td>3.058454</td>
-      <td>3.290145</td>
+      <td>2.863648</td>
+      <td>0.136708</td>
+      <td>2.382410</td>
+      <td>2.609725</td>
+      <td>2.861714</td>
+      <td>3.120923</td>
+      <td>3.358475</td>
     </tr>
     <tr>
       <th>scale</th>
       <td>5000.0</td>
-      <td>8.695953</td>
-      <td>0.630038</td>
-      <td>6.448833</td>
-      <td>7.504722</td>
-      <td>8.690381</td>
-      <td>9.900940</td>
-      <td>10.838046</td>
+      <td>9.005477</td>
+      <td>0.870540</td>
+      <td>5.714116</td>
+      <td>7.380205</td>
+      <td>8.992948</td>
+      <td>10.633552</td>
+      <td>12.097922</td>
     </tr>
   </tbody>
 </table>
@@ -1150,6 +999,6 @@ ax = df.plot(kind='kde')
 
 
     
-![png](img/output_87_0.png)
+![png](https://github.com/MaxGrtz/bayesian-inference/tree/thesis/readme_images/output_89_0.png)
     
 

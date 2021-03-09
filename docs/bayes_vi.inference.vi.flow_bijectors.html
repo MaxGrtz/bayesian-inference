@@ -198,7 +198,7 @@ Raises:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;`self.<strong>dtype</strong>`.<br>
 &nbsp;&nbsp;NotImplementedError:&nbsp;if&nbsp;`_forward`&nbsp;is&nbsp;not&nbsp;implemented.</tt></dd></dl>
 
-<dl><dt><a name="AffineFlow-forward_dtype"><strong>forward_dtype</strong></a>(self, dtype=&lt;object object at 0x7fd8f7ed5490&gt;, name='forward_dtype', **kwargs)</dt><dd><tt>Returns&nbsp;the&nbsp;dtype&nbsp;returned&nbsp;by&nbsp;`forward`&nbsp;for&nbsp;the&nbsp;provided&nbsp;input.</tt></dd></dl>
+<dl><dt><a name="AffineFlow-forward_dtype"><strong>forward_dtype</strong></a>(self, dtype=&lt;object object at 0x7fe7ffc384d0&gt;, name='forward_dtype', **kwargs)</dt><dd><tt>Returns&nbsp;the&nbsp;dtype&nbsp;returned&nbsp;by&nbsp;`forward`&nbsp;for&nbsp;the&nbsp;provided&nbsp;input.</tt></dd></dl>
 
 <dl><dt><a name="AffineFlow-forward_event_ndims"><strong>forward_event_ndims</strong></a>(self, event_ndims, **kwargs)</dt><dd><tt>Returns&nbsp;the&nbsp;number&nbsp;of&nbsp;event&nbsp;dimensions&nbsp;produced&nbsp;by&nbsp;`forward`.</tt></dd></dl>
 
@@ -242,7 +242,7 @@ Raises:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;output&nbsp;dtype.<br>
 &nbsp;&nbsp;NotImplementedError:&nbsp;if&nbsp;`_inverse`&nbsp;is&nbsp;not&nbsp;implemented.</tt></dd></dl>
 
-<dl><dt><a name="AffineFlow-inverse_dtype"><strong>inverse_dtype</strong></a>(self, dtype=&lt;object object at 0x7fd8f7ed5490&gt;, name='inverse_dtype', **kwargs)</dt><dd><tt>Returns&nbsp;the&nbsp;dtype&nbsp;returned&nbsp;by&nbsp;`inverse`&nbsp;for&nbsp;the&nbsp;provided&nbsp;input.</tt></dd></dl>
+<dl><dt><a name="AffineFlow-inverse_dtype"><strong>inverse_dtype</strong></a>(self, dtype=&lt;object object at 0x7fe7ffc384d0&gt;, name='inverse_dtype', **kwargs)</dt><dd><tt>Returns&nbsp;the&nbsp;dtype&nbsp;returned&nbsp;by&nbsp;`inverse`&nbsp;for&nbsp;the&nbsp;provided&nbsp;input.</tt></dd></dl>
 
 <dl><dt><a name="AffineFlow-inverse_event_ndims"><strong>inverse_event_ndims</strong></a>(self, event_ndims, **kwargs)</dt><dd><tt>Returns&nbsp;the&nbsp;number&nbsp;of&nbsp;event&nbsp;dimensions&nbsp;produced&nbsp;by&nbsp;`inverse`.</tt></dd></dl>
 
@@ -409,7 +409,7 @@ Data descriptors inherited from <a href="tensorflow.python.training.tracking.bas
 <font color="#000000" face="helvetica, arial"><a name="HamiltonianFlow">class <strong>HamiltonianFlow</strong></a>(<a href="tensorflow_probability.python.bijectors.bijector.html#Bijector">tensorflow_probability.python.bijectors.bijector.Bijector</a>)</font></td></tr>
     
 <tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
-<td colspan=2><tt><a href="#HamiltonianFlow">HamiltonianFlow</a>(event_dims,&nbsp;potential_energy_fn=None,&nbsp;kinetic_energy_fn=None,&nbsp;symplectic_integrator=&amp;lt;bayes_vi.utils.symplectic_integrators.LeapfrogIntegrator&nbsp;object&nbsp;at&nbsp;0x7fd8f90dd910&amp;gt;,&nbsp;step_sizes=&amp;lt;tf.Tensor:&nbsp;shape=(),&nbsp;dtype=float32,&nbsp;numpy=0.1&amp;gt;,&nbsp;num_integration_steps=5,&nbsp;hidden_layers=None,&nbsp;validate_args=False,&nbsp;name='hamiltonian_flow')<br>
+<td colspan=2><tt><a href="#HamiltonianFlow">HamiltonianFlow</a>(event_dims,&nbsp;potential_energy_fn=None,&nbsp;kinetic_energy_fn=None,&nbsp;symplectic_integrator=&amp;lt;bayes_vi.utils.symplectic_integrators.LeapfrogIntegrator&nbsp;object&nbsp;at&nbsp;0x7fe801352cd0&amp;gt;,&nbsp;step_sizes=&amp;lt;tf.Tensor:&nbsp;shape=(),&nbsp;dtype=float32,&nbsp;numpy=0.1&amp;gt;,&nbsp;num_integration_steps=5,&nbsp;hidden_layers=None,&nbsp;validate_args=False,&nbsp;name='hamiltonian_flow')<br>
 &nbsp;<br>
 Implements&nbsp;a&nbsp;trainable&nbsp;Hamiltonian&nbsp;flow&nbsp;bijector.<br>&nbsp;</tt></td></tr>
 <tr><td>&nbsp;</td>
@@ -423,7 +423,7 @@ Implements&nbsp;a&nbsp;trainable&nbsp;Hamiltonian&nbsp;flow&nbsp;bijector.<br>&n
 </dl>
 <hr>
 Methods defined here:<br>
-<dl><dt><a name="HamiltonianFlow-__init__"><strong>__init__</strong></a>(self, event_dims, potential_energy_fn=None, kinetic_energy_fn=None, symplectic_integrator=&lt;bayes_vi.utils.symplectic_integrators.LeapfrogIntegrator object at 0x7fd8f90dd910&gt;, step_sizes=&lt;tf.Tensor: shape=(), dtype=float32, numpy=0.1&gt;, num_integration_steps=5, hidden_layers=None, validate_args=False, name='hamiltonian_flow')</dt><dd><tt>Initializes&nbsp;Hamiltonian&nbsp;flow&nbsp;bijector.<br>
+<dl><dt><a name="HamiltonianFlow-__init__"><strong>__init__</strong></a>(self, event_dims, potential_energy_fn=None, kinetic_energy_fn=None, symplectic_integrator=&lt;bayes_vi.utils.symplectic_integrators.LeapfrogIntegrator object at 0x7fe801352cd0&gt;, step_sizes=&lt;tf.Tensor: shape=(), dtype=float32, numpy=0.1&gt;, num_integration_steps=5, hidden_layers=None, validate_args=False, name='hamiltonian_flow')</dt><dd><tt>Initializes&nbsp;Hamiltonian&nbsp;flow&nbsp;bijector.<br>
 &nbsp;<br>
 Parameters<br>
 ----------<br>
@@ -519,7 +519,7 @@ Raises:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;`self.<strong>dtype</strong>`.<br>
 &nbsp;&nbsp;NotImplementedError:&nbsp;if&nbsp;`_forward`&nbsp;is&nbsp;not&nbsp;implemented.</tt></dd></dl>
 
-<dl><dt><a name="HamiltonianFlow-forward_dtype"><strong>forward_dtype</strong></a>(self, dtype=&lt;object object at 0x7fd8f7ed5490&gt;, name='forward_dtype', **kwargs)</dt><dd><tt>Returns&nbsp;the&nbsp;dtype&nbsp;returned&nbsp;by&nbsp;`forward`&nbsp;for&nbsp;the&nbsp;provided&nbsp;input.</tt></dd></dl>
+<dl><dt><a name="HamiltonianFlow-forward_dtype"><strong>forward_dtype</strong></a>(self, dtype=&lt;object object at 0x7fe7ffc384d0&gt;, name='forward_dtype', **kwargs)</dt><dd><tt>Returns&nbsp;the&nbsp;dtype&nbsp;returned&nbsp;by&nbsp;`forward`&nbsp;for&nbsp;the&nbsp;provided&nbsp;input.</tt></dd></dl>
 
 <dl><dt><a name="HamiltonianFlow-forward_event_ndims"><strong>forward_event_ndims</strong></a>(self, event_ndims, **kwargs)</dt><dd><tt>Returns&nbsp;the&nbsp;number&nbsp;of&nbsp;event&nbsp;dimensions&nbsp;produced&nbsp;by&nbsp;`forward`.</tt></dd></dl>
 
@@ -590,7 +590,7 @@ Raises:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;output&nbsp;dtype.<br>
 &nbsp;&nbsp;NotImplementedError:&nbsp;if&nbsp;`_inverse`&nbsp;is&nbsp;not&nbsp;implemented.</tt></dd></dl>
 
-<dl><dt><a name="HamiltonianFlow-inverse_dtype"><strong>inverse_dtype</strong></a>(self, dtype=&lt;object object at 0x7fd8f7ed5490&gt;, name='inverse_dtype', **kwargs)</dt><dd><tt>Returns&nbsp;the&nbsp;dtype&nbsp;returned&nbsp;by&nbsp;`inverse`&nbsp;for&nbsp;the&nbsp;provided&nbsp;input.</tt></dd></dl>
+<dl><dt><a name="HamiltonianFlow-inverse_dtype"><strong>inverse_dtype</strong></a>(self, dtype=&lt;object object at 0x7fe7ffc384d0&gt;, name='inverse_dtype', **kwargs)</dt><dd><tt>Returns&nbsp;the&nbsp;dtype&nbsp;returned&nbsp;by&nbsp;`inverse`&nbsp;for&nbsp;the&nbsp;provided&nbsp;input.</tt></dd></dl>
 
 <dl><dt><a name="HamiltonianFlow-inverse_event_ndims"><strong>inverse_event_ndims</strong></a>(self, event_ndims, **kwargs)</dt><dd><tt>Returns&nbsp;the&nbsp;number&nbsp;of&nbsp;event&nbsp;dimensions&nbsp;produced&nbsp;by&nbsp;`inverse`.</tt></dd></dl>
 

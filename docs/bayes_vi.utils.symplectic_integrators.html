@@ -55,7 +55,8 @@ potential_energy_fn:&nbsp;`callable`<br>
 kinetic_energy_fn:&nbsp;`callable`<br>
 &nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;kinetic&nbsp;energy&nbsp;function&nbsp;of&nbsp;the&nbsp;Hamiltonian&nbsp;system.<br>
 initial_state:&nbsp;`tf.Tensor`<br>
-&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;initial&nbsp;state&nbsp;of&nbsp;the&nbsp;system&nbsp;in&nbsp;phase&nbsp;space&nbsp;of&nbsp;shape&nbsp;(...,&nbsp;2d).<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;initial&nbsp;state&nbsp;of&nbsp;the&nbsp;system&nbsp;in&nbsp;phase&nbsp;space&nbsp;of&nbsp;shape&nbsp;(...,&nbsp;2d),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;where&nbsp;(...,&nbsp;0:d)&nbsp;is&nbsp;the&nbsp;configuration&nbsp;and&nbsp;(...,&nbsp;d:2d)&nbsp;is&nbsp;the&nbsp;momentum.<br>
 step_sizes:&nbsp;`tf.Tensor`<br>
 &nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;integration&nbsp;step&nbsp;size&nbsp;(possibly&nbsp;individual&nbsp;steps&nbsp;size&nbsp;per&nbsp;dimension).<br>
 num_integration_steps:&nbsp;`int`<br>

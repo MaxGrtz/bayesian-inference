@@ -46,7 +46,7 @@
 <font color="#000000" face="helvetica, arial"><a name="VI">class <strong>VI</strong></a>(<a href="bayes_vi.inference.inference.html#Inference">bayes_vi.inference.inference.Inference</a>)</font></td></tr>
     
 <tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
-<td colspan=2><tt><a href="#VI">VI</a>(model,&nbsp;dataset,&nbsp;surrogate_posterior,&nbsp;discrepancy_fn=&amp;lt;function&nbsp;kl_reverse&nbsp;at&nbsp;0x7fd8f90bee50&amp;gt;)<br>
+<td colspan=2><tt><a href="#VI">VI</a>(model,&nbsp;dataset,&nbsp;surrogate_posterior,&nbsp;discrepancy_fn=&amp;lt;function&nbsp;kl_reverse&nbsp;at&nbsp;0x7fe801341550&amp;gt;)<br>
 &nbsp;<br>
 Implementation&nbsp;of&nbsp;Variational&nbsp;inference.<br>
 &nbsp;<br>
@@ -73,7 +73,7 @@ discrepancy_fn:&nbsp;`callable`<br>
 </dl>
 <hr>
 Methods defined here:<br>
-<dl><dt><a name="VI-__init__"><strong>__init__</strong></a>(self, model, dataset, surrogate_posterior, discrepancy_fn=&lt;function kl_reverse at 0x7fd8f90bee50&gt;)</dt><dd><tt>Initializes&nbsp;an&nbsp;<a href="bayes_vi.inference.inference.html#Inference">Inference</a>&nbsp;instance.<br>
+<dl><dt><a name="VI-__init__"><strong>__init__</strong></a>(self, model, dataset, surrogate_posterior, discrepancy_fn=&lt;function kl_reverse at 0x7fe801341550&gt;)</dt><dd><tt>Initializes&nbsp;an&nbsp;<a href="bayes_vi.inference.inference.html#Inference">Inference</a>&nbsp;instance.<br>
 &nbsp;<br>
 Parameters<br>
 ----------<br>
@@ -82,7 +82,7 @@ model:&nbsp;`Model`<br>
 dataset:&nbsp;`tf.data.Dataset`<br>
 &nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;`tf.data.Dataset`&nbsp;consisting&nbsp;of&nbsp;features&nbsp;(if&nbsp;regression&nbsp;model)&nbsp;and&nbsp;targets.</tt></dd></dl>
 
-<dl><dt><a name="VI-fit"><strong>fit</strong></a>(self, optimizer=&lt;tensorflow.python.keras.optimizer_v2.adam.Adam object at 0x7fd8f90ca400&gt;, num_steps=10000, sample_size=1, num_samples_to_approx_marginals=10000, progress_bar=True)</dt><dd><tt>Fits&nbsp;`surrogate_posterior`&nbsp;to&nbsp;the&nbsp;true&nbsp;posterior.<br>
+<dl><dt><a name="VI-fit"><strong>fit</strong></a>(self, optimizer=&lt;tensorflow.python.keras.optimizer_v2.adam.Adam object at 0x7fe800e2a6d0&gt;, num_steps=10000, sample_size=1, num_samples_to_approx_marginals=10000, progress_bar=True)</dt><dd><tt>Fits&nbsp;`surrogate_posterior`&nbsp;to&nbsp;the&nbsp;true&nbsp;posterior.<br>
 &nbsp;<br>
 Parameters<br>
 ----------<br>
@@ -106,7 +106,7 @@ losses:&nbsp;`np.array`<br>
 
 <dl><dt><a name="VI-safe_discrepancy_fn"><strong>safe_discrepancy_fn</strong></a>(self, logu)</dt><dd><tt>Computes&nbsp;discrepancy,&nbsp;dropping&nbsp;infinite&nbsp;values</tt></dd></dl>
 
-<dl><dt><a name="VI-stochastic_fit"><strong>stochastic_fit</strong></a>(self, optimizer=&lt;tensorflow.python.keras.optimizer_v2.adam.Adam object at 0x7fd8f90dd520&gt;, epochs=1, batch_size=32, sample_size=1, num_samples_to_approx_marginals=10000, progress_bar=True)</dt><dd><tt>Fits&nbsp;`surrogate_posterior`&nbsp;to&nbsp;the&nbsp;true&nbsp;posterior&nbsp;stochastically.<br>
+<dl><dt><a name="VI-stochastic_fit"><strong>stochastic_fit</strong></a>(self, optimizer=&lt;tensorflow.python.keras.optimizer_v2.adam.Adam object at 0x7fe8013528e0&gt;, epochs=1, batch_size=32, sample_size=1, num_samples_to_approx_marginals=10000, progress_bar=True)</dt><dd><tt>Fits&nbsp;`surrogate_posterior`&nbsp;to&nbsp;the&nbsp;true&nbsp;posterior&nbsp;stochastically.<br>
 &nbsp;<br>
 Note:&nbsp;This&nbsp;is&nbsp;particularly&nbsp;useful&nbsp;for&nbsp;large&nbsp;datasets.<br>
 &nbsp;<br>

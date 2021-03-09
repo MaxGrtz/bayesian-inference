@@ -49,7 +49,7 @@
 <font color="#000000" face="helvetica, arial"><a name="HamiltonianMonteCarlo">class <strong>HamiltonianMonteCarlo</strong></a>(<a href="bayes_vi.inference.mcmc.transition_kernels.html#TransitionKernel">TransitionKernel</a>)</font></td></tr>
     
 <tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
-<td colspan=2><tt><a href="#HamiltonianMonteCarlo">HamiltonianMonteCarlo</a>(step_size,&nbsp;num_leapfrog_steps,&nbsp;transforming_bijector=None,&nbsp;stepsize_adaptation_kernel=None,&nbsp;state_gradients_are_stopped=False,&nbsp;name=None)<br>
+<td colspan=2><tt><a href="#HamiltonianMonteCarlo">HamiltonianMonteCarlo</a>(step_size=0.01,&nbsp;num_leapfrog_steps=5,&nbsp;transforming_bijector=None,&nbsp;stepsize_adaptation_kernel=None,&nbsp;state_gradients_are_stopped=False,&nbsp;name=None)<br>
 &nbsp;<br>
 Implements&nbsp;HMC&nbsp;transition&nbsp;kernel.<br>
 &nbsp;<br>
@@ -95,7 +95,7 @@ name:&nbsp;`str`<br>
 </dl>
 <hr>
 Methods defined here:<br>
-<dl><dt><a name="HamiltonianMonteCarlo-__init__"><strong>__init__</strong></a>(self, step_size, num_leapfrog_steps, transforming_bijector=None, stepsize_adaptation_kernel=None, state_gradients_are_stopped=False, name=None)</dt><dd><tt>Initializes&nbsp;the&nbsp;HMC&nbsp;kernel.<br>
+<dl><dt><a name="HamiltonianMonteCarlo-__init__"><strong>__init__</strong></a>(self, step_size=0.01, num_leapfrog_steps=5, transforming_bijector=None, stepsize_adaptation_kernel=None, state_gradients_are_stopped=False, name=None)</dt><dd><tt>Initializes&nbsp;the&nbsp;HMC&nbsp;kernel.<br>
 &nbsp;<br>
 Note:&nbsp;This&nbsp;is&nbsp;a&nbsp;wrapper&nbsp;around&nbsp;`tfp.mcmc.<a href="#HamiltonianMonteCarlo">HamiltonianMonteCarlo</a>`<br>
 &nbsp;<br>
@@ -107,11 +107,11 @@ step_size:&nbsp;`float`&nbsp;or&nbsp;`list`&nbsp;of&nbsp;`float`<br>
 &nbsp;&nbsp;&nbsp;&nbsp;Larger&nbsp;step&nbsp;sizes&nbsp;lead&nbsp;to&nbsp;faster&nbsp;progress,&nbsp;but&nbsp;too-large&nbsp;step&nbsp;sizes&nbsp;make<br>
 &nbsp;&nbsp;&nbsp;&nbsp;rejection&nbsp;exponentially&nbsp;more&nbsp;likely.&nbsp;When&nbsp;possible,&nbsp;it's&nbsp;often&nbsp;helpful<br>
 &nbsp;&nbsp;&nbsp;&nbsp;to&nbsp;match&nbsp;per-variable&nbsp;step&nbsp;sizes&nbsp;to&nbsp;the&nbsp;standard&nbsp;deviations&nbsp;of&nbsp;the<br>
-&nbsp;&nbsp;&nbsp;&nbsp;target&nbsp;distribution&nbsp;in&nbsp;each&nbsp;variable.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;target&nbsp;distribution&nbsp;in&nbsp;each&nbsp;variable.&nbsp;(Default:&nbsp;`0.01`)<br>
 num_leapfrog_steps:&nbsp;`int`<br>
 &nbsp;&nbsp;&nbsp;&nbsp;Number&nbsp;of&nbsp;steps&nbsp;to&nbsp;run&nbsp;the&nbsp;leapfrog&nbsp;integrator&nbsp;for.<br>
 &nbsp;&nbsp;&nbsp;&nbsp;Total&nbsp;progress&nbsp;per&nbsp;HMC&nbsp;step&nbsp;is&nbsp;roughly&nbsp;proportional&nbsp;to<br>
-&nbsp;&nbsp;&nbsp;&nbsp;`step_size&nbsp;*&nbsp;num_leapfrog_steps`.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;`step_size&nbsp;*&nbsp;num_leapfrog_steps`.&nbsp;(Default:&nbsp;`5`)<br>
 step_size_adaptation_kernel:&nbsp;`bayes_vi.inference.mcmc.stepsize_adaptation_kernels.StepSizeAdaptationKernel`<br>
 &nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;stepsize&nbsp;adaptation&nbsp;kernel&nbsp;to&nbsp;wrap&nbsp;the&nbsp;transition&nbsp;kernel&nbsp;and&nbsp;optimize&nbsp;stepsize&nbsp;in&nbsp;burnin&nbsp;phase.<br>
 &nbsp;&nbsp;&nbsp;&nbsp;(Default:&nbsp;`None`)<br>
@@ -154,7 +154,7 @@ Data descriptors inherited from <a href="bayes_vi.inference.mcmc.transition_kern
 <font color="#000000" face="helvetica, arial"><a name="NoUTurnSampler">class <strong>NoUTurnSampler</strong></a>(<a href="bayes_vi.inference.mcmc.transition_kernels.html#TransitionKernel">TransitionKernel</a>)</font></td></tr>
     
 <tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
-<td colspan=2><tt><a href="#NoUTurnSampler">NoUTurnSampler</a>(step_size,&nbsp;max_tree_depth=10,&nbsp;max_energy_diff=1000.0,&nbsp;unrolled_leapfrog_steps=1,&nbsp;parallel_iterations=10,&nbsp;transforming_bijector=None,&nbsp;stepsize_adaptation_kernel=None,&nbsp;name=None)<br>
+<td colspan=2><tt><a href="#NoUTurnSampler">NoUTurnSampler</a>(step_size=0.01,&nbsp;max_tree_depth=5,&nbsp;max_energy_diff=1000.0,&nbsp;unrolled_leapfrog_steps=1,&nbsp;parallel_iterations=10,&nbsp;transforming_bijector=None,&nbsp;stepsize_adaptation_kernel=None,&nbsp;name=None)<br>
 &nbsp;<br>
 Implementation&nbsp;of&nbsp;the&nbsp;<a href="#NoUTurnSampler">NoUTurnSampler</a>.<br>
 &nbsp;<br>
@@ -208,7 +208,7 @@ name:&nbsp;`str`<br>
 </dl>
 <hr>
 Methods defined here:<br>
-<dl><dt><a name="NoUTurnSampler-__init__"><strong>__init__</strong></a>(self, step_size, max_tree_depth=10, max_energy_diff=1000.0, unrolled_leapfrog_steps=1, parallel_iterations=10, transforming_bijector=None, stepsize_adaptation_kernel=None, name=None)</dt><dd><tt>Initializes&nbsp;the&nbsp;<a href="#NoUTurnSampler">NoUTurnSampler</a>&nbsp;kernel.<br>
+<dl><dt><a name="NoUTurnSampler-__init__"><strong>__init__</strong></a>(self, step_size=0.01, max_tree_depth=5, max_energy_diff=1000.0, unrolled_leapfrog_steps=1, parallel_iterations=10, transforming_bijector=None, stepsize_adaptation_kernel=None, name=None)</dt><dd><tt>Initializes&nbsp;the&nbsp;<a href="#NoUTurnSampler">NoUTurnSampler</a>&nbsp;kernel.<br>
 &nbsp;<br>
 Parameters<br>
 ----------<br>
@@ -218,12 +218,12 @@ step_size:&nbsp;`float`&nbsp;or&nbsp;`list`&nbsp;of&nbsp;`float`<br>
 &nbsp;&nbsp;&nbsp;&nbsp;Larger&nbsp;step&nbsp;sizes&nbsp;lead&nbsp;to&nbsp;faster&nbsp;progress,&nbsp;but&nbsp;too-large&nbsp;step&nbsp;sizes&nbsp;make<br>
 &nbsp;&nbsp;&nbsp;&nbsp;rejection&nbsp;exponentially&nbsp;more&nbsp;likely.&nbsp;When&nbsp;possible,&nbsp;it's&nbsp;often&nbsp;helpful<br>
 &nbsp;&nbsp;&nbsp;&nbsp;to&nbsp;match&nbsp;per-variable&nbsp;step&nbsp;sizes&nbsp;to&nbsp;the&nbsp;standard&nbsp;deviations&nbsp;of&nbsp;the<br>
-&nbsp;&nbsp;&nbsp;&nbsp;target&nbsp;distribution&nbsp;in&nbsp;each&nbsp;variable.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;target&nbsp;distribution&nbsp;in&nbsp;each&nbsp;variable.&nbsp;(Default:&nbsp;`0.01`)<br>
 max_tree_depth:&nbsp;`int`<br>
 &nbsp;&nbsp;&nbsp;&nbsp;Maximum&nbsp;depth&nbsp;of&nbsp;the&nbsp;tree&nbsp;implicitly&nbsp;built&nbsp;by&nbsp;NUTS.&nbsp;The<br>
 &nbsp;&nbsp;&nbsp;&nbsp;maximum&nbsp;number&nbsp;of&nbsp;leapfrog&nbsp;steps&nbsp;is&nbsp;bounded&nbsp;by&nbsp;`2**max_tree_depth`&nbsp;i.e.<br>
 &nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;number&nbsp;of&nbsp;nodes&nbsp;in&nbsp;a&nbsp;binary&nbsp;tree&nbsp;`max_tree_depth`&nbsp;nodes&nbsp;deep.&nbsp;The<br>
-&nbsp;&nbsp;&nbsp;&nbsp;default&nbsp;setting&nbsp;of&nbsp;10&nbsp;takes&nbsp;up&nbsp;to&nbsp;1024&nbsp;leapfrog&nbsp;steps.&nbsp;(Default:&nbsp;`10`)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;default&nbsp;setting&nbsp;of&nbsp;10&nbsp;takes&nbsp;up&nbsp;to&nbsp;1024&nbsp;leapfrog&nbsp;steps.&nbsp;(Default:&nbsp;`5`)<br>
 max_energy_diff:&nbsp;`float`<br>
 &nbsp;&nbsp;&nbsp;&nbsp;Threshold&nbsp;of&nbsp;energy&nbsp;differences&nbsp;at&nbsp;each&nbsp;leapfrog,<br>
 &nbsp;&nbsp;&nbsp;&nbsp;divergence&nbsp;samples&nbsp;are&nbsp;defined&nbsp;as&nbsp;leapfrog&nbsp;steps&nbsp;that&nbsp;exceed&nbsp;this<br>
