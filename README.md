@@ -643,6 +643,7 @@ approx_posterior, hnf_losses = vi.fit(
   100.00% [1000/1000 00:07<00:00 avg loss: 54.512]
 </div>
 
+&nbsp;
 
 
 
@@ -683,6 +684,7 @@ approx_posterior, hnf_losses = vi.fit(
 <div>
   100.00% [1000/1000 00:07<00:00 avg loss: 50.746]
 </div>
+&nbsp;
 
 
 
@@ -794,6 +796,7 @@ mcmc_result = mcmc.fit(
   92.70% [4635/5000 00:01<00:00]
 </div>
 
+&nbsp;
 
 
 
@@ -917,6 +920,7 @@ approx_posterior, meanfield_advi_losses = vi.fit(
   100.00% [1000/1000 00:04<00:00 avg loss: 188.817]
 </div>
 
+&nbsp;
 
 
 
