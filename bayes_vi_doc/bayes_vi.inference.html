@@ -9,7 +9,13 @@
 <font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong><a href="bayes_vi.html"><font color="#ffffff">bayes_vi</font></a>.inference</strong></big></big></font></td
 ><td align=right valign=bottom
 ><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/Users/mgartz/Life/1-University/Bachelor-Thesis/code/bayesian-inference/bayes_vi/inference/__init__.py">/Users/mgartz/Life/1-University/Bachelor-Thesis/code/bayesian-inference/bayes_vi/inference/__init__.py</a></font></td></tr></table>
-    <p></p>
+    <p><tt>Inference&nbsp;subpackage&nbsp;containing&nbsp;mcmc&nbsp;and&nbsp;vi&nbsp;package.<br>
+&nbsp;<br>
+Subpackages<br>
+-----------<br>
+mcmc:&nbsp;package&nbsp;containing&nbsp;Markov&nbsp;Chain&nbsp;Monte&nbsp;Carlo&nbsp;(mcmc)&nbsp;inference&nbsp;related&nbsp;modules.<br>
+&nbsp;<br>
+vi:&nbsp;package&nbsp;containing&nbsp;variational&nbsp;inference&nbsp;(vi)&nbsp;related&nbsp;modules.</tt></p>
 <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#aa55cc">
@@ -17,82 +23,15 @@
 <font color="#ffffff" face="helvetica, arial"><big><strong>Package Contents</strong></big></font></td></tr>
     
 <tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
-<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="bayes_vi.inference.mcmc.html"><strong>mcmc</strong>&nbsp;(package)</a><br>
+<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="bayes_vi.inference.inference.html">inference</a><br>
+</td><td width="25%" valign=top><a href="bayes_vi.inference.mcmc.html"><strong>mcmc</strong>&nbsp;(package)</a><br>
 </td><td width="25%" valign=top><a href="bayes_vi.inference.vi.html"><strong>vi</strong>&nbsp;(package)</a><br>
-</td><td width="25%" valign=top></td><td width="25%" valign=top></td></tr></table></td></tr></table><p>
+</td><td width="25%" valign=top></td></tr></table></td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
-<tr bgcolor="#ee77aa">
+<tr bgcolor="#55aa55">
 <td colspan=3 valign=bottom>&nbsp;<br>
-<font color="#ffffff" face="helvetica, arial"><big><strong>Classes</strong></big></font></td></tr>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Data</strong></big></font></td></tr>
     
-<tr><td bgcolor="#ee77aa"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
-<td width="100%"><dl>
-<dt><font face="helvetica, arial"><a href="builtins.html#object">builtins.object</a>
-</font></dt><dd>
-<dl>
-<dt><font face="helvetica, arial"><a href="bayes_vi.inference.html#Inference">Inference</a>
-</font></dt></dl>
-</dd>
-</dl>
- <p>
-<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
-<tr bgcolor="#ffc8d8">
-<td colspan=3 valign=bottom>&nbsp;<br>
-<font color="#000000" face="helvetica, arial"><a name="Inference">class <strong>Inference</strong></a>(<a href="builtins.html#object">builtins.object</a>)</font></td></tr>
-    
-<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
-<td colspan=2><tt><a href="#Inference">Inference</a>(model,&nbsp;dataset)<br>
-&nbsp;<br>
-A&nbsp;base&nbsp;class&nbsp;for&nbsp;different&nbsp;<a href="#Inference">Inference</a>&nbsp;algorithms.<br>
-&nbsp;<br>
-An&nbsp;`<a href="#Inference">Inference</a>`&nbsp;algorithm&nbsp;consists&nbsp;of:<br>
-&nbsp;&nbsp;&nbsp;&nbsp;a&nbsp;Bayesian&nbsp;`Model`&nbsp;and<br>
-&nbsp;&nbsp;&nbsp;&nbsp;a&nbsp;`tf.data.Dataset`.<br>
-&nbsp;<br>
-Note:&nbsp;Every&nbsp;subclass&nbsp;has&nbsp;to&nbsp;implement&nbsp;a&nbsp;`fit`&nbsp;method.<br>
-&nbsp;<br>
-Attributes<br>
-----------<br>
-model:&nbsp;`Model`<br>
-&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;Bayesian&nbsp;probabilistic&nbsp;`Model`.<br>
-dataset:&nbsp;`tf.data.Dataset`<br>
-&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;`tf.data.Dataset`&nbsp;consisting&nbsp;of&nbsp;features&nbsp;(if&nbsp;regression&nbsp;model)&nbsp;and&nbsp;targets.<br>
-num_datapoints:&nbsp;`int`<br>
-&nbsp;&nbsp;&nbsp;&nbsp;Number&nbsp;of&nbsp;examples&nbsp;(i.e.&nbsp;datapoints)&nbsp;in&nbsp;the&nbsp;dataset.<br>&nbsp;</tt></td></tr>
-<tr><td>&nbsp;</td>
-<td width="100%">Methods defined here:<br>
-<dl><dt><a name="Inference-__init__"><strong>__init__</strong></a>(self, model, dataset)</dt><dd><tt>Initializes&nbsp;an&nbsp;<a href="#Inference">Inference</a>&nbsp;instance.<br>
-&nbsp;<br>
-Parameters<br>
-----------<br>
-model:&nbsp;`Model`<br>
-&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;Bayesian&nbsp;probabilistic&nbsp;`Model`.<br>
-dataset:&nbsp;`tf.data.Dataset`<br>
-&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;`tf.data.Dataset`&nbsp;consisting&nbsp;of&nbsp;features&nbsp;(if&nbsp;regression&nbsp;model)&nbsp;and&nbsp;targets.</tt></dd></dl>
-
-<dl><dt><a name="Inference-fit"><strong>fit</strong></a>(self, *args, **kwargs)</dt><dd><tt>Fits&nbsp;the&nbsp;Bayesian&nbsp;model&nbsp;to&nbsp;the&nbsp;dataset.<br>
-&nbsp;<br>
-Has&nbsp;to&nbsp;be&nbsp;implemented&nbsp;in&nbsp;any&nbsp;subclass&nbsp;of&nbsp;`<a href="#Inference">Inference</a>`.<br>
-&nbsp;<br>
-Parameters<br>
-----------<br>
-args:&nbsp;positional&nbsp;arguments<br>
-&nbsp;&nbsp;&nbsp;&nbsp;positional&nbsp;arguments&nbsp;of&nbsp;the&nbsp;fit&nbsp;method.<br>
-kwargs:&nbsp;keyword&nbsp;arguments<br>
-&nbsp;&nbsp;&nbsp;&nbsp;keyword&nbsp;arguments&nbsp;of&nbsp;the&nbsp;fit&nbsp;method.<br>
-&nbsp;<br>
-Raises<br>
-------<br>
-NotImplementedError<br>
-&nbsp;&nbsp;&nbsp;&nbsp;If&nbsp;the&nbsp;fit&nbsp;method&nbsp;is&nbsp;not&nbsp;implemented&nbsp;in&nbsp;a&nbsp;subclass.</tt></dd></dl>
-
-<hr>
-Data descriptors defined here:<br>
-<dl><dt><strong>__dict__</strong></dt>
-<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
-</dl>
-<dl><dt><strong>__weakref__</strong></dt>
-<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
-</dl>
-</td></tr></table></td></tr></table>
+<tr><td bgcolor="#55aa55"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><strong>__all__</strong> = ['inference']</td></tr></table>
 </body></html>

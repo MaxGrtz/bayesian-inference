@@ -1,0 +1,150 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Python: module bayes_vi.inference.vi.vi</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head><body bgcolor="#f0f0f8">
+
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
+<tr bgcolor="#7799ee">
+<td valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong><a href="bayes_vi.html"><font color="#ffffff">bayes_vi</font></a>.<a href="bayes_vi.inference.html"><font color="#ffffff">inference</font></a>.<a href="bayes_vi.inference.vi.html"><font color="#ffffff">vi</font></a>.vi</strong></big></big></font></td
+><td align=right valign=bottom
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/Users/mgartz/Life/1-University/Bachelor-Thesis/code/bayesian-inference/bayes_vi/inference/vi/vi.py">/Users/mgartz/Life/1-University/Bachelor-Thesis/code/bayesian-inference/bayes_vi/inference/vi/vi.py</a></font></td></tr></table>
+    <p><tt>Module&nbsp;providing&nbsp;the&nbsp;<a href="#VI">VI</a>&nbsp;class.</tt></p>
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#aa55cc">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Modules</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="fastprogress.fastprogress.html">fastprogress.fastprogress</a><br>
+<a href="functools.html">functools</a><br>
+</td><td width="25%" valign=top><a href="numpy.html">numpy</a><br>
+<a href="tensorflow.html">tensorflow</a><br>
+</td><td width="25%" valign=top><a href="tensorflow_probability.python.bijectors.html">tensorflow_probability.python.bijectors</a><br>
+<a href="tensorflow_probability.python.distributions.html">tensorflow_probability.python.distributions</a><br>
+</td><td width="25%" valign=top><a href="tensorflow_probability.html">tensorflow_probability</a><br>
+</td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ee77aa">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Classes</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#ee77aa"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl>
+<dt><font face="helvetica, arial"><a href="bayes_vi.inference.inference.html#Inference">bayes_vi.inference.inference.Inference</a>(<a href="builtins.html#object">builtins.object</a>)
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="bayes_vi.inference.vi.vi.html#VI">VI</a>
+</font></dt></dl>
+</dd>
+</dl>
+ <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="VI">class <strong>VI</strong></a>(<a href="bayes_vi.inference.inference.html#Inference">bayes_vi.inference.inference.Inference</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt><a href="#VI">VI</a>(model,&nbsp;dataset,&nbsp;surrogate_posterior,&nbsp;discrepancy_fn=&amp;lt;function&nbsp;kl_reverse&nbsp;at&nbsp;0x7fd8f90bee50&amp;gt;)<br>
+&nbsp;<br>
+Implementation&nbsp;of&nbsp;Variational&nbsp;inference.<br>
+&nbsp;<br>
+Attributes<br>
+----------<br>
+features:&nbsp;`tf.Tensor`&nbsp;or&nbsp;`dict[str,&nbsp;tf.Tensor]`<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;features&nbsp;contained&nbsp;in&nbsp;`dataset`.<br>
+targets:&nbsp;`tf.Tensor`<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;targets&nbsp;contained&nbsp;in&nbsp;`dataset`.<br>
+distribution:&nbsp;`tf.distributions.JointDistributionNamedAutoBatched`<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;joint&nbsp;distribution&nbsp;of&nbsp;the&nbsp;model&nbsp;(conditioned&nbsp;on&nbsp;features&nbsp;if&nbsp;regression&nbsp;model)<br>
+target_log_prob:&nbsp;`callable`<br>
+&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;callable&nbsp;taking&nbsp;a&nbsp;constrained&nbsp;parameter&nbsp;sample&nbsp;as&nbsp;a&nbsp;list<br>
+&nbsp;&nbsp;&nbsp;&nbsp;and&nbsp;returning&nbsp;the&nbsp;unnormalized&nbsp;log&nbsp;posterior&nbsp;of&nbsp;the&nbsp;`model`.<br>
+surrogate_posterior:&nbsp;`tfp.distributions.Distribution`<br>
+&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;trainable&nbsp;distribution&nbsp;to&nbsp;fit&nbsp;to&nbsp;true&nbsp;posterior.<br>
+discrepancy_fn:&nbsp;`callable`<br>
+&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;function&nbsp;defining&nbsp;a&nbsp;f-divergence&nbsp;in&nbsp;log&nbsp;space.<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="bayes_vi.inference.vi.vi.html#VI">VI</a></dd>
+<dd><a href="bayes_vi.inference.inference.html#Inference">bayes_vi.inference.inference.Inference</a></dd>
+<dd><a href="builtins.html#object">builtins.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="VI-__init__"><strong>__init__</strong></a>(self, model, dataset, surrogate_posterior, discrepancy_fn=&lt;function kl_reverse at 0x7fd8f90bee50&gt;)</dt><dd><tt>Initializes&nbsp;an&nbsp;<a href="bayes_vi.inference.inference.html#Inference">Inference</a>&nbsp;instance.<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+model:&nbsp;`Model`<br>
+&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;Bayesian&nbsp;probabilistic&nbsp;`Model`.<br>
+dataset:&nbsp;`tf.data.Dataset`<br>
+&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;`tf.data.Dataset`&nbsp;consisting&nbsp;of&nbsp;features&nbsp;(if&nbsp;regression&nbsp;model)&nbsp;and&nbsp;targets.</tt></dd></dl>
+
+<dl><dt><a name="VI-fit"><strong>fit</strong></a>(self, optimizer=&lt;tensorflow.python.keras.optimizer_v2.adam.Adam object at 0x7fd8f90ca400&gt;, num_steps=10000, sample_size=1, num_samples_to_approx_marginals=10000, progress_bar=True)</dt><dd><tt>Fits&nbsp;`surrogate_posterior`&nbsp;to&nbsp;the&nbsp;true&nbsp;posterior.<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+optimizer:&nbsp;`tf.optimizers.Optimizer`<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Optimizer&nbsp;instance&nbsp;to&nbsp;use&nbsp;for&nbsp;optimization&nbsp;(Default:&nbsp;`tf.optimizers.Adam()`).<br>
+num_steps:&nbsp;`int`<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Number&nbsp;of&nbsp;optimization&nbsp;steps&nbsp;(Default:&nbsp;10000).<br>
+sample_size:&nbsp;`int`<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Number&nbsp;of&nbsp;samples&nbsp;to&nbsp;use&nbsp;in&nbsp;every&nbsp;optimization&nbsp;step&nbsp;to&nbsp;approximate&nbsp;variational&nbsp;loss&nbsp;(Default:&nbsp;1).<br>
+num_samples_to_approx_marginals:&nbsp;`int`<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Number&nbsp;of&nbsp;samples&nbsp;to&nbsp;use&nbsp;to&nbsp;finally&nbsp;approximate&nbsp;the&nbsp;marginal&nbsp;posterior&nbsp;distributions&nbsp;(Default:&nbsp;10000).<br>
+progress_bar:&nbsp;`bool`<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Boolean&nbsp;indicator&nbsp;whether&nbsp;or&nbsp;not&nbsp;to&nbsp;show&nbsp;a&nbsp;progress&nbsp;bar&nbsp;(Default:&nbsp;True).<br>
+&nbsp;<br>
+Returns<br>
+-------<br>
+approx_posterior:&nbsp;`tfp.distributions.JointDistributionNamedAutoBatched`<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Approximated&nbsp;marginal&nbsp;posterior&nbsp;distributions.<br>
+losses:&nbsp;`np.array`<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Array&nbsp;of&nbsp;optimization&nbsp;loss&nbsp;history.</tt></dd></dl>
+
+<dl><dt><a name="VI-safe_discrepancy_fn"><strong>safe_discrepancy_fn</strong></a>(self, logu)</dt><dd><tt>Computes&nbsp;discrepancy,&nbsp;dropping&nbsp;infinite&nbsp;values</tt></dd></dl>
+
+<dl><dt><a name="VI-stochastic_fit"><strong>stochastic_fit</strong></a>(self, optimizer=&lt;tensorflow.python.keras.optimizer_v2.adam.Adam object at 0x7fd8f90dd520&gt;, epochs=1, batch_size=32, sample_size=1, num_samples_to_approx_marginals=10000, progress_bar=True)</dt><dd><tt>Fits&nbsp;`surrogate_posterior`&nbsp;to&nbsp;the&nbsp;true&nbsp;posterior&nbsp;stochastically.<br>
+&nbsp;<br>
+Note:&nbsp;This&nbsp;is&nbsp;particularly&nbsp;useful&nbsp;for&nbsp;large&nbsp;datasets.<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+optimizer:&nbsp;`tf.optimizers.Optimizer`<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Optimizer&nbsp;instance&nbsp;to&nbsp;use&nbsp;for&nbsp;optimization&nbsp;(Default:&nbsp;`tf.optimizers.Adam()`).<br>
+epochs:&nbsp;`int`<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Number&nbsp;of&nbsp;full&nbsp;passes&nbsp;of&nbsp;the&nbsp;dataset&nbsp;(Default:&nbsp;1).<br>
+batch_size:&nbsp;`int`<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Number&nbsp;of&nbsp;examples&nbsp;from&nbsp;dataset&nbsp;to&nbsp;use&nbsp;on&nbsp;each&nbsp;optimization&nbsp;step&nbsp;(Default:&nbsp;32).<br>
+sample_size:&nbsp;`int`<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Number&nbsp;of&nbsp;samples&nbsp;to&nbsp;use&nbsp;in&nbsp;every&nbsp;optimization&nbsp;step&nbsp;to&nbsp;approximate&nbsp;variational&nbsp;loss&nbsp;(Default:&nbsp;1).<br>
+num_samples_to_approx_marginals:&nbsp;`int`<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Number&nbsp;of&nbsp;samples&nbsp;to&nbsp;use&nbsp;to&nbsp;finally&nbsp;approximate&nbsp;the&nbsp;marginal&nbsp;posterior&nbsp;distributions&nbsp;(Default:&nbsp;10000).<br>
+progress_bar:&nbsp;`bool`<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Boolean&nbsp;indicator&nbsp;whether&nbsp;or&nbsp;not&nbsp;to&nbsp;show&nbsp;a&nbsp;progress&nbsp;bar&nbsp;(Default:&nbsp;True).<br>
+&nbsp;<br>
+Returns<br>
+-------<br>
+approx_posterior:&nbsp;`tfp.distributions.JointDistributionNamedAutoBatched`<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Approximated&nbsp;marginal&nbsp;posterior&nbsp;distributions.<br>
+losses:&nbsp;`np.array`<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Array&nbsp;of&nbsp;optimization&nbsp;loss&nbsp;history.</tt></dd></dl>
+
+<hr>
+Static methods defined here:<br>
+<dl><dt><a name="VI-make_optimizer_step_fn"><strong>make_optimizer_step_fn</strong></a>(loss_fn, optimizer)</dt><dd><tt>Creates&nbsp;function&nbsp;that&nbsp;computes&nbsp;a&nbsp;single&nbsp;optimization&nbsp;step</tt></dd></dl>
+
+<dl><dt><a name="VI-make_stochastic_optimizer_step_fn"><strong>make_stochastic_optimizer_step_fn</strong></a>(loss_fn, optimizer)</dt><dd><tt>Creates&nbsp;function&nbsp;that&nbsp;computes&nbsp;a&nbsp;single&nbsp;stochastic&nbsp;optimization&nbsp;step</tt></dd></dl>
+
+<hr>
+Data descriptors inherited from <a href="bayes_vi.inference.inference.html#Inference">bayes_vi.inference.inference.Inference</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+</td></tr></table></td></tr></table>
+</body></html>

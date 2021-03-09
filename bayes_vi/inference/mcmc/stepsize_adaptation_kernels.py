@@ -1,3 +1,4 @@
+"""Module providing different stepsize adaptation kernels."""
 import tensorflow_probability as tfp
 import functools
 

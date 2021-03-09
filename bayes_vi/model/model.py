@@ -1,3 +1,5 @@
+"""Module providing the Model class defining a Bayesian statistical model."""
+
 import collections
 import functools
 import inspect
@@ -13,9 +15,10 @@ tfb = tfp.bijectors
 
 
 @decorator.decorator
-def sample(f, sample_shape=(), *args, **kwargs):
+def sample(f, num_samples=1, *args, **kwargs):
+    """Decorator to map data distribution onto the product data distribution based on num_samples."""
     llh = f(*args, **kwargs)
-    return tfd.Sample(llh, sample_shape=sample_shape, name='Sample_Likelihood')
+    return tfd.Sample(llh, sample_shape=num_samples, name='Sample_Likelihood')
 
 
 class Model:
@@ -31,7 +34,7 @@ class Model:
     Attributes
     ----------
     likelihood: `callable`
-        A `callable` taking the model parameters (and `features` of the dataset for regression models)
+        A `callable` taking the model parameters (and `features` of the dataset for regression model)
         and returning a `tfp.distributions.Distribution` of the data.
     is_generative_model: `bool`
         A `bool` indicator whether or not the `Model` is a generative model,
@@ -88,7 +91,7 @@ class Model:
             An ordered mapping from parameter names `str` to `tfp.distributions.Distribution`s
             or callables returning a `tfp.distributions.Distribution` (conditional distributions).
         likelihood: `callable`
-            A `callable` taking the model parameters (and `features` of the dataset for regression models)
+            A `callable` taking the model parameters (and `features` of the dataset for regression model)
             and returning a `tfp.distributions.Distribution` of the data.
         constraining_bijectors: `list` of `tfp.bijectors.Bijector`
             A list of diffeomorphisms defined as `tfp.bijectors.Bijector`
@@ -169,7 +172,7 @@ class Model:
         """Utility function returning the joint distribution of the model.
 
         This function is primarily for internal use.
-        It handles the differences between generative and regression models.
+        It handles the differences between generative and regression model.
         If generative model -> provide `num_samples` over which to construct the product joint distribution.
         If regression model -> provide `features` to condition the model on.
 
@@ -192,7 +195,7 @@ class Model:
             llh = functools.partial(self.likelihood, features=features)
         else:
             if num_samples is not None:
-                llh = sample(self.likelihood, sample_shape=num_samples)
+                llh = sample(self.likelihood, num_samples=num_samples)
             else:
                 llh = self.likelihood
         return tfd.JointDistributionNamedAutoBatched(

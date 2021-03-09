@@ -1,3 +1,14 @@
+"""Package providing various utility functions and classes.
+
+Modules
+-------
+datasets: module providing utility function for constructing datasets.
+
+symplectic_integrators: module providing symplectic integrators.
+"""
+
+__all__ = ['datasets', 'symplectic_integrators', 'compose', 'to_ordered_dict']
+
 import collections
 import functools
 

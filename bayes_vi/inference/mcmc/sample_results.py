@@ -1,8 +1,10 @@
+"""Module providing wrapper class for MCMC sampling results."""
+
 import tensorflow as tf
 
 
 class SampleResult:
-    """Wrapper for mcmc-like sample results.
+    """Wrapper for mcmc sample results.
 
     Attributes
     ----------

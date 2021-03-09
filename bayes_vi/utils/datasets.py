@@ -1,3 +1,5 @@
+"""Module providing utility function to construct datasets from pandas DataFrames."""
+
 import pandas as pd
 import tensorflow as tf
 

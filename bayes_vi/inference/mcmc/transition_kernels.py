@@ -1,3 +1,5 @@
+"""Module providing different Markov transition kernels."""
+
 import functools
 
 import tensorflow_probability as tfp
@@ -75,7 +77,7 @@ class HamiltonianMonteCarlo(TransitionKernel):
         (Default: `None` (i.e., 'hmc_kernel')).
     """
 
-    def __init__(self, step_size, num_leapfrog_steps,
+    def __init__(self, step_size=0.01, num_leapfrog_steps=5,
                  transforming_bijector=None, stepsize_adaptation_kernel=None,
                  state_gradients_are_stopped=False, name=None):
         """Initializes the HMC kernel.
@@ -90,11 +92,11 @@ class HamiltonianMonteCarlo(TransitionKernel):
             Larger step sizes lead to faster progress, but too-large step sizes make
             rejection exponentially more likely. When possible, it's often helpful
             to match per-variable step sizes to the standard deviations of the
-            target distribution in each variable.
+            target distribution in each variable. (Default: `0.01`)
         num_leapfrog_steps: `int`
             Number of steps to run the leapfrog integrator for.
             Total progress per HMC step is roughly proportional to
-            `step_size * num_leapfrog_steps`.
+            `step_size * num_leapfrog_steps`. (Default: `5`)
         step_size_adaptation_kernel: `bayes_vi.inference.mcmc.stepsize_adaptation_kernels.StepSizeAdaptationKernel`
             A stepsize adaptation kernel to wrap the transition kernel and optimize stepsize in burnin phase.
             (Default: `None`)
@@ -182,7 +184,7 @@ class NoUTurnSampler(TransitionKernel):
         (Default: `None` (i.e., 'nuts_kernel')).
     """
 
-    def __init__(self, step_size, max_tree_depth=10, max_energy_diff=1000.0,
+    def __init__(self, step_size=0.01, max_tree_depth=5, max_energy_diff=1000.0,
                  unrolled_leapfrog_steps=1, parallel_iterations=10,
                  transforming_bijector=None, stepsize_adaptation_kernel=None, name=None):
         """Initializes the NoUTurnSampler kernel.
@@ -195,12 +197,12 @@ class NoUTurnSampler(TransitionKernel):
             Larger step sizes lead to faster progress, but too-large step sizes make
             rejection exponentially more likely. When possible, it's often helpful
             to match per-variable step sizes to the standard deviations of the
-            target distribution in each variable.
+            target distribution in each variable. (Default: `0.01`)
         max_tree_depth: `int`
             Maximum depth of the tree implicitly built by NUTS. The
             maximum number of leapfrog steps is bounded by `2**max_tree_depth` i.e.
             the number of nodes in a binary tree `max_tree_depth` nodes deep. The
-            default setting of 10 takes up to 1024 leapfrog steps. (Default: `10`)
+            default setting of 10 takes up to 1024 leapfrog steps. (Default: `5`)
         max_energy_diff: `float`
             Threshold of energy differences at each leapfrog,
             divergence samples are defined as leapfrog steps that exceed this

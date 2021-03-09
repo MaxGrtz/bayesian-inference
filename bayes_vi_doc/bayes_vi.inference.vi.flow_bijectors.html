@@ -9,7 +9,7 @@
 <font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong><a href="bayes_vi.html"><font color="#ffffff">bayes_vi</font></a>.<a href="bayes_vi.inference.html"><font color="#ffffff">inference</font></a>.<a href="bayes_vi.inference.vi.html"><font color="#ffffff">vi</font></a>.flow_bijectors</strong></big></big></font></td
 ><td align=right valign=bottom
 ><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/Users/mgartz/Life/1-University/Bachelor-Thesis/code/bayesian-inference/bayes_vi/inference/vi/flow_bijectors.py">/Users/mgartz/Life/1-University/Bachelor-Thesis/code/bayesian-inference/bayes_vi/inference/vi/flow_bijectors.py</a></font></td></tr></table>
-    <p></p>
+    <p><tt>Module&nbsp;providing&nbsp;trainable&nbsp;bijectors&nbsp;for&nbsp;normalizing&nbsp;flows.</tt></p>
 <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#aa55cc">
@@ -48,7 +48,7 @@
 <tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
 <td colspan=2><tt><a href="#AffineFlow">AffineFlow</a>(event_dims,&nbsp;validate_args=False,&nbsp;name='affine_flow')<br>
 &nbsp;<br>
-Implements&nbsp;a&nbsp;trainable&nbsp;Affine&nbsp;Flow&nbsp;bijector.<br>&nbsp;</tt></td></tr>
+Implements&nbsp;a&nbsp;trainable&nbsp;Affine&nbsp;flow&nbsp;bijector.<br>&nbsp;</tt></td></tr>
 <tr><td>&nbsp;</td>
 <td width="100%"><dl><dt>Method resolution order:</dt>
 <dd><a href="bayes_vi.inference.vi.flow_bijectors.html#AffineFlow">AffineFlow</a></dd>
@@ -60,50 +60,16 @@ Implements&nbsp;a&nbsp;trainable&nbsp;Affine&nbsp;Flow&nbsp;bijector.<br>&nbsp;<
 </dl>
 <hr>
 Methods defined here:<br>
-<dl><dt><a name="AffineFlow-__init__"><strong>__init__</strong></a>(self, event_dims, validate_args=False, name='affine_flow')</dt><dd><tt>Constructs&nbsp;<a href="tensorflow_probability.python.bijectors.bijector.html#Bijector">Bijector</a>.<br>
+<dl><dt><a name="AffineFlow-__init__"><strong>__init__</strong></a>(self, event_dims, validate_args=False, name='affine_flow')</dt><dd><tt>Initializes&nbsp;default&nbsp;trainable&nbsp;Affine&nbsp;flow&nbsp;bijector.<br>
 &nbsp;<br>
-A&nbsp;`<a href="tensorflow_probability.python.bijectors.bijector.html#Bijector">Bijector</a>`&nbsp;transforms&nbsp;random&nbsp;variables&nbsp;into&nbsp;new&nbsp;random&nbsp;variables.<br>
-&nbsp;<br>
-Examples:<br>
-&nbsp;<br>
-```python<br>
-#&nbsp;Create&nbsp;the&nbsp;Y&nbsp;=&nbsp;g(X)&nbsp;=&nbsp;X&nbsp;transform.<br>
-identity&nbsp;=&nbsp;Identity()<br>
-&nbsp;<br>
-#&nbsp;Create&nbsp;the&nbsp;Y&nbsp;=&nbsp;g(X)&nbsp;=&nbsp;exp(X)&nbsp;transform.<br>
-exp&nbsp;=&nbsp;Exp()<br>
-```<br>
-&nbsp;<br>
-See&nbsp;`<a href="tensorflow_probability.python.bijectors.bijector.html#Bijector">Bijector</a>`&nbsp;subclass&nbsp;docstring&nbsp;for&nbsp;more&nbsp;details&nbsp;and&nbsp;specific&nbsp;examples.<br>
-&nbsp;<br>
-Args:<br>
-&nbsp;&nbsp;graph_parents:&nbsp;Python&nbsp;list&nbsp;of&nbsp;graph&nbsp;prerequisites&nbsp;of&nbsp;this&nbsp;`<a href="tensorflow_probability.python.bijectors.bijector.html#Bijector">Bijector</a>`.<br>
-&nbsp;&nbsp;is_constant_jacobian:&nbsp;Python&nbsp;`bool`&nbsp;indicating&nbsp;that&nbsp;the&nbsp;Jacobian&nbsp;matrix&nbsp;is<br>
-&nbsp;&nbsp;&nbsp;&nbsp;not&nbsp;a&nbsp;function&nbsp;of&nbsp;the&nbsp;input.<br>
-&nbsp;&nbsp;validate_args:&nbsp;Python&nbsp;`bool`,&nbsp;default&nbsp;`False`.&nbsp;Whether&nbsp;to&nbsp;validate&nbsp;input<br>
-&nbsp;&nbsp;&nbsp;&nbsp;with&nbsp;asserts.&nbsp;If&nbsp;`validate_args`&nbsp;is&nbsp;`False`,&nbsp;and&nbsp;the&nbsp;inputs&nbsp;are&nbsp;invalid,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;correct&nbsp;behavior&nbsp;is&nbsp;not&nbsp;guaranteed.<br>
-&nbsp;&nbsp;dtype:&nbsp;`tf.dtype`&nbsp;supported&nbsp;by&nbsp;this&nbsp;`<a href="tensorflow_probability.python.bijectors.bijector.html#Bijector">Bijector</a>`.&nbsp;`None`&nbsp;means&nbsp;dtype&nbsp;is&nbsp;not<br>
-&nbsp;&nbsp;&nbsp;&nbsp;enforced.&nbsp;For&nbsp;multipart&nbsp;bijectors,&nbsp;this&nbsp;value&nbsp;is&nbsp;expected&nbsp;to&nbsp;be&nbsp;the<br>
-&nbsp;&nbsp;&nbsp;&nbsp;same&nbsp;for&nbsp;all&nbsp;elements&nbsp;of&nbsp;the&nbsp;input&nbsp;and&nbsp;output&nbsp;structures.<br>
-&nbsp;&nbsp;forward_min_event_ndims:&nbsp;Python&nbsp;`integer`&nbsp;(structure)&nbsp;indicating&nbsp;the<br>
-&nbsp;&nbsp;&nbsp;&nbsp;minimum&nbsp;number&nbsp;of&nbsp;dimensions&nbsp;on&nbsp;which&nbsp;`forward`&nbsp;operates.<br>
-&nbsp;&nbsp;inverse_min_event_ndims:&nbsp;Python&nbsp;`integer`&nbsp;(structure)&nbsp;indicating&nbsp;the<br>
-&nbsp;&nbsp;&nbsp;&nbsp;minimum&nbsp;number&nbsp;of&nbsp;dimensions&nbsp;on&nbsp;which&nbsp;`inverse`&nbsp;operates.&nbsp;Will&nbsp;be&nbsp;set&nbsp;to<br>
-&nbsp;&nbsp;&nbsp;&nbsp;`forward_min_event_ndims`&nbsp;by&nbsp;default,&nbsp;if&nbsp;no&nbsp;value&nbsp;is&nbsp;provided.<br>
-&nbsp;&nbsp;parameters:&nbsp;Python&nbsp;`dict`&nbsp;of&nbsp;parameters&nbsp;used&nbsp;to&nbsp;instantiate&nbsp;this<br>
-&nbsp;&nbsp;&nbsp;&nbsp;`<a href="tensorflow_probability.python.bijectors.bijector.html#Bijector">Bijector</a>`.&nbsp;<a href="tensorflow_probability.python.bijectors.bijector.html#Bijector">Bijector</a>&nbsp;instances&nbsp;with&nbsp;identical&nbsp;types,&nbsp;names,&nbsp;and<br>
-&nbsp;&nbsp;&nbsp;&nbsp;`parameters`&nbsp;share&nbsp;an&nbsp;input/output&nbsp;cache.&nbsp;`parameters`&nbsp;dicts&nbsp;are<br>
-&nbsp;&nbsp;&nbsp;&nbsp;keyed&nbsp;by&nbsp;strings&nbsp;and&nbsp;are&nbsp;identical&nbsp;if&nbsp;their&nbsp;keys&nbsp;are&nbsp;identical&nbsp;and&nbsp;if<br>
-&nbsp;&nbsp;&nbsp;&nbsp;corresponding&nbsp;values&nbsp;have&nbsp;identical&nbsp;hashes&nbsp;(or&nbsp;object&nbsp;ids,&nbsp;for<br>
-&nbsp;&nbsp;&nbsp;&nbsp;unhashable&nbsp;objects).<br>
-&nbsp;&nbsp;name:&nbsp;The&nbsp;name&nbsp;to&nbsp;give&nbsp;Ops&nbsp;created&nbsp;by&nbsp;the&nbsp;initializer.<br>
-&nbsp;<br>
-Raises:<br>
-&nbsp;&nbsp;ValueError:&nbsp;&nbsp;If&nbsp;neither&nbsp;`forward_min_event_ndims`&nbsp;and<br>
-&nbsp;&nbsp;&nbsp;&nbsp;`inverse_min_event_ndims`&nbsp;are&nbsp;specified,&nbsp;or&nbsp;if&nbsp;either&nbsp;of&nbsp;them&nbsp;is<br>
-&nbsp;&nbsp;&nbsp;&nbsp;negative.<br>
-&nbsp;&nbsp;ValueError:&nbsp;&nbsp;If&nbsp;a&nbsp;member&nbsp;of&nbsp;`graph_parents`&nbsp;is&nbsp;not&nbsp;a&nbsp;`Tensor`.</tt></dd></dl>
+Parameters<br>
+----------<br>
+event_dims:&nbsp;`int`<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Number&nbsp;of&nbsp;parameter&nbsp;space&nbsp;dimensions.<br>
+validate_args:&nbsp;`bool`<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Boolean&nbsp;indicator&nbsp;whether&nbsp;or&nbsp;not&nbsp;to&nbsp;validate&nbsp;the&nbsp;input&nbsp;arguments.<br>
+name:&nbsp;`string`<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Name&nbsp;of&nbsp;the&nbsp;flow&nbsp;bijector.</tt></dd></dl>
 
 <dl><dt><a name="AffineFlow-forward_log_det_jacobian"><strong>forward_log_det_jacobian</strong></a>(self, x, event_ndims, name='forward_log_det_jacobian', **kwargs)</dt><dd><tt>Returns&nbsp;both&nbsp;the&nbsp;forward_log_det_jacobian.<br>
 &nbsp;<br>
@@ -232,7 +198,7 @@ Raises:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;`self.<strong>dtype</strong>`.<br>
 &nbsp;&nbsp;NotImplementedError:&nbsp;if&nbsp;`_forward`&nbsp;is&nbsp;not&nbsp;implemented.</tt></dd></dl>
 
-<dl><dt><a name="AffineFlow-forward_dtype"><strong>forward_dtype</strong></a>(self, dtype=&lt;object object at 0x7fd5a16e0470&gt;, name='forward_dtype', **kwargs)</dt><dd><tt>Returns&nbsp;the&nbsp;dtype&nbsp;returned&nbsp;by&nbsp;`forward`&nbsp;for&nbsp;the&nbsp;provided&nbsp;input.</tt></dd></dl>
+<dl><dt><a name="AffineFlow-forward_dtype"><strong>forward_dtype</strong></a>(self, dtype=&lt;object object at 0x7fd8f7ed5490&gt;, name='forward_dtype', **kwargs)</dt><dd><tt>Returns&nbsp;the&nbsp;dtype&nbsp;returned&nbsp;by&nbsp;`forward`&nbsp;for&nbsp;the&nbsp;provided&nbsp;input.</tt></dd></dl>
 
 <dl><dt><a name="AffineFlow-forward_event_ndims"><strong>forward_event_ndims</strong></a>(self, event_ndims, **kwargs)</dt><dd><tt>Returns&nbsp;the&nbsp;number&nbsp;of&nbsp;event&nbsp;dimensions&nbsp;produced&nbsp;by&nbsp;`forward`.</tt></dd></dl>
 
@@ -276,7 +242,7 @@ Raises:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;output&nbsp;dtype.<br>
 &nbsp;&nbsp;NotImplementedError:&nbsp;if&nbsp;`_inverse`&nbsp;is&nbsp;not&nbsp;implemented.</tt></dd></dl>
 
-<dl><dt><a name="AffineFlow-inverse_dtype"><strong>inverse_dtype</strong></a>(self, dtype=&lt;object object at 0x7fd5a16e0470&gt;, name='inverse_dtype', **kwargs)</dt><dd><tt>Returns&nbsp;the&nbsp;dtype&nbsp;returned&nbsp;by&nbsp;`inverse`&nbsp;for&nbsp;the&nbsp;provided&nbsp;input.</tt></dd></dl>
+<dl><dt><a name="AffineFlow-inverse_dtype"><strong>inverse_dtype</strong></a>(self, dtype=&lt;object object at 0x7fd8f7ed5490&gt;, name='inverse_dtype', **kwargs)</dt><dd><tt>Returns&nbsp;the&nbsp;dtype&nbsp;returned&nbsp;by&nbsp;`inverse`&nbsp;for&nbsp;the&nbsp;provided&nbsp;input.</tt></dd></dl>
 
 <dl><dt><a name="AffineFlow-inverse_event_ndims"><strong>inverse_event_ndims</strong></a>(self, event_ndims, **kwargs)</dt><dd><tt>Returns&nbsp;the&nbsp;number&nbsp;of&nbsp;event&nbsp;dimensions&nbsp;produced&nbsp;by&nbsp;`inverse`.</tt></dd></dl>
 
@@ -443,9 +409,9 @@ Data descriptors inherited from <a href="tensorflow.python.training.tracking.bas
 <font color="#000000" face="helvetica, arial"><a name="HamiltonianFlow">class <strong>HamiltonianFlow</strong></a>(<a href="tensorflow_probability.python.bijectors.bijector.html#Bijector">tensorflow_probability.python.bijectors.bijector.Bijector</a>)</font></td></tr>
     
 <tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
-<td colspan=2><tt><a href="#HamiltonianFlow">HamiltonianFlow</a>(event_dims,&nbsp;potential_energy_fn=None,&nbsp;kinetic_energy_fn=None,&nbsp;symplectic_integrator=&amp;lt;bayes_vi.utils.leapfrog_integrator.LeapfrogIntegrator&nbsp;object&nbsp;at&nbsp;0x7fd5a20e4b50&amp;gt;,&nbsp;step_sizes=0.2,&nbsp;num_integration_steps=5,&nbsp;hidden_layers=None,&nbsp;validate_args=False,&nbsp;name='hamiltonian_flow')<br>
+<td colspan=2><tt><a href="#HamiltonianFlow">HamiltonianFlow</a>(event_dims,&nbsp;potential_energy_fn=None,&nbsp;kinetic_energy_fn=None,&nbsp;symplectic_integrator=&amp;lt;bayes_vi.utils.symplectic_integrators.LeapfrogIntegrator&nbsp;object&nbsp;at&nbsp;0x7fd8f90dd910&amp;gt;,&nbsp;step_sizes=&amp;lt;tf.Tensor:&nbsp;shape=(),&nbsp;dtype=float32,&nbsp;numpy=0.1&amp;gt;,&nbsp;num_integration_steps=5,&nbsp;hidden_layers=None,&nbsp;validate_args=False,&nbsp;name='hamiltonian_flow')<br>
 &nbsp;<br>
-Implements&nbsp;a&nbsp;trainable&nbsp;Hamiltonian&nbsp;Flow&nbsp;bijector.<br>&nbsp;</tt></td></tr>
+Implements&nbsp;a&nbsp;trainable&nbsp;Hamiltonian&nbsp;flow&nbsp;bijector.<br>&nbsp;</tt></td></tr>
 <tr><td>&nbsp;</td>
 <td width="100%"><dl><dt>Method resolution order:</dt>
 <dd><a href="bayes_vi.inference.vi.flow_bijectors.html#HamiltonianFlow">HamiltonianFlow</a></dd>
@@ -457,50 +423,33 @@ Implements&nbsp;a&nbsp;trainable&nbsp;Hamiltonian&nbsp;Flow&nbsp;bijector.<br>&n
 </dl>
 <hr>
 Methods defined here:<br>
-<dl><dt><a name="HamiltonianFlow-__init__"><strong>__init__</strong></a>(self, event_dims, potential_energy_fn=None, kinetic_energy_fn=None, symplectic_integrator=&lt;bayes_vi.utils.leapfrog_integrator.LeapfrogIntegrator object at 0x7fd5a20e4b50&gt;, step_sizes=0.2, num_integration_steps=5, hidden_layers=None, validate_args=False, name='hamiltonian_flow')</dt><dd><tt>Constructs&nbsp;<a href="tensorflow_probability.python.bijectors.bijector.html#Bijector">Bijector</a>.<br>
+<dl><dt><a name="HamiltonianFlow-__init__"><strong>__init__</strong></a>(self, event_dims, potential_energy_fn=None, kinetic_energy_fn=None, symplectic_integrator=&lt;bayes_vi.utils.symplectic_integrators.LeapfrogIntegrator object at 0x7fd8f90dd910&gt;, step_sizes=&lt;tf.Tensor: shape=(), dtype=float32, numpy=0.1&gt;, num_integration_steps=5, hidden_layers=None, validate_args=False, name='hamiltonian_flow')</dt><dd><tt>Initializes&nbsp;Hamiltonian&nbsp;flow&nbsp;bijector.<br>
 &nbsp;<br>
-A&nbsp;`<a href="tensorflow_probability.python.bijectors.bijector.html#Bijector">Bijector</a>`&nbsp;transforms&nbsp;random&nbsp;variables&nbsp;into&nbsp;new&nbsp;random&nbsp;variables.<br>
-&nbsp;<br>
-Examples:<br>
-&nbsp;<br>
-```python<br>
-#&nbsp;Create&nbsp;the&nbsp;Y&nbsp;=&nbsp;g(X)&nbsp;=&nbsp;X&nbsp;transform.<br>
-identity&nbsp;=&nbsp;Identity()<br>
-&nbsp;<br>
-#&nbsp;Create&nbsp;the&nbsp;Y&nbsp;=&nbsp;g(X)&nbsp;=&nbsp;exp(X)&nbsp;transform.<br>
-exp&nbsp;=&nbsp;Exp()<br>
-```<br>
-&nbsp;<br>
-See&nbsp;`<a href="tensorflow_probability.python.bijectors.bijector.html#Bijector">Bijector</a>`&nbsp;subclass&nbsp;docstring&nbsp;for&nbsp;more&nbsp;details&nbsp;and&nbsp;specific&nbsp;examples.<br>
-&nbsp;<br>
-Args:<br>
-&nbsp;&nbsp;graph_parents:&nbsp;Python&nbsp;list&nbsp;of&nbsp;graph&nbsp;prerequisites&nbsp;of&nbsp;this&nbsp;`<a href="tensorflow_probability.python.bijectors.bijector.html#Bijector">Bijector</a>`.<br>
-&nbsp;&nbsp;is_constant_jacobian:&nbsp;Python&nbsp;`bool`&nbsp;indicating&nbsp;that&nbsp;the&nbsp;Jacobian&nbsp;matrix&nbsp;is<br>
-&nbsp;&nbsp;&nbsp;&nbsp;not&nbsp;a&nbsp;function&nbsp;of&nbsp;the&nbsp;input.<br>
-&nbsp;&nbsp;validate_args:&nbsp;Python&nbsp;`bool`,&nbsp;default&nbsp;`False`.&nbsp;Whether&nbsp;to&nbsp;validate&nbsp;input<br>
-&nbsp;&nbsp;&nbsp;&nbsp;with&nbsp;asserts.&nbsp;If&nbsp;`validate_args`&nbsp;is&nbsp;`False`,&nbsp;and&nbsp;the&nbsp;inputs&nbsp;are&nbsp;invalid,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;correct&nbsp;behavior&nbsp;is&nbsp;not&nbsp;guaranteed.<br>
-&nbsp;&nbsp;dtype:&nbsp;`tf.dtype`&nbsp;supported&nbsp;by&nbsp;this&nbsp;`<a href="tensorflow_probability.python.bijectors.bijector.html#Bijector">Bijector</a>`.&nbsp;`None`&nbsp;means&nbsp;dtype&nbsp;is&nbsp;not<br>
-&nbsp;&nbsp;&nbsp;&nbsp;enforced.&nbsp;For&nbsp;multipart&nbsp;bijectors,&nbsp;this&nbsp;value&nbsp;is&nbsp;expected&nbsp;to&nbsp;be&nbsp;the<br>
-&nbsp;&nbsp;&nbsp;&nbsp;same&nbsp;for&nbsp;all&nbsp;elements&nbsp;of&nbsp;the&nbsp;input&nbsp;and&nbsp;output&nbsp;structures.<br>
-&nbsp;&nbsp;forward_min_event_ndims:&nbsp;Python&nbsp;`integer`&nbsp;(structure)&nbsp;indicating&nbsp;the<br>
-&nbsp;&nbsp;&nbsp;&nbsp;minimum&nbsp;number&nbsp;of&nbsp;dimensions&nbsp;on&nbsp;which&nbsp;`forward`&nbsp;operates.<br>
-&nbsp;&nbsp;inverse_min_event_ndims:&nbsp;Python&nbsp;`integer`&nbsp;(structure)&nbsp;indicating&nbsp;the<br>
-&nbsp;&nbsp;&nbsp;&nbsp;minimum&nbsp;number&nbsp;of&nbsp;dimensions&nbsp;on&nbsp;which&nbsp;`inverse`&nbsp;operates.&nbsp;Will&nbsp;be&nbsp;set&nbsp;to<br>
-&nbsp;&nbsp;&nbsp;&nbsp;`forward_min_event_ndims`&nbsp;by&nbsp;default,&nbsp;if&nbsp;no&nbsp;value&nbsp;is&nbsp;provided.<br>
-&nbsp;&nbsp;parameters:&nbsp;Python&nbsp;`dict`&nbsp;of&nbsp;parameters&nbsp;used&nbsp;to&nbsp;instantiate&nbsp;this<br>
-&nbsp;&nbsp;&nbsp;&nbsp;`<a href="tensorflow_probability.python.bijectors.bijector.html#Bijector">Bijector</a>`.&nbsp;<a href="tensorflow_probability.python.bijectors.bijector.html#Bijector">Bijector</a>&nbsp;instances&nbsp;with&nbsp;identical&nbsp;types,&nbsp;names,&nbsp;and<br>
-&nbsp;&nbsp;&nbsp;&nbsp;`parameters`&nbsp;share&nbsp;an&nbsp;input/output&nbsp;cache.&nbsp;`parameters`&nbsp;dicts&nbsp;are<br>
-&nbsp;&nbsp;&nbsp;&nbsp;keyed&nbsp;by&nbsp;strings&nbsp;and&nbsp;are&nbsp;identical&nbsp;if&nbsp;their&nbsp;keys&nbsp;are&nbsp;identical&nbsp;and&nbsp;if<br>
-&nbsp;&nbsp;&nbsp;&nbsp;corresponding&nbsp;values&nbsp;have&nbsp;identical&nbsp;hashes&nbsp;(or&nbsp;object&nbsp;ids,&nbsp;for<br>
-&nbsp;&nbsp;&nbsp;&nbsp;unhashable&nbsp;objects).<br>
-&nbsp;&nbsp;name:&nbsp;The&nbsp;name&nbsp;to&nbsp;give&nbsp;Ops&nbsp;created&nbsp;by&nbsp;the&nbsp;initializer.<br>
-&nbsp;<br>
-Raises:<br>
-&nbsp;&nbsp;ValueError:&nbsp;&nbsp;If&nbsp;neither&nbsp;`forward_min_event_ndims`&nbsp;and<br>
-&nbsp;&nbsp;&nbsp;&nbsp;`inverse_min_event_ndims`&nbsp;are&nbsp;specified,&nbsp;or&nbsp;if&nbsp;either&nbsp;of&nbsp;them&nbsp;is<br>
-&nbsp;&nbsp;&nbsp;&nbsp;negative.<br>
-&nbsp;&nbsp;ValueError:&nbsp;&nbsp;If&nbsp;a&nbsp;member&nbsp;of&nbsp;`graph_parents`&nbsp;is&nbsp;not&nbsp;a&nbsp;`Tensor`.</tt></dd></dl>
+Parameters<br>
+----------<br>
+event_dims:&nbsp;`int`<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Number&nbsp;of&nbsp;configuration&nbsp;space&nbsp;dimensions.<br>
+potential_energy_fn:&nbsp;`callable`<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;potential&nbsp;energy&nbsp;function&nbsp;of&nbsp;the&nbsp;Hamiltonian&nbsp;system&nbsp;(may&nbsp;be&nbsp;trainable).<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Default&nbsp;is&nbsp;a&nbsp;MLP&nbsp;with&nbsp;tanh&nbsp;hidden&nbsp;layers&nbsp;[32,&nbsp;32]&nbsp;and&nbsp;softplus&nbsp;output&nbsp;layer.<br>
+kinetic_energy_fn:&nbsp;`callable`<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;kinetic&nbsp;energy&nbsp;function&nbsp;of&nbsp;the&nbsp;Hamiltonian&nbsp;system&nbsp;(may&nbsp;be&nbsp;trainable).<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Default&nbsp;is&nbsp;a&nbsp;MLP&nbsp;with&nbsp;tanh&nbsp;hidden&nbsp;layers&nbsp;[32,&nbsp;32]&nbsp;and&nbsp;softplus&nbsp;output&nbsp;layer.<br>
+symplectic_integrator:&nbsp;symplectic&nbsp;integrator&nbsp;instance<br>
+&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;symplectic&nbsp;integrator&nbsp;instance&nbsp;implementing&nbsp;a&nbsp;solve&nbsp;function&nbsp;with&nbsp;signature:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;solve(potential_energy_fn,&nbsp;kinetic_energy_fn,&nbsp;initial_state,&nbsp;step_sizes,&nbsp;num_integration_steps).<br>
+&nbsp;&nbsp;&nbsp;&nbsp;(Default:&nbsp;`bayes_vi.utils.symplectic_integrators.LeapfrogIntegrator`)<br>
+step_sizes:&nbsp;`tf.Tensor`<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;integration&nbsp;step&nbsp;size&nbsp;(possibly&nbsp;individual&nbsp;steps&nbsp;size&nbsp;per&nbsp;dimension&nbsp;and/or&nbsp;trainable).<br>
+num_integration_steps:&nbsp;`int`<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;number&nbsp;of&nbsp;integration&nbsp;steps&nbsp;for&nbsp;which&nbsp;to&nbsp;compute&nbsp;the&nbsp;evolution&nbsp;of&nbsp;the&nbsp;system&nbsp;(may&nbsp;be&nbsp;trainable).<br>
+hidden_layers:&nbsp;`list`&nbsp;of&nbsp;`int`<br>
+&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;list&nbsp;of&nbsp;ints&nbsp;specifying&nbsp;the&nbsp;number&nbsp;of&nbsp;neurons&nbsp;in&nbsp;the&nbsp;hidden&nbsp;layers&nbsp;of&nbsp;the&nbsp;potential&nbsp;and/or&nbsp;kinetic&nbsp;energy&nbsp;MLPs.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Is&nbsp;ignored&nbsp;if&nbsp;potential&nbsp;and&nbsp;kinetic&nbsp;energy&nbsp;function&nbsp;are&nbsp;provided&nbsp;explicitly.<br>
+validate_args:&nbsp;`bool`<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Boolean&nbsp;indicator&nbsp;whether&nbsp;or&nbsp;not&nbsp;to&nbsp;validate&nbsp;the&nbsp;input&nbsp;arguments.<br>
+name:&nbsp;`string`<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Name&nbsp;of&nbsp;the&nbsp;flow&nbsp;bijector.</tt></dd></dl>
 
 <hr>
 Data and other attributes defined here:<br>
@@ -570,7 +519,7 @@ Raises:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;`self.<strong>dtype</strong>`.<br>
 &nbsp;&nbsp;NotImplementedError:&nbsp;if&nbsp;`_forward`&nbsp;is&nbsp;not&nbsp;implemented.</tt></dd></dl>
 
-<dl><dt><a name="HamiltonianFlow-forward_dtype"><strong>forward_dtype</strong></a>(self, dtype=&lt;object object at 0x7fd5a16e0470&gt;, name='forward_dtype', **kwargs)</dt><dd><tt>Returns&nbsp;the&nbsp;dtype&nbsp;returned&nbsp;by&nbsp;`forward`&nbsp;for&nbsp;the&nbsp;provided&nbsp;input.</tt></dd></dl>
+<dl><dt><a name="HamiltonianFlow-forward_dtype"><strong>forward_dtype</strong></a>(self, dtype=&lt;object object at 0x7fd8f7ed5490&gt;, name='forward_dtype', **kwargs)</dt><dd><tt>Returns&nbsp;the&nbsp;dtype&nbsp;returned&nbsp;by&nbsp;`forward`&nbsp;for&nbsp;the&nbsp;provided&nbsp;input.</tt></dd></dl>
 
 <dl><dt><a name="HamiltonianFlow-forward_event_ndims"><strong>forward_event_ndims</strong></a>(self, event_ndims, **kwargs)</dt><dd><tt>Returns&nbsp;the&nbsp;number&nbsp;of&nbsp;event&nbsp;dimensions&nbsp;produced&nbsp;by&nbsp;`forward`.</tt></dd></dl>
 
@@ -641,7 +590,7 @@ Raises:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;output&nbsp;dtype.<br>
 &nbsp;&nbsp;NotImplementedError:&nbsp;if&nbsp;`_inverse`&nbsp;is&nbsp;not&nbsp;implemented.</tt></dd></dl>
 
-<dl><dt><a name="HamiltonianFlow-inverse_dtype"><strong>inverse_dtype</strong></a>(self, dtype=&lt;object object at 0x7fd5a16e0470&gt;, name='inverse_dtype', **kwargs)</dt><dd><tt>Returns&nbsp;the&nbsp;dtype&nbsp;returned&nbsp;by&nbsp;`inverse`&nbsp;for&nbsp;the&nbsp;provided&nbsp;input.</tt></dd></dl>
+<dl><dt><a name="HamiltonianFlow-inverse_dtype"><strong>inverse_dtype</strong></a>(self, dtype=&lt;object object at 0x7fd8f7ed5490&gt;, name='inverse_dtype', **kwargs)</dt><dd><tt>Returns&nbsp;the&nbsp;dtype&nbsp;returned&nbsp;by&nbsp;`inverse`&nbsp;for&nbsp;the&nbsp;provided&nbsp;input.</tt></dd></dl>
 
 <dl><dt><a name="HamiltonianFlow-inverse_event_ndims"><strong>inverse_event_ndims</strong></a>(self, event_ndims, **kwargs)</dt><dd><tt>Returns&nbsp;the&nbsp;number&nbsp;of&nbsp;event&nbsp;dimensions&nbsp;produced&nbsp;by&nbsp;`inverse`.</tt></dd></dl>
 
