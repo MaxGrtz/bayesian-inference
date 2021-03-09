@@ -37,7 +37,9 @@
 
     
     <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" /> 
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="bayes_vi.utils package" href="bayes_vi.utils.html" />
+    <link rel="prev" title="bayes_vi.inference.vi package" href="bayes_vi.inference.vi.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -82,19 +84,23 @@
               
             
             
-              <!-- Local TOC -->
-              <div class="local-toc"><ul>
-<li><a class="reference internal" href="#">bayes_vi.model package</a><ul>
-<li><a class="reference internal" href="#submodules">Submodules</a></li>
-<li><a class="reference internal" href="#module-bayes_vi.model.model">bayes_vi.model.model module</a></li>
-<li><a class="reference internal" href="#module-bayes_vi.model">Module contents</a><ul>
-<li><a class="reference internal" href="#modules">Modules</a></li>
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">bayes_vi</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="bayes_vi.html">bayes_vi package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="bayes_vi.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="bayes_vi.inference.html">bayes_vi.inference package</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">bayes_vi.model package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="bayes_vi.utils.html">bayes_vi.utils package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="bayes_vi.html#module-bayes_vi">Module contents</a></li>
 </ul>
 </li>
 </ul>
 </li>
 </ul>
-</div>
+
             
           
         </div>
@@ -140,6 +146,10 @@
   <ul class="wy-breadcrumbs">
     
       <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="modules.html">bayes_vi</a> &raquo;</li>
+        
+          <li><a href="bayes_vi.html">bayes_vi package</a> &raquo;</li>
         
       <li>bayes_vi.model package</li>
     
@@ -398,6 +408,22 @@ a merged sample on the forward transformation.</p>
 </dl>
 </dd></dl>
 
+<p>Initializes the a <cite>Model</cite> instance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>priors</strong> (<cite>collections.OrderedDict[str, tfp.distributions.Distribution]</cite>) – An ordered mapping from parameter names <cite>str</cite> to <cite>tfp.distributions.Distribution`s
+or callables returning a `tfp.distributions.Distribution</cite> (conditional distributions).</p></li>
+<li><p><strong>likelihood</strong> (<cite>callable</cite>) – A <cite>callable</cite> taking the model parameters (and <cite>features</cite> of the dataset for regression model)
+and returning a <cite>tfp.distributions.Distribution</cite> of the data.</p></li>
+<li><p><strong>constraining_bijectors</strong> (<cite>list</cite> of <cite>tfp.bijectors.Bijector</cite>) – A list of diffeomorphisms defined as <cite>tfp.bijectors.Bijector</cite>
+to transform each parameter into unconstrained space R^n. The semantics are chosen,
+such that the inverse transformation of each bijector unconstrains a parameter sample,
+while the forward transformation constrains the parameter sample to the allowed range.
+If no list is provided, default bijectors are used.</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="py method">
 <dt id="bayes_vi.model.model.Model.get_joint_distribution">
 <code class="sig-name descname"><span class="pre">get_joint_distribution</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">features</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bayes_vi.model.model.Model.get_joint_distribution" title="Permalink to this definition">¶</a></dt>
@@ -485,6 +511,10 @@ a merged sample on the forward transformation.</p>
            
           </div>
           <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="bayes_vi.utils.html" class="btn btn-neutral float-right" title="bayes_vi.utils package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="bayes_vi.inference.vi.html" class="btn btn-neutral float-left" title="bayes_vi.inference.vi package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
 
   <hr/>
 
