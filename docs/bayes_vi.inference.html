@@ -1,37 +1,322 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<html><head><title>Python: package bayes_vi.inference</title>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-</head><body bgcolor="#f0f0f8">
 
-<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
-<tr bgcolor="#7799ee">
-<td valign=bottom>&nbsp;<br>
-<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong><a href="bayes_vi.html"><font color="#ffffff">bayes_vi</font></a>.inference</strong></big></big></font></td
-><td align=right valign=bottom
-><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/Users/mgartz/Life/1-University/Bachelor-Thesis/code/bayesian-inference/bayes_vi/inference/__init__.py">/Users/mgartz/Life/1-University/Bachelor-Thesis/code/bayesian-inference/bayes_vi/inference/__init__.py</a></font></td></tr></table>
-    <p><tt>Inference&nbsp;subpackage&nbsp;containing&nbsp;mcmc&nbsp;and&nbsp;vi&nbsp;package.<br>
-&nbsp;<br>
-Subpackages<br>
------------<br>
-mcmc:&nbsp;package&nbsp;containing&nbsp;Markov&nbsp;Chain&nbsp;Monte&nbsp;Carlo&nbsp;(mcmc)&nbsp;inference&nbsp;related&nbsp;modules.<br>
-&nbsp;<br>
-vi:&nbsp;package&nbsp;containing&nbsp;variational&nbsp;inference&nbsp;(vi)&nbsp;related&nbsp;modules.</tt></p>
-<p>
-<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
-<tr bgcolor="#aa55cc">
-<td colspan=3 valign=bottom>&nbsp;<br>
-<font color="#ffffff" face="helvetica, arial"><big><strong>Package Contents</strong></big></font></td></tr>
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>bayes_vi.inference package &mdash; bayes-vi 0.3.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
     
-<tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
-<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="bayes_vi.inference.inference.html">inference</a><br>
-</td><td width="25%" valign=top><a href="bayes_vi.inference.mcmc.html"><strong>mcmc</strong>&nbsp;(package)</a><br>
-</td><td width="25%" valign=top><a href="bayes_vi.inference.vi.html"><strong>vi</strong>&nbsp;(package)</a><br>
-</td><td width="25%" valign=top></td></tr></table></td></tr></table><p>
-<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
-<tr bgcolor="#55aa55">
-<td colspan=3 valign=bottom>&nbsp;<br>
-<font color="#ffffff" face="helvetica, arial"><big><strong>Data</strong></big></font></td></tr>
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
     
-<tr><td bgcolor="#55aa55"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
-<td width="100%"><strong>__all__</strong> = ['inference']</td></tr></table>
-</body></html>
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> bayes-vi
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">bayes_vi.inference package</a><ul>
+<li><a class="reference internal" href="#subpackages">Subpackages</a></li>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-bayes_vi.inference.inference">bayes_vi.inference.inference module</a></li>
+<li><a class="reference internal" href="#module-bayes_vi.inference">Module contents</a><ul>
+<li><a class="reference internal" href="#id1">Subpackages</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">bayes-vi</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>bayes_vi.inference package</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/bayes_vi.inference.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="bayes-vi-inference-package">
+<h1>bayes_vi.inference package<a class="headerlink" href="#bayes-vi-inference-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="bayes_vi.inference.mcmc.html">bayes_vi.inference.mcmc package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="bayes_vi.inference.mcmc.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bayes_vi.inference.mcmc.html#module-bayes_vi.inference.mcmc.mcmc">bayes_vi.inference.mcmc.mcmc module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bayes_vi.inference.mcmc.html#module-bayes_vi.inference.mcmc.sample_results">bayes_vi.inference.mcmc.sample_results module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bayes_vi.inference.mcmc.html#module-bayes_vi.inference.mcmc.stepsize_adaptation_kernels">bayes_vi.inference.mcmc.stepsize_adaptation_kernels module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bayes_vi.inference.mcmc.html#module-bayes_vi.inference.mcmc.transition_kernels">bayes_vi.inference.mcmc.transition_kernels module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bayes_vi.inference.mcmc.html#module-bayes_vi.inference.mcmc">Module contents</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="bayes_vi.inference.mcmc.html#modules">Modules</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="bayes_vi.inference.vi.html">bayes_vi.inference.vi package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="bayes_vi.inference.vi.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bayes_vi.inference.vi.html#module-bayes_vi.inference.vi.flow_bijectors">bayes_vi.inference.vi.flow_bijectors module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bayes_vi.inference.vi.html#module-bayes_vi.inference.vi.surrogate_posteriors">bayes_vi.inference.vi.surrogate_posteriors module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bayes_vi.inference.vi.html#module-bayes_vi.inference.vi.vi">bayes_vi.inference.vi.vi module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bayes_vi.inference.vi.html#module-bayes_vi.inference.vi">Module contents</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="bayes_vi.inference.vi.html#modules">Modules</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-bayes_vi.inference.inference">
+<span id="bayes-vi-inference-inference-module"></span><h2>bayes_vi.inference.inference module<a class="headerlink" href="#module-bayes_vi.inference.inference" title="Permalink to this headline">¶</a></h2>
+<p>Module providing the Inference Base class.</p>
+<dl class="py class">
+<dt id="bayes_vi.inference.inference.Inference">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">bayes_vi.inference.inference.</span></code><code class="sig-name descname"><span class="pre">Inference</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bayes_vi.inference.inference.Inference" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A base class for different Inference algorithms.</p>
+<dl class="simple">
+<dt>An <cite>Inference</cite> algorithm consists of:</dt><dd><p>a Bayesian <cite>Model</cite> and
+a <cite>tf.data.Dataset</cite>.</p>
+</dd>
+</dl>
+<p>Note: Every subclass has to implement a <cite>fit</cite> method.</p>
+<dl class="py attribute">
+<dt id="bayes_vi.inference.inference.Inference.model">
+<code class="sig-name descname"><span class="pre">model</span></code><a class="headerlink" href="#bayes_vi.inference.inference.Inference.model" title="Permalink to this definition">¶</a></dt>
+<dd><p>A Bayesian probabilistic <cite>Model</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><cite>Model</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="bayes_vi.inference.inference.Inference.dataset">
+<code class="sig-name descname"><span class="pre">dataset</span></code><a class="headerlink" href="#bayes_vi.inference.inference.Inference.dataset" title="Permalink to this definition">¶</a></dt>
+<dd><p>A <cite>tf.data.Dataset</cite> consisting of features (if regression model) and targets.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><cite>tf.data.Dataset</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="bayes_vi.inference.inference.Inference.num_datapoints">
+<code class="sig-name descname"><span class="pre">num_datapoints</span></code><a class="headerlink" href="#bayes_vi.inference.inference.Inference.num_datapoints" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of examples (i.e. datapoints) in the dataset.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><cite>int</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="bayes_vi.inference.inference.Inference.fit">
+<code class="sig-name descname"><span class="pre">fit</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bayes_vi.inference.inference.Inference.fit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fits the Bayesian model to the dataset.</p>
+<p>Has to be implemented in any subclass of <cite>Inference</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>args</strong> (<em>positional arguments</em>) – positional arguments of the fit method.</p></li>
+<li><p><strong>kwargs</strong> (<em>keyword arguments</em>) – keyword arguments of the fit method.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>NotImplementedError</strong> – If the fit method is not implemented in a subclass.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-bayes_vi.inference">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-bayes_vi.inference" title="Permalink to this headline">¶</a></h2>
+<p>Inference subpackage containing mcmc and vi package.</p>
+<div class="section" id="id1">
+<h3>Subpackages<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<p>mcmc: package containing Markov Chain Monte Carlo (mcmc) inference related modules.</p>
+<p>vi: package containing variational inference (vi) related modules.</p>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, Maximilian Gartz.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

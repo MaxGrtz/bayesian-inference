@@ -1,33 +1,527 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<html><head><title>Python: package bayes_vi.model</title>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-</head><body bgcolor="#f0f0f8">
 
-<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
-<tr bgcolor="#7799ee">
-<td valign=bottom>&nbsp;<br>
-<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong><a href="bayes_vi.html"><font color="#ffffff">bayes_vi</font></a>.model</strong></big></big></font></td
-><td align=right valign=bottom
-><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/Users/mgartz/Life/1-University/Bachelor-Thesis/code/bayesian-inference/bayes_vi/model/__init__.py">/Users/mgartz/Life/1-University/Bachelor-Thesis/code/bayesian-inference/bayes_vi/model/__init__.py</a></font></td></tr></table>
-    <p><tt>Model&nbsp;subpackage&nbsp;containing&nbsp;the&nbsp;model&nbsp;module.<br>
-&nbsp;<br>
-Modules<br>
--------<br>
-model:&nbsp;module&nbsp;providing&nbsp;the&nbsp;model&nbsp;class.</tt></p>
-<p>
-<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
-<tr bgcolor="#aa55cc">
-<td colspan=3 valign=bottom>&nbsp;<br>
-<font color="#ffffff" face="helvetica, arial"><big><strong>Package Contents</strong></big></font></td></tr>
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>bayes_vi.model package &mdash; bayes-vi 0.3.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
     
-<tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
-<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="bayes_vi.model.model.html">model</a><br>
-</td><td width="25%" valign=top></td><td width="25%" valign=top></td><td width="25%" valign=top></td></tr></table></td></tr></table><p>
-<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
-<tr bgcolor="#55aa55">
-<td colspan=3 valign=bottom>&nbsp;<br>
-<font color="#ffffff" face="helvetica, arial"><big><strong>Data</strong></big></font></td></tr>
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
     
-<tr><td bgcolor="#55aa55"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
-<td width="100%"><strong>__all__</strong> = ['model']</td></tr></table>
-</body></html>
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> bayes-vi
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">bayes_vi.model package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-bayes_vi.model.model">bayes_vi.model.model module</a></li>
+<li><a class="reference internal" href="#module-bayes_vi.model">Module contents</a><ul>
+<li><a class="reference internal" href="#modules">Modules</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">bayes-vi</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>bayes_vi.model package</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/bayes_vi.model.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="bayes-vi-model-package">
+<h1>bayes_vi.model package<a class="headerlink" href="#bayes-vi-model-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-bayes_vi.model.model">
+<span id="bayes-vi-model-model-module"></span><h2>bayes_vi.model.model module<a class="headerlink" href="#module-bayes_vi.model.model" title="Permalink to this headline">¶</a></h2>
+<p>Module providing the Model class defining a Bayesian statistical model.</p>
+<dl class="py class">
+<dt id="bayes_vi.model.model.Model">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">bayes_vi.model.model.</span></code><code class="sig-name descname"><span class="pre">Model</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">priors</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">likelihood</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">constraining_bijectors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bayes_vi.model.model.Model" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A probabilistic model in the Bayesian sense.</p>
+<dl class="simple">
+<dt>A Bayesian <cite>Model</cite> consists of:</dt><dd><p>an <cite>collections.OrderedDict</cite> of prior <cite>tfp.distributions.Distribution</cite>,
+a likelihood function (conditional distribution of the data) and
+a list of constraining <cite>tfp.bijectors.Bijector</cite>.</p>
+</dd>
+</dl>
+<p>Note: There are various additional attributes derived from those fundamental components.</p>
+<dl class="py attribute">
+<dt id="bayes_vi.model.model.Model.likelihood">
+<code class="sig-name descname"><span class="pre">likelihood</span></code><a class="headerlink" href="#bayes_vi.model.model.Model.likelihood" title="Permalink to this definition">¶</a></dt>
+<dd><p>A <cite>callable</cite> taking the model parameters (and <cite>features</cite> of the dataset for regression model)
+and returning a <cite>tfp.distributions.Distribution</cite> of the data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><cite>callable</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="bayes_vi.model.model.Model.is_generative_model">
+<code class="sig-name descname"><span class="pre">is_generative_model</span></code><a class="headerlink" href="#bayes_vi.model.model.Model.is_generative_model" title="Permalink to this definition">¶</a></dt>
+<dd><p>A <cite>bool</cite> indicator whether or not the <cite>Model</cite> is a generative model,
+i.e. the likelihood function has no <cite>features</cite> argument.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><cite>bool</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="bayes_vi.model.model.Model.priors">
+<code class="sig-name descname"><span class="pre">priors</span></code><a class="headerlink" href="#bayes_vi.model.model.Model.priors" title="Permalink to this definition">¶</a></dt>
+<dd><p>An ordered mapping from parameter names <cite>str</cite> to <cite>tfp.distributions.Distribution`s
+or callables returning a `tfp.distributions.Distribution</cite> (conditional distributions).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><cite>collections.OrderedDict[str, tfp.distributions.Distribution]</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="bayes_vi.model.model.Model.param_names">
+<code class="sig-name descname"><span class="pre">param_names</span></code><a class="headerlink" href="#bayes_vi.model.model.Model.param_names" title="Permalink to this definition">¶</a></dt>
+<dd><p>A list of the ordered parameter names derived from <cite>priors</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><cite>list</cite> of <cite>str</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="bayes_vi.model.model.Model.dtypes">
+<code class="sig-name descname"><span class="pre">dtypes</span></code><a class="headerlink" href="#bayes_vi.model.model.Model.dtypes" title="Permalink to this definition">¶</a></dt>
+<dd><p>A list of the dtype of each parameter.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><cite>list</cite> of <cite>tf.dtype</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="bayes_vi.model.model.Model.prior_distribution">
+<code class="sig-name descname"><span class="pre">prior_distribution</span></code><a class="headerlink" href="#bayes_vi.model.model.Model.prior_distribution" title="Permalink to this definition">¶</a></dt>
+<dd><p>A joint distribution of the <cite>priors</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><cite>tfp.distributions.JointDistributionNamedAutoBatched</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="bayes_vi.model.model.Model.constraining_bijectors">
+<code class="sig-name descname"><span class="pre">constraining_bijectors</span></code><a class="headerlink" href="#bayes_vi.model.model.Model.constraining_bijectors" title="Permalink to this definition">¶</a></dt>
+<dd><p>A list of diffeomorphisms defined as <cite>tfp.bijectors.Bijector</cite>
+to transform each parameter into unconstrained space R^n. The semantics are chosen,
+such that the inverse transformation of each bijector unconstrains a parameter sample,
+while the forward transformation constrains the parameter sample to the allowed range.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><cite>list</cite> of <cite>tfp.bijectors.Bijector</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="bayes_vi.model.model.Model.joint_constraining_bijector">
+<code class="sig-name descname"><span class="pre">joint_constraining_bijector</span></code><a class="headerlink" href="#bayes_vi.model.model.Model.joint_constraining_bijector" title="Permalink to this definition">¶</a></dt>
+<dd><p>A bijector which applies the constraining bijectors to the respective parameters in parallel.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><cite>tfp.bijectors.JointMap</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="bayes_vi.model.model.Model.param_event_shape">
+<code class="sig-name descname"><span class="pre">param_event_shape</span></code><a class="headerlink" href="#bayes_vi.model.model.Model.param_event_shape" title="Permalink to this definition">¶</a></dt>
+<dd><p>A list of the event shapes of each prior distribution.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><cite>list</cite> of <cite>tf.TensorShape</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="bayes_vi.model.model.Model.unconstrained_param_event_shape">
+<code class="sig-name descname"><span class="pre">unconstrained_param_event_shape</span></code><a class="headerlink" href="#bayes_vi.model.model.Model.unconstrained_param_event_shape" title="Permalink to this definition">¶</a></dt>
+<dd><p>A list of the prior distributions event shapes in unconstrained space.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><cite>list</cite> of <cite>tf.TensorShape</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="bayes_vi.model.model.Model.reshape_flat_param_bijector">
+<code class="sig-name descname"><span class="pre">reshape_flat_param_bijector</span></code><a class="headerlink" href="#bayes_vi.model.model.Model.reshape_flat_param_bijector" title="Permalink to this definition">¶</a></dt>
+<dd><p>A bijector which reshapes (forward) and flattens (inverse) a parameter samples in constrained space.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><cite>tfp.bijectors.JointMap</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="bayes_vi.model.model.Model.reshape_flat_unconstrained_param_bijector">
+<code class="sig-name descname"><span class="pre">reshape_flat_unconstrained_param_bijector</span></code><a class="headerlink" href="#bayes_vi.model.model.Model.reshape_flat_unconstrained_param_bijector" title="Permalink to this definition">¶</a></dt>
+<dd><p>A bijector which reshapes (forward) and flattens (inverse) a parameter samples in unconstrained space.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><cite>tfp.bijectors.JointMap</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="bayes_vi.model.model.Model.flat_param_event_shape">
+<code class="sig-name descname"><span class="pre">flat_param_event_shape</span></code><a class="headerlink" href="#bayes_vi.model.model.Model.flat_param_event_shape" title="Permalink to this definition">¶</a></dt>
+<dd><p>A list of flattened parameter event shapes in constrained space.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><cite>list</cite> of <cite>tf.TensorShape</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="bayes_vi.model.model.Model.flat_unconstrained_param_event_shape">
+<code class="sig-name descname"><span class="pre">flat_unconstrained_param_event_shape</span></code><a class="headerlink" href="#bayes_vi.model.model.Model.flat_unconstrained_param_event_shape" title="Permalink to this definition">¶</a></dt>
+<dd><p>A list of flattened parameter event shapes in unconstrained space.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><cite>list</cite> of <cite>tf.TensorShape</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="bayes_vi.model.model.Model.split_flat_param_bijector">
+<code class="sig-name descname"><span class="pre">split_flat_param_bijector</span></code><a class="headerlink" href="#bayes_vi.model.model.Model.split_flat_param_bijector" title="Permalink to this definition">¶</a></dt>
+<dd><p>A bijector which concatenates (inverse) a the parts of a parameter sample and
+splits (forward) such a merged sample in constrained space.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><cite>tfp.bijectors.Split</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="bayes_vi.model.model.Model.split_flat_unconstrained_param_bijector">
+<code class="sig-name descname"><span class="pre">split_flat_unconstrained_param_bijector</span></code><a class="headerlink" href="#bayes_vi.model.model.Model.split_flat_unconstrained_param_bijector" title="Permalink to this definition">¶</a></dt>
+<dd><p>A bijector which concatenates (inverse) a the parts of a parameter sample and
+splits (forward) such a merged sample in unconstrained space.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><cite>tfp.bijectors.Split</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="bayes_vi.model.model.Model.blockwise_constraining_bijector">
+<code class="sig-name descname"><span class="pre">blockwise_constraining_bijector</span></code><a class="headerlink" href="#bayes_vi.model.model.Model.blockwise_constraining_bijector" title="Permalink to this definition">¶</a></dt>
+<dd><p>A chain of bijectors, that splits, reshapes, constrains, flattens and concatenates
+a merged sample on the forward transformation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><cite>tfp.bijectors.Chain</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="bayes_vi.model.model.Model.flat_param_event_ndims">
+<code class="sig-name descname"><span class="pre">flat_param_event_ndims</span></code><a class="headerlink" href="#bayes_vi.model.model.Model.flat_param_event_ndims" title="Permalink to this definition">¶</a></dt>
+<dd><p>The dimension of the constrained parameter space.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><cite>int</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="bayes_vi.model.model.Model.flat_unconstrained_param_event_ndims">
+<code class="sig-name descname"><span class="pre">flat_unconstrained_param_event_ndims</span></code><a class="headerlink" href="#bayes_vi.model.model.Model.flat_unconstrained_param_event_ndims" title="Permalink to this definition">¶</a></dt>
+<dd><p>The dimension of the unconstrained parameter space.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><cite>int</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="bayes_vi.model.model.Model.get_joint_distribution">
+<code class="sig-name descname"><span class="pre">get_joint_distribution</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">features</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bayes_vi.model.model.Model.get_joint_distribution" title="Permalink to this definition">¶</a></dt>
+<dd><p>Constructs the joint distribution of the model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>num_samples</strong> (<cite>int</cite>) – The number of samples over which to construct the product joint distribution.</p></li>
+<li><p><strong>features</strong> (<cite>tf.Tensor</cite> or <cite>dict[str, tf.Tensor]</cite>) – The features on which to condition the model.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The respective joint distribution of the model conditioned on <cite>features</cite> if provided.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><cite>tfp.distributions.JointDistributionNamedAutoBatched</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="bayes_vi.model.model.Model.get_param_distributions">
+<code class="sig-name descname"><span class="pre">get_param_distributions</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">joint_param_distribution</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">param_samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bayes_vi.model.model.Model.get_param_distributions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Utility function returning the marginal parameter distributions given a joint distribution or samples.</p>
+<p>This function is primarily for internal use.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>joint_param_distribution</strong> (<cite>tfp.distributions.JointDistributionNamed</cite> or <cite>tfp.distributions.JointDistributionNamedAutoBatched</cite>) – A joint distribution over the model parameters (e.g. prior or posterior)</p></li>
+<li><p><strong>param_samples</strong> (<cite>list</cite> of <cite>tf.Tensor</cite> or <cite>collections.OrderedDict[str, tf.Tensor]</cite>) – A list or collections.OrderedDict of parameter samples.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A mapping from parameter names to their marginal distributions.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><cite>collections.OrderedDict[str, tfp.distributions.Distribution]</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="bayes_vi.model.model.Model.get_posterior_predictive_distribution">
+<code class="sig-name descname"><span class="pre">get_posterior_predictive_distribution</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">posterior_distribution</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">posterior_samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">features</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bayes_vi.model.model.Model.get_posterior_predictive_distribution" title="Permalink to this definition">¶</a></dt>
+<dd><p>Constructs the posterior predictive distribution of the model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>posterior_distribution</strong> (<cite>tfp.distributions.JointDistributionNamed</cite> or <cite>tfp.distributions.JointDistributionNamedAutoBatched</cite>) – A joint distribution over the model parameters (e.g. prior or posterior)</p></li>
+<li><p><strong>posterior_samples</strong> (<cite>list</cite> of <cite>tf.Tensor</cite> or <cite>collections.OrderedDict[str, tf.Tensor]</cite>) – A list or collections.OrderedDict of parameter samples.</p></li>
+<li><p><strong>num_samples</strong> (<cite>int</cite>) – The number of samples over which to construct the product joint distribution.</p></li>
+<li><p><strong>features</strong> (<cite>tf.Tensor</cite> or <cite>dict[str, tf.Tensor]</cite>) – The features on which to condition the model.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The posterior predictive distribution of the model conditioned on <cite>features</cite> if provided.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><cite>tfp.distributions.JointDistributionNamedAutoBatched</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt id="bayes_vi.model.model.sample">
+<code class="sig-prename descclassname"><span class="pre">bayes_vi.model.model.</span></code><code class="sig-name descname"><span class="pre">sample</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bayes_vi.model.model.sample" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decorator to map data distribution onto the product data distribution based on num_samples.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-bayes_vi.model">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-bayes_vi.model" title="Permalink to this headline">¶</a></h2>
+<p>Model subpackage containing the model module.</p>
+<div class="section" id="modules">
+<h3>Modules<a class="headerlink" href="#modules" title="Permalink to this headline">¶</a></h3>
+<p>model: module providing the model class.</p>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, Maximilian Gartz.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

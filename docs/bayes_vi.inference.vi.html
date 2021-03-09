@@ -1,39 +1,653 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<html><head><title>Python: package bayes_vi.inference.vi</title>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-</head><body bgcolor="#f0f0f8">
 
-<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
-<tr bgcolor="#7799ee">
-<td valign=bottom>&nbsp;<br>
-<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong><a href="bayes_vi.html"><font color="#ffffff">bayes_vi</font></a>.<a href="bayes_vi.inference.html"><font color="#ffffff">inference</font></a>.vi</strong></big></big></font></td
-><td align=right valign=bottom
-><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/Users/mgartz/Life/1-University/Bachelor-Thesis/code/bayesian-inference/bayes_vi/inference/vi/__init__.py">/Users/mgartz/Life/1-University/Bachelor-Thesis/code/bayesian-inference/bayes_vi/inference/vi/__init__.py</a></font></td></tr></table>
-    <p><tt>Variational&nbsp;inference&nbsp;subpackage.<br>
-&nbsp;<br>
-Modules<br>
--------<br>
-vi:&nbsp;module&nbsp;providing&nbsp;the&nbsp;variational&nbsp;inference&nbsp;class.<br>
-&nbsp;<br>
-surrogate_posteriors:&nbsp;module&nbsp;providing&nbsp;different&nbsp;surrogate&nbsp;posterior&nbsp;classes.<br>
-&nbsp;<br>
-flow_bijectors:&nbsp;module&nbsp;providing&nbsp;trainable&nbsp;flow&nbsp;bijectors.</tt></p>
-<p>
-<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
-<tr bgcolor="#aa55cc">
-<td colspan=3 valign=bottom>&nbsp;<br>
-<font color="#ffffff" face="helvetica, arial"><big><strong>Package Contents</strong></big></font></td></tr>
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>bayes_vi.inference.vi package &mdash; bayes-vi 0.3.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
     
-<tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
-<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="bayes_vi.inference.vi.flow_bijectors.html">flow_bijectors</a><br>
-</td><td width="25%" valign=top><a href="bayes_vi.inference.vi.surrogate_posteriors.html">surrogate_posteriors</a><br>
-</td><td width="25%" valign=top><a href="bayes_vi.inference.vi.vi.html">vi</a><br>
-</td><td width="25%" valign=top></td></tr></table></td></tr></table><p>
-<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
-<tr bgcolor="#55aa55">
-<td colspan=3 valign=bottom>&nbsp;<br>
-<font color="#ffffff" face="helvetica, arial"><big><strong>Data</strong></big></font></td></tr>
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
     
-<tr><td bgcolor="#55aa55"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
-<td width="100%"><strong>__all___</strong> = ['vi', 'flow_bijectors', 'surrogate_posteriors']</td></tr></table>
-</body></html>
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> bayes-vi
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">bayes_vi.inference.vi package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-bayes_vi.inference.vi.flow_bijectors">bayes_vi.inference.vi.flow_bijectors module</a></li>
+<li><a class="reference internal" href="#module-bayes_vi.inference.vi.surrogate_posteriors">bayes_vi.inference.vi.surrogate_posteriors module</a></li>
+<li><a class="reference internal" href="#module-bayes_vi.inference.vi.vi">bayes_vi.inference.vi.vi module</a></li>
+<li><a class="reference internal" href="#module-bayes_vi.inference.vi">Module contents</a><ul>
+<li><a class="reference internal" href="#modules">Modules</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">bayes-vi</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>bayes_vi.inference.vi package</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/bayes_vi.inference.vi.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="bayes-vi-inference-vi-package">
+<h1>bayes_vi.inference.vi package<a class="headerlink" href="#bayes-vi-inference-vi-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-bayes_vi.inference.vi.flow_bijectors">
+<span id="bayes-vi-inference-vi-flow-bijectors-module"></span><h2>bayes_vi.inference.vi.flow_bijectors module<a class="headerlink" href="#module-bayes_vi.inference.vi.flow_bijectors" title="Permalink to this headline">¶</a></h2>
+<p>Module providing trainable bijectors for normalizing flows.</p>
+<dl class="py class">
+<dt id="bayes_vi.inference.vi.flow_bijectors.AffineFlow">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">bayes_vi.inference.vi.flow_bijectors.</span></code><code class="sig-name descname"><span class="pre">AffineFlow</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event_dims</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">validate_args</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'affine_flow'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bayes_vi.inference.vi.flow_bijectors.AffineFlow" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">tensorflow_probability.python.bijectors.bijector.Bijector</span></code></p>
+<p>Implements a trainable Affine flow bijector.</p>
+<dl class="py method">
+<dt id="bayes_vi.inference.vi.flow_bijectors.AffineFlow.forward_log_det_jacobian">
+<code class="sig-name descname"><span class="pre">forward_log_det_jacobian</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">event_ndims</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'forward_log_det_jacobian'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bayes_vi.inference.vi.flow_bijectors.AffineFlow.forward_log_det_jacobian" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns both the forward_log_det_jacobian.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> – <cite>Tensor</cite> (structure). The input to the ‘forward’ Jacobian determinant
+evaluation.</p></li>
+<li><p><strong>event_ndims</strong> – Number of dimensions in the probabilistic events being
+transformed. Must be greater than or equal to
+<cite>self.forward_min_event_ndims</cite>. The result is summed over the final
+dimensions to produce a scalar Jacobian determinant for each event, i.e.
+it has shape <cite>rank(x) - event_ndims</cite> dimensions.
+Multipart bijectors require <em>structured</em> event_ndims, such that
+<cite>rank(y[i]) - rank(event_ndims[i])</cite> is the same for all elements <cite>i</cite> of
+the structured input. Furthermore, the first <cite>event_ndims[i]</cite> of each
+<cite>x[i].shape</cite> must be the same for all <cite>i</cite> (broadcasting is not allowed).</p></li>
+<li><p><strong>name</strong> – The name to give this op.</p></li>
+<li><p><strong>**kwargs</strong> – Named arguments forwarded to subclass implementation.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><dl class="simple">
+<dt><cite>Tensor</cite> (structure), if this bijector is injective.</dt><dd><p>If not injective this is not implemented.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>TypeError</strong> – if <cite>y</cite>’s dtype is incompatible with the expected output dtype.</p></li>
+<li><p><strong>NotImplementedError</strong> – if neither <cite>_forward_log_det_jacobian</cite>
+    nor {<cite>_inverse</cite>, <cite>_inverse_log_det_jacobian</cite>} are implemented, or
+    this is a non-injective bijector.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="bayes_vi.inference.vi.flow_bijectors.AffineFlow.inverse_log_det_jacobian">
+<code class="sig-name descname"><span class="pre">inverse_log_det_jacobian</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">event_ndims</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'inverse_log_det_jacobian'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bayes_vi.inference.vi.flow_bijectors.AffineFlow.inverse_log_det_jacobian" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the (log o det o Jacobian o inverse)(y).</p>
+<p>Mathematically, returns: <cite>log(det(dX/dY))(Y)</cite>. (Recall that: <cite>X=g^{-1}(Y)</cite>.)</p>
+<p>Note that <cite>forward_log_det_jacobian</cite> is the negative of this function,
+evaluated at <cite>g^{-1}(y)</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>y</strong> – <cite>Tensor</cite> (structure). The input to the ‘inverse’ Jacobian determinant
+evaluation.</p></li>
+<li><p><strong>event_ndims</strong> – Number of dimensions in the probabilistic events being
+transformed. Must be greater than or equal to
+<cite>self.inverse_min_event_ndims</cite>. The result is summed over the final
+dimensions to produce a scalar Jacobian determinant for each event, i.e.
+it has shape <cite>rank(y) - event_ndims</cite> dimensions.
+Multipart bijectors require <em>structured</em> event_ndims, such that
+<cite>rank(y[i]) - rank(event_ndims[i])</cite> is the same for all elements <cite>i</cite> of
+the structured input. Furthermore, the first <cite>event_ndims[i]</cite> of each
+<cite>x[i].shape</cite> must be the same for all <cite>i</cite> (broadcasting is not allowed).</p></li>
+<li><p><strong>name</strong> – The name to give this op.</p></li>
+<li><p><strong>**kwargs</strong> – Named arguments forwarded to subclass implementation.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><dl class="simple">
+<dt><cite>Tensor</cite>, if this bijector is injective.</dt><dd><p>If not injective, returns the tuple of local log det
+Jacobians, <cite>log(det(Dg_i^{-1}(y)))</cite>, where <cite>g_i</cite> is the restriction
+of <cite>g</cite> to the <cite>ith</cite> partition <cite>Di</cite>.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>ildj</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>TypeError</strong> – if <cite>x</cite>’s dtype is incompatible with the expected inverse-dtype.</p></li>
+<li><p><strong>NotImplementedError</strong> – if <cite>_inverse_log_det_jacobian</cite> is not implemented.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="bayes_vi.inference.vi.flow_bijectors.HamiltonianFlow">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">bayes_vi.inference.vi.flow_bijectors.</span></code><code class="sig-name descname"><span class="pre">HamiltonianFlow</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="pre">event_dims</span></em>, <em class="sig-param"><span class="pre">potential_energy_fn=None</span></em>, <em class="sig-param"><span class="pre">kinetic_energy_fn=None</span></em>, <em class="sig-param"><span class="pre">symplectic_integrator=&lt;bayes_vi.utils.symplectic_integrators.LeapfrogIntegrator</span> <span class="pre">object&gt;</span></em>, <em class="sig-param"><span class="pre">step_sizes=&lt;tf.Tensor:</span> <span class="pre">shape=()</span></em>, <em class="sig-param"><span class="pre">dtype=float32</span></em>, <em class="sig-param"><span class="pre">numpy=0.1&gt;</span></em>, <em class="sig-param"><span class="pre">num_integration_steps=5</span></em>, <em class="sig-param"><span class="pre">hidden_layers=None</span></em>, <em class="sig-param"><span class="pre">validate_args=False</span></em>, <em class="sig-param"><span class="pre">name='hamiltonian_flow'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bayes_vi.inference.vi.flow_bijectors.HamiltonianFlow" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">tensorflow_probability.python.bijectors.bijector.Bijector</span></code></p>
+<p>Implements a trainable Hamiltonian flow bijector.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="bayes_vi.inference.vi.flow_bijectors.make_energy_fn">
+<code class="sig-prename descclassname"><span class="pre">bayes_vi.inference.vi.flow_bijectors.</span></code><code class="sig-name descname"><span class="pre">make_energy_fn</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event_dims</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden_layers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bayes_vi.inference.vi.flow_bijectors.make_energy_fn" title="Permalink to this definition">¶</a></dt>
+<dd><p>Utility function to construct a simple MLP energy function.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="bayes_vi.inference.vi.flow_bijectors.make_scale_fn">
+<code class="sig-prename descclassname"><span class="pre">bayes_vi.inference.vi.flow_bijectors.</span></code><code class="sig-name descname"><span class="pre">make_scale_fn</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event_ndims</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden_layers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bayes_vi.inference.vi.flow_bijectors.make_scale_fn" title="Permalink to this definition">¶</a></dt>
+<dd><p>Utility function to construct a simple MLP function to parameterize a diagonal scale.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="bayes_vi.inference.vi.flow_bijectors.make_shift_fn">
+<code class="sig-prename descclassname"><span class="pre">bayes_vi.inference.vi.flow_bijectors.</span></code><code class="sig-name descname"><span class="pre">make_shift_fn</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event_ndims</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden_layers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bayes_vi.inference.vi.flow_bijectors.make_shift_fn" title="Permalink to this definition">¶</a></dt>
+<dd><p>Utility function to construct a simple MLP shift function to parameterize a location.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-bayes_vi.inference.vi.surrogate_posteriors">
+<span id="bayes-vi-inference-vi-surrogate-posteriors-module"></span><h2>bayes_vi.inference.vi.surrogate_posteriors module<a class="headerlink" href="#module-bayes_vi.inference.vi.surrogate_posteriors" title="Permalink to this headline">¶</a></h2>
+<p>Module providing different surrogate posterior classes.</p>
+<dl class="py class">
+<dt id="bayes_vi.inference.vi.surrogate_posteriors.ADVI">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">bayes_vi.inference.vi.surrogate_posteriors.</span></code><code class="sig-name descname"><span class="pre">ADVI</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mean_field</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bayes_vi.inference.vi.surrogate_posteriors.ADVI" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#bayes_vi.inference.vi.surrogate_posteriors.SurrogatePosterior" title="bayes_vi.inference.vi.surrogate_posteriors.SurrogatePosterior"><code class="xref py py-class docutils literal notranslate"><span class="pre">bayes_vi.inference.vi.surrogate_posteriors.SurrogatePosterior</span></code></a></p>
+<p>Implements Automatic Differentiation Variational Inference (ADVI) surrogate posterior.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="bayes_vi.inference.vi.surrogate_posteriors.NormalizingFlow">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">bayes_vi.inference.vi.surrogate_posteriors.</span></code><code class="sig-name descname"><span class="pre">NormalizingFlow</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flow_bijector</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_distribution</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extra_ndims</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">posterior_lift_distribution</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bayes_vi.inference.vi.surrogate_posteriors.NormalizingFlow" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#bayes_vi.inference.vi.surrogate_posteriors.SurrogatePosterior" title="bayes_vi.inference.vi.surrogate_posteriors.SurrogatePosterior"><code class="xref py py-class docutils literal notranslate"><span class="pre">bayes_vi.inference.vi.surrogate_posteriors.SurrogatePosterior</span></code></a></p>
+<p>Implements Normalizing Flow surrogate posterior.</p>
+<dl class="py attribute">
+<dt id="bayes_vi.inference.vi.surrogate_posteriors.NormalizingFlow.base_distribution">
+<code class="sig-name descname"><span class="pre">base_distribution</span></code><a class="headerlink" href="#bayes_vi.inference.vi.surrogate_posteriors.NormalizingFlow.base_distribution" title="Permalink to this definition">¶</a></dt>
+<dd><p>The base distribution of the normalizing flow based surrogate posterior.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><cite>tfp.distributions.Distribution</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="bayes_vi.inference.vi.surrogate_posteriors.NormalizingFlow.flow_bijector">
+<code class="sig-name descname"><span class="pre">flow_bijector</span></code><a class="headerlink" href="#bayes_vi.inference.vi.surrogate_posteriors.NormalizingFlow.flow_bijector" title="Permalink to this definition">¶</a></dt>
+<dd><p>A trainable bijector.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><cite>tfp.bijectors.Bijector</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="bayes_vi.inference.vi.surrogate_posteriors.NormalizingFlow.extra_ndims">
+<code class="sig-name descname"><span class="pre">extra_ndims</span></code><a class="headerlink" href="#bayes_vi.inference.vi.surrogate_posteriors.NormalizingFlow.extra_ndims" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of extra dimensions for augmented normalizing flows.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><cite>int</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="bayes_vi.inference.vi.surrogate_posteriors.NormalizingFlow.posterior_lift_distribution">
+<code class="sig-name descname"><span class="pre">posterior_lift_distribution</span></code><a class="headerlink" href="#bayes_vi.inference.vi.surrogate_posteriors.NormalizingFlow.posterior_lift_distribution" title="Permalink to this definition">¶</a></dt>
+<dd><p>A callable returning a <cite>tfp.distributions.Distribution</cite>, implementing a
+conditional lift distribution over extra dimensions for augmented normalizing flows.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><cite>callable</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="bayes_vi.inference.vi.surrogate_posteriors.SurrogatePosterior">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">bayes_vi.inference.vi.surrogate_posteriors.</span></code><code class="sig-name descname"><span class="pre">SurrogatePosterior</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bayes_vi.inference.vi.surrogate_posteriors.SurrogatePosterior" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Base Class for surrogate posteriors.</p>
+<dl class="py attribute">
+<dt id="bayes_vi.inference.vi.surrogate_posteriors.SurrogatePosterior.model">
+<code class="sig-name descname"><span class="pre">model</span></code><a class="headerlink" href="#bayes_vi.inference.vi.surrogate_posteriors.SurrogatePosterior.model" title="Permalink to this definition">¶</a></dt>
+<dd><p>A Bayesian probabilistic <cite>Model</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><cite>Model</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="bayes_vi.inference.vi.surrogate_posteriors.SurrogatePosterior.distribution">
+<code class="sig-name descname"><span class="pre">distribution</span></code><a class="headerlink" href="#bayes_vi.inference.vi.surrogate_posteriors.SurrogatePosterior.distribution" title="Permalink to this definition">¶</a></dt>
+<dd><p>The trainable surrogate posterior distribution.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><cite>tfp.distributions.Distribution</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="bayes_vi.inference.vi.surrogate_posteriors.SurrogatePosterior.reshape_sample_bijector">
+<code class="sig-name descname"><span class="pre">reshape_sample_bijector</span></code><a class="headerlink" href="#bayes_vi.inference.vi.surrogate_posteriors.SurrogatePosterior.reshape_sample_bijector" title="Permalink to this definition">¶</a></dt>
+<dd><p>A bijector to split merged parameters and reshape them.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><cite>tfp.bijectors.Bijector</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="bayes_vi.inference.vi.surrogate_posteriors.SurrogatePosterior.unconstrained_event_ndims">
+<code class="sig-name descname"><span class="pre">unconstrained_event_ndims</span></code><a class="headerlink" href="#bayes_vi.inference.vi.surrogate_posteriors.SurrogatePosterior.unconstrained_event_ndims" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of unconstrained parameter space dimensions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><cite>int</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="bayes_vi.inference.vi.surrogate_posteriors.SurrogatePosterior.event_ndims">
+<code class="sig-name descname"><span class="pre">event_ndims</span></code><a class="headerlink" href="#bayes_vi.inference.vi.surrogate_posteriors.SurrogatePosterior.event_ndims" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of parameter space dimensions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><cite>int</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="bayes_vi.inference.vi.surrogate_posteriors.SurrogatePosterior.dtype">
+<code class="sig-name descname"><span class="pre">dtype</span></code><a class="headerlink" href="#bayes_vi.inference.vi.surrogate_posteriors.SurrogatePosterior.dtype" title="Permalink to this definition">¶</a></dt>
+<dd><p>Datatype of the surrogate posterior distribution samples.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><cite>tf.dtypes.Dtype</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="bayes_vi.inference.vi.surrogate_posteriors.SurrogatePosterior.approx_joint_marginal_posteriors">
+<code class="sig-name descname"><span class="pre">approx_joint_marginal_posteriors</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_samples_to_approx_marginals</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bayes_vi.inference.vi.surrogate_posteriors.SurrogatePosterior.approx_joint_marginal_posteriors" title="Permalink to this definition">¶</a></dt>
+<dd><p>Approximates the marginal posterior distributions and returns them as a joint distribution.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>num_samples_to_approx_marginals</strong> (<cite>int</cite>) – The number of samples to approximate the marginal posteriors for each parameter.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The independent joint distribution over model parameters.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><cite>tfp.distributions.JointDistributionNamedAutoBatched</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="bayes_vi.inference.vi.surrogate_posteriors.SurrogatePosterior.get_corrected_target_log_prob_fn">
+<code class="sig-name descname"><span class="pre">get_corrected_target_log_prob_fn</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target_log_prob_fn</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bayes_vi.inference.vi.surrogate_posteriors.SurrogatePosterior.get_corrected_target_log_prob_fn" title="Permalink to this definition">¶</a></dt>
+<dd><p>If the surrogate posterior has an Attribute <cite>extra_ndims</cite>, return the corrected <cite>target_log_prob_fn</cite>.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-bayes_vi.inference.vi.vi">
+<span id="bayes-vi-inference-vi-vi-module"></span><h2>bayes_vi.inference.vi.vi module<a class="headerlink" href="#module-bayes_vi.inference.vi.vi" title="Permalink to this headline">¶</a></h2>
+<p>Module providing the VI class.</p>
+<dl class="py class">
+<dt id="bayes_vi.inference.vi.vi.VI">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">bayes_vi.inference.vi.vi.</span></code><code class="sig-name descname"><span class="pre">VI</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="pre">model</span></em>, <em class="sig-param"><span class="pre">dataset</span></em>, <em class="sig-param"><span class="pre">surrogate_posterior</span></em>, <em class="sig-param"><span class="pre">discrepancy_fn=&lt;function</span> <span class="pre">kl_reverse&gt;</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bayes_vi.inference.vi.vi.VI" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="bayes_vi.inference.html#bayes_vi.inference.inference.Inference" title="bayes_vi.inference.inference.Inference"><code class="xref py py-class docutils literal notranslate"><span class="pre">bayes_vi.inference.inference.Inference</span></code></a></p>
+<p>Implementation of Variational inference.</p>
+<dl class="py attribute">
+<dt id="bayes_vi.inference.vi.vi.VI.features">
+<code class="sig-name descname"><span class="pre">features</span></code><a class="headerlink" href="#bayes_vi.inference.vi.vi.VI.features" title="Permalink to this definition">¶</a></dt>
+<dd><p>The features contained in <cite>dataset</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><cite>tf.Tensor</cite> or <cite>dict[str, tf.Tensor]</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="bayes_vi.inference.vi.vi.VI.targets">
+<code class="sig-name descname"><span class="pre">targets</span></code><a class="headerlink" href="#bayes_vi.inference.vi.vi.VI.targets" title="Permalink to this definition">¶</a></dt>
+<dd><p>The targets contained in <cite>dataset</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><cite>tf.Tensor</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="bayes_vi.inference.vi.vi.VI.distribution">
+<code class="sig-name descname"><span class="pre">distribution</span></code><a class="headerlink" href="#bayes_vi.inference.vi.vi.VI.distribution" title="Permalink to this definition">¶</a></dt>
+<dd><p>The joint distribution of the model (conditioned on features if regression model)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><cite>tf.distributions.JointDistributionNamedAutoBatched</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="bayes_vi.inference.vi.vi.VI.target_log_prob">
+<code class="sig-name descname"><span class="pre">target_log_prob</span></code><a class="headerlink" href="#bayes_vi.inference.vi.vi.VI.target_log_prob" title="Permalink to this definition">¶</a></dt>
+<dd><p>A callable taking a constrained parameter sample as a list
+and returning the unnormalized log posterior of the <cite>model</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><cite>callable</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="bayes_vi.inference.vi.vi.VI.surrogate_posterior">
+<code class="sig-name descname"><span class="pre">surrogate_posterior</span></code><a class="headerlink" href="#bayes_vi.inference.vi.vi.VI.surrogate_posterior" title="Permalink to this definition">¶</a></dt>
+<dd><p>A trainable distribution to fit to true posterior.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><cite>tfp.distributions.Distribution</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="bayes_vi.inference.vi.vi.VI.discrepancy_fn">
+<code class="sig-name descname"><span class="pre">discrepancy_fn</span></code><a class="headerlink" href="#bayes_vi.inference.vi.vi.VI.discrepancy_fn" title="Permalink to this definition">¶</a></dt>
+<dd><p>A function defining a f-divergence in log space.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><cite>callable</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="bayes_vi.inference.vi.vi.VI.fit">
+<code class="sig-name descname"><span class="pre">fit</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="pre">optimizer=&lt;tensorflow.python.keras.optimizer_v2.adam.Adam</span> <span class="pre">object&gt;</span></em>, <em class="sig-param"><span class="pre">num_steps=10000</span></em>, <em class="sig-param"><span class="pre">sample_size=1</span></em>, <em class="sig-param"><span class="pre">num_samples_to_approx_marginals=10000</span></em>, <em class="sig-param"><span class="pre">progress_bar=True</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bayes_vi.inference.vi.vi.VI.fit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fits <cite>surrogate_posterior</cite> to the true posterior.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>optimizer</strong> (<cite>tf.optimizers.Optimizer</cite>) – Optimizer instance to use for optimization (Default: <cite>tf.optimizers.Adam()</cite>).</p></li>
+<li><p><strong>num_steps</strong> (<cite>int</cite>) – Number of optimization steps (Default: 10000).</p></li>
+<li><p><strong>sample_size</strong> (<cite>int</cite>) – Number of samples to use in every optimization step to approximate variational loss (Default: 1).</p></li>
+<li><p><strong>num_samples_to_approx_marginals</strong> (<cite>int</cite>) – Number of samples to use to finally approximate the marginal posterior distributions (Default: 10000).</p></li>
+<li><p><strong>progress_bar</strong> (<cite>bool</cite>) – Boolean indicator whether or not to show a progress bar (Default: True).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>approx_posterior</strong> (<cite>tfp.distributions.JointDistributionNamedAutoBatched</cite>) – Approximated marginal posterior distributions.</p></li>
+<li><p><strong>losses</strong> (<cite>np.array</cite>) – Array of optimization loss history.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="bayes_vi.inference.vi.vi.VI.make_optimizer_step_fn">
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">make_optimizer_step_fn</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">loss_fn</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimizer</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bayes_vi.inference.vi.vi.VI.make_optimizer_step_fn" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates function that computes a single optimization step</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="bayes_vi.inference.vi.vi.VI.make_stochastic_optimizer_step_fn">
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">make_stochastic_optimizer_step_fn</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">loss_fn</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimizer</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bayes_vi.inference.vi.vi.VI.make_stochastic_optimizer_step_fn" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates function that computes a single stochastic optimization step</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="bayes_vi.inference.vi.vi.VI.safe_discrepancy_fn">
+<code class="sig-name descname"><span class="pre">safe_discrepancy_fn</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">logu</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bayes_vi.inference.vi.vi.VI.safe_discrepancy_fn" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes discrepancy, dropping infinite values</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="bayes_vi.inference.vi.vi.VI.stochastic_fit">
+<code class="sig-name descname"><span class="pre">stochastic_fit</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="pre">optimizer=&lt;tensorflow.python.keras.optimizer_v2.adam.Adam</span> <span class="pre">object&gt;</span></em>, <em class="sig-param"><span class="pre">epochs=1</span></em>, <em class="sig-param"><span class="pre">batch_size=32</span></em>, <em class="sig-param"><span class="pre">sample_size=1</span></em>, <em class="sig-param"><span class="pre">num_samples_to_approx_marginals=10000</span></em>, <em class="sig-param"><span class="pre">progress_bar=True</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bayes_vi.inference.vi.vi.VI.stochastic_fit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fits <cite>surrogate_posterior</cite> to the true posterior stochastically.</p>
+<p>Note: This is particularly useful for large datasets.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>optimizer</strong> (<cite>tf.optimizers.Optimizer</cite>) – Optimizer instance to use for optimization (Default: <cite>tf.optimizers.Adam()</cite>).</p></li>
+<li><p><strong>epochs</strong> (<cite>int</cite>) – Number of full passes of the dataset (Default: 1).</p></li>
+<li><p><strong>batch_size</strong> (<cite>int</cite>) – Number of examples from dataset to use on each optimization step (Default: 32).</p></li>
+<li><p><strong>sample_size</strong> (<cite>int</cite>) – Number of samples to use in every optimization step to approximate variational loss (Default: 1).</p></li>
+<li><p><strong>num_samples_to_approx_marginals</strong> (<cite>int</cite>) – Number of samples to use to finally approximate the marginal posterior distributions (Default: 10000).</p></li>
+<li><p><strong>progress_bar</strong> (<cite>bool</cite>) – Boolean indicator whether or not to show a progress bar (Default: True).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>approx_posterior</strong> (<cite>tfp.distributions.JointDistributionNamedAutoBatched</cite>) – Approximated marginal posterior distributions.</p></li>
+<li><p><strong>losses</strong> (<cite>np.array</cite>) – Array of optimization loss history.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-bayes_vi.inference.vi">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-bayes_vi.inference.vi" title="Permalink to this headline">¶</a></h2>
+<p>Variational inference subpackage.</p>
+<div class="section" id="modules">
+<h3>Modules<a class="headerlink" href="#modules" title="Permalink to this headline">¶</a></h3>
+<p>vi: module providing the variational inference class.</p>
+<p>surrogate_posteriors: module providing different surrogate posterior classes.</p>
+<p>flow_bijectors: module providing trainable flow bijectors.</p>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, Maximilian Gartz.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

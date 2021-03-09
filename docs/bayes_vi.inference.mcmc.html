@@ -1,42 +1,737 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<html><head><title>Python: package bayes_vi.inference.mcmc</title>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-</head><body bgcolor="#f0f0f8">
 
-<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
-<tr bgcolor="#7799ee">
-<td valign=bottom>&nbsp;<br>
-<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong><a href="bayes_vi.html"><font color="#ffffff">bayes_vi</font></a>.<a href="bayes_vi.inference.html"><font color="#ffffff">inference</font></a>.mcmc</strong></big></big></font></td
-><td align=right valign=bottom
-><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/Users/mgartz/Life/1-University/Bachelor-Thesis/code/bayesian-inference/bayes_vi/inference/mcmc/__init__.py">/Users/mgartz/Life/1-University/Bachelor-Thesis/code/bayesian-inference/bayes_vi/inference/mcmc/__init__.py</a></font></td></tr></table>
-    <p><tt>MCMC&nbsp;subpackage&nbsp;containing&nbsp;MCMC&nbsp;related&nbsp;modules.<br>
-&nbsp;<br>
-Modules<br>
--------<br>
-mcmc:&nbsp;module&nbsp;providing&nbsp;the&nbsp;mcmc&nbsp;inference&nbsp;class<br>
-&nbsp;<br>
-sample_results:&nbsp;module&nbsp;providing&nbsp;a&nbsp;wrapper&nbsp;for&nbsp;the&nbsp;mcmc&nbsp;sampling&nbsp;results.<br>
-&nbsp;<br>
-stepsize_adaptation_kernels:&nbsp;module&nbsp;providing&nbsp;different&nbsp;stepsize&nbsp;adaptation&nbsp;kernels.<br>
-&nbsp;<br>
-transition_kernels:&nbsp;module&nbsp;providing&nbsp;different&nbsp;Markov&nbsp;transition&nbsp;kernels.</tt></p>
-<p>
-<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
-<tr bgcolor="#aa55cc">
-<td colspan=3 valign=bottom>&nbsp;<br>
-<font color="#ffffff" face="helvetica, arial"><big><strong>Package Contents</strong></big></font></td></tr>
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>bayes_vi.inference.mcmc package &mdash; bayes-vi 0.3.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
     
-<tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
-<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="bayes_vi.inference.mcmc.mcmc.html">mcmc</a><br>
-</td><td width="25%" valign=top><a href="bayes_vi.inference.mcmc.sample_results.html">sample_results</a><br>
-</td><td width="25%" valign=top><a href="bayes_vi.inference.mcmc.stepsize_adaptation_kernels.html">stepsize_adaptation_kernels</a><br>
-</td><td width="25%" valign=top><a href="bayes_vi.inference.mcmc.transition_kernels.html">transition_kernels</a><br>
-</td></tr></table></td></tr></table><p>
-<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
-<tr bgcolor="#55aa55">
-<td colspan=3 valign=bottom>&nbsp;<br>
-<font color="#ffffff" face="helvetica, arial"><big><strong>Data</strong></big></font></td></tr>
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
     
-<tr><td bgcolor="#55aa55"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
-<td width="100%"><strong>__all__</strong> = ['mcmc', 'sample_results', 'stepsize_adaptation_kernels', 'transition_kernels']</td></tr></table>
-</body></html>
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> bayes-vi
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">bayes_vi.inference.mcmc package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-bayes_vi.inference.mcmc.mcmc">bayes_vi.inference.mcmc.mcmc module</a></li>
+<li><a class="reference internal" href="#module-bayes_vi.inference.mcmc.sample_results">bayes_vi.inference.mcmc.sample_results module</a></li>
+<li><a class="reference internal" href="#module-bayes_vi.inference.mcmc.stepsize_adaptation_kernels">bayes_vi.inference.mcmc.stepsize_adaptation_kernels module</a></li>
+<li><a class="reference internal" href="#module-bayes_vi.inference.mcmc.transition_kernels">bayes_vi.inference.mcmc.transition_kernels module</a></li>
+<li><a class="reference internal" href="#module-bayes_vi.inference.mcmc">Module contents</a><ul>
+<li><a class="reference internal" href="#modules">Modules</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">bayes-vi</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>bayes_vi.inference.mcmc package</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/bayes_vi.inference.mcmc.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="bayes-vi-inference-mcmc-package">
+<h1>bayes_vi.inference.mcmc package<a class="headerlink" href="#bayes-vi-inference-mcmc-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-bayes_vi.inference.mcmc.mcmc">
+<span id="bayes-vi-inference-mcmc-mcmc-module"></span><h2>bayes_vi.inference.mcmc.mcmc module<a class="headerlink" href="#module-bayes_vi.inference.mcmc.mcmc" title="Permalink to this headline">¶</a></h2>
+<p>Module providing the MCMC inference class.</p>
+<dl class="py class">
+<dt id="bayes_vi.inference.mcmc.mcmc.MCMC">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">bayes_vi.inference.mcmc.mcmc.</span></code><code class="sig-name descname"><span class="pre">MCMC</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="pre">model</span></em>, <em class="sig-param"><span class="pre">dataset</span></em>, <em class="sig-param"><span class="pre">transition_kernel=&lt;bayes_vi.inference.mcmc.transition_kernels.RandomWalkMetropolis</span> <span class="pre">object&gt;</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bayes_vi.inference.mcmc.mcmc.MCMC" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="bayes_vi.inference.html#bayes_vi.inference.inference.Inference" title="bayes_vi.inference.inference.Inference"><code class="xref py py-class docutils literal notranslate"><span class="pre">bayes_vi.inference.inference.Inference</span></code></a></p>
+<p>Implementation of MCMC to generate posterior samples.</p>
+<dl class="py attribute">
+<dt id="bayes_vi.inference.mcmc.mcmc.MCMC.features">
+<code class="sig-name descname"><span class="pre">features</span></code><a class="headerlink" href="#bayes_vi.inference.mcmc.mcmc.MCMC.features" title="Permalink to this definition">¶</a></dt>
+<dd><p>The features contained in <cite>dataset</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><cite>tf.Tensor</cite> or <cite>dict[str, tf.Tensor]</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="bayes_vi.inference.mcmc.mcmc.MCMC.targets">
+<code class="sig-name descname"><span class="pre">targets</span></code><a class="headerlink" href="#bayes_vi.inference.mcmc.mcmc.MCMC.targets" title="Permalink to this definition">¶</a></dt>
+<dd><p>The targets contained in <cite>dataset</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><cite>tf.Tensor</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="bayes_vi.inference.mcmc.mcmc.MCMC.distribution">
+<code class="sig-name descname"><span class="pre">distribution</span></code><a class="headerlink" href="#bayes_vi.inference.mcmc.mcmc.MCMC.distribution" title="Permalink to this definition">¶</a></dt>
+<dd><p>The joint distribution of the model (conditioned on features if regression model)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><cite>tf.distributions.JointDistributionNamedAutoBatched</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="bayes_vi.inference.mcmc.mcmc.MCMC.target_log_prob">
+<code class="sig-name descname"><span class="pre">target_log_prob</span></code><a class="headerlink" href="#bayes_vi.inference.mcmc.mcmc.MCMC.target_log_prob" title="Permalink to this definition">¶</a></dt>
+<dd><p>A callable taking a constrained parameter sample as a list
+and returning the unnormalized log posterior of the <cite>model</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><cite>callable</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="bayes_vi.inference.mcmc.mcmc.MCMC.transition_kernel">
+<code class="sig-name descname"><span class="pre">transition_kernel</span></code><a class="headerlink" href="#bayes_vi.inference.mcmc.mcmc.MCMC.transition_kernel" title="Permalink to this definition">¶</a></dt>
+<dd><p>A Markov transition kernel to define transition between states.
+(Default: <cite>bayes_vi.inference.mcmc.transition_kernels.RandomWalkMetropolis</cite>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><cite>bayes_vi.inference.mcmc.transition_kernels.TransitionKernel</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="bayes_vi.inference.mcmc.mcmc.MCMC.fit">
+<code class="sig-name descname"><span class="pre">fit</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">initial_state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_chains</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_burnin_steps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">merge_state_parts</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">progress_bar</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bayes_vi.inference.mcmc.mcmc.MCMC.fit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fits the Bayesian model to the dataset.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>initial_state</strong> (<cite>list</cite> of <cite>tf.Tensor</cite> or <cite>collection.OrderedDict[str, tf.Tensor]</cite>) – <p>A parameter sample of some sample shape, where the sample shape induces parallel runs
+(in this case <cite>num_chains</cite> is ignored).
+Special values:</p>
+<blockquote>
+<div><ul>
+<li><p><cite>None</cite>: samples initial state uniformly from [-1,1] in unconstrained space.</p></li>
+</ul>
+</div></blockquote>
+<p>(Default: <cite>None</cite>).</p>
+</p></li>
+<li><p><strong>num_chains</strong> (<cite>int</cite>) – Number of chains to run in parallel.
+Is ignored if initial state is provided explicitly.
+(Default: <cite>4</cite>).</p></li>
+<li><p><strong>num_samples</strong> (<cite>int</cite>) – Number of samples to generate per chain. (Default: <cite>4000</cite>).</p></li>
+<li><p><strong>num_burnin_steps</strong> (<cite>int</cite>) – Number of burnin steps before starting to generate <cite>num_samples</cite>. (Default: <cite>1000</cite>).</p></li>
+<li><p><strong>merge_state_parts</strong> (<cite>bool</cite>) – A boolean indicator whether or not to merge the state parts into a single state.
+(Default: <cite>False</cite>).</p></li>
+<li><p><strong>progress_bar</strong> (<cite>bool</cite>) – Boolean indicator whether or not to show a progress bar (Default: True).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The sample results containing generated posterior samples and traced metrics.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><cite>bayes_vi.utils.sample_results.SampleResult</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="bayes_vi.inference.mcmc.mcmc.MCMC.sample_chain">
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">sample_chain</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_results</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_burnin_steps</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">current_state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kernel</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trace_fn</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_final_kernel_results</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bayes_vi.inference.mcmc.mcmc.MCMC.sample_chain" title="Permalink to this definition">¶</a></dt>
+<dd><p>wraps <cite>tfp.mcmc.sample_chain</cite>.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-bayes_vi.inference.mcmc.sample_results">
+<span id="bayes-vi-inference-mcmc-sample-results-module"></span><h2>bayes_vi.inference.mcmc.sample_results module<a class="headerlink" href="#module-bayes_vi.inference.mcmc.sample_results" title="Permalink to this headline">¶</a></h2>
+<p>Module providing wrapper class for MCMC sampling results.</p>
+<dl class="py class">
+<dt id="bayes_vi.inference.mcmc.sample_results.SampleResult">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">bayes_vi.inference.mcmc.sample_results.</span></code><code class="sig-name descname"><span class="pre">SampleResult</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">samples</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trace</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bayes_vi.inference.mcmc.sample_results.SampleResult" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Wrapper for mcmc sample results.</p>
+<dl class="py attribute">
+<dt id="bayes_vi.inference.mcmc.sample_results.SampleResult.samples">
+<code class="sig-name descname"><span class="pre">samples</span></code><a class="headerlink" href="#bayes_vi.inference.mcmc.sample_results.SampleResult.samples" title="Permalink to this definition">¶</a></dt>
+<dd><p>The sample results from MCMC or MCMC-like sampling algorithm.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><cite>list</cite> of <cite>tf.Tensor</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="bayes_vi.inference.mcmc.sample_results.SampleResult.trace">
+<code class="sig-name descname"><span class="pre">trace</span></code><a class="headerlink" href="#bayes_vi.inference.mcmc.sample_results.SampleResult.trace" title="Permalink to this definition">¶</a></dt>
+<dd><p>Mapping from names of traced metrics to traced values defined in the Transition kernels.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><cite>dict[str, tf.Tensor]</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="bayes_vi.inference.mcmc.sample_results.SampleResult.accept_ratios">
+<code class="sig-name descname"><span class="pre">accept_ratios</span></code><a class="headerlink" href="#bayes_vi.inference.mcmc.sample_results.SampleResult.accept_ratios" title="Permalink to this definition">¶</a></dt>
+<dd><p>Per chain ratio of accepted samples in the sampling process.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><cite>list</cite> of <cite>tf.Tensor</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-bayes_vi.inference.mcmc.stepsize_adaptation_kernels">
+<span id="bayes-vi-inference-mcmc-stepsize-adaptation-kernels-module"></span><h2>bayes_vi.inference.mcmc.stepsize_adaptation_kernels module<a class="headerlink" href="#module-bayes_vi.inference.mcmc.stepsize_adaptation_kernels" title="Permalink to this headline">¶</a></h2>
+<p>Module providing different stepsize adaptation kernels.</p>
+<dl class="py class">
+<dt id="bayes_vi.inference.mcmc.stepsize_adaptation_kernels.DualAveragingStepSizeAdaptation">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">bayes_vi.inference.mcmc.stepsize_adaptation_kernels.</span></code><code class="sig-name descname"><span class="pre">DualAveragingStepSizeAdaptation</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="pre">num_adaptation_steps</span></em>, <em class="sig-param"><span class="pre">target_accept_prob=0.75</span></em>, <em class="sig-param"><span class="pre">exploration_shrinkage=0.05</span></em>, <em class="sig-param"><span class="pre">shrinkage_target=None</span></em>, <em class="sig-param"><span class="pre">step_count_smoothing=10</span></em>, <em class="sig-param"><span class="pre">decay_rate=0.75</span></em>, <em class="sig-param"><span class="pre">step_size_setter_fn=&lt;function</span> <span class="pre">hmc_like_step_size_setter_fn&gt;</span></em>, <em class="sig-param"><span class="pre">step_size_getter_fn=&lt;function</span> <span class="pre">hmc_like_step_size_getter_fn&gt;</span></em>, <em class="sig-param"><span class="pre">log_accept_prob_getter_fn=&lt;function</span> <span class="pre">hmc_like_log_accept_prob_getter_fn&gt;</span></em>, <em class="sig-param"><span class="pre">validate_args=False</span></em>, <em class="sig-param"><span class="pre">name=None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bayes_vi.inference.mcmc.stepsize_adaptation_kernels.DualAveragingStepSizeAdaptation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#bayes_vi.inference.mcmc.stepsize_adaptation_kernels.StepSizeAdaptationKernel" title="bayes_vi.inference.mcmc.stepsize_adaptation_kernels.StepSizeAdaptationKernel"><code class="xref py py-class docutils literal notranslate"><span class="pre">bayes_vi.inference.mcmc.stepsize_adaptation_kernels.StepSizeAdaptationKernel</span></code></a></p>
+<p>Implements the DualAveragingStepSizeAdaptation kernel.</p>
+<p>Note: This is a wrapper around <cite>tfp.mcmc.DualAveragingStepSizeAdaptation</cite>.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="bayes_vi.inference.mcmc.stepsize_adaptation_kernels.SimpleStepSizeAdaptation">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">bayes_vi.inference.mcmc.stepsize_adaptation_kernels.</span></code><code class="sig-name descname"><span class="pre">SimpleStepSizeAdaptation</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="pre">num_adaptation_steps</span></em>, <em class="sig-param"><span class="pre">target_accept_prob=0.75</span></em>, <em class="sig-param"><span class="pre">adaptation_rate=0.01</span></em>, <em class="sig-param"><span class="pre">step_size_setter_fn=&lt;function</span> <span class="pre">hmc_like_step_size_setter_fn&gt;</span></em>, <em class="sig-param"><span class="pre">step_size_getter_fn=&lt;function</span> <span class="pre">hmc_like_step_size_getter_fn&gt;</span></em>, <em class="sig-param"><span class="pre">log_accept_prob_getter_fn=&lt;function</span> <span class="pre">hmc_like_log_accept_prob_getter_fn&gt;</span></em>, <em class="sig-param"><span class="pre">validate_args=False</span></em>, <em class="sig-param"><span class="pre">name=None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bayes_vi.inference.mcmc.stepsize_adaptation_kernels.SimpleStepSizeAdaptation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#bayes_vi.inference.mcmc.stepsize_adaptation_kernels.StepSizeAdaptationKernel" title="bayes_vi.inference.mcmc.stepsize_adaptation_kernels.StepSizeAdaptationKernel"><code class="xref py py-class docutils literal notranslate"><span class="pre">bayes_vi.inference.mcmc.stepsize_adaptation_kernels.StepSizeAdaptationKernel</span></code></a></p>
+<p>Implements the SimpleStepSizeAdaptation kernel.</p>
+<p>Note: This is a wrapper around <cite>tfp.mcmc.SimpleStepSizeAdaptation</cite>.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="bayes_vi.inference.mcmc.stepsize_adaptation_kernels.StepSizeAdaptationKernel">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">bayes_vi.inference.mcmc.stepsize_adaptation_kernels.</span></code><code class="sig-name descname"><span class="pre">StepSizeAdaptationKernel</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_adaptation_steps</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_accept_prob</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">step_size_setter_fn</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">step_size_getter_fn</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_accept_prob_getter_fn</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bayes_vi.inference.mcmc.stepsize_adaptation_kernels.StepSizeAdaptationKernel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Base class for step size adaptation kernels.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-bayes_vi.inference.mcmc.transition_kernels">
+<span id="bayes-vi-inference-mcmc-transition-kernels-module"></span><h2>bayes_vi.inference.mcmc.transition_kernels module<a class="headerlink" href="#module-bayes_vi.inference.mcmc.transition_kernels" title="Permalink to this headline">¶</a></h2>
+<p>Module providing different Markov transition kernels.</p>
+<dl class="py class">
+<dt id="bayes_vi.inference.mcmc.transition_kernels.HamiltonianMonteCarlo">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">bayes_vi.inference.mcmc.transition_kernels.</span></code><code class="sig-name descname"><span class="pre">HamiltonianMonteCarlo</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">step_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.01</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_leapfrog_steps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transforming_bijector</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stepsize_adaptation_kernel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state_gradients_are_stopped</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bayes_vi.inference.mcmc.transition_kernels.HamiltonianMonteCarlo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#bayes_vi.inference.mcmc.transition_kernels.TransitionKernel" title="bayes_vi.inference.mcmc.transition_kernels.TransitionKernel"><code class="xref py py-class docutils literal notranslate"><span class="pre">bayes_vi.inference.mcmc.transition_kernels.TransitionKernel</span></code></a></p>
+<p>Implements HMC transition kernel.</p>
+<p>Note: This is a wrapper around <cite>tfp.mcmc.HamiltonianMonteCarlo</cite>.</p>
+<dl class="py attribute">
+<dt id="bayes_vi.inference.mcmc.transition_kernels.HamiltonianMonteCarlo.step_size">
+<code class="sig-name descname"><span class="pre">step_size</span></code><a class="headerlink" href="#bayes_vi.inference.mcmc.transition_kernels.HamiltonianMonteCarlo.step_size" title="Permalink to this definition">¶</a></dt>
+<dd><p>representing the step size for the leapfrog integrator.
+Must broadcast with the shape of the state.
+Larger step sizes lead to faster progress, but too-large step sizes make
+rejection exponentially more likely. When possible, it’s often helpful
+to match per-variable step sizes to the standard deviations of the
+target distribution in each variable.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><cite>float</cite> or <cite>list</cite> of <cite>float</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="bayes_vi.inference.mcmc.transition_kernels.HamiltonianMonteCarlo.num_leapfrog_steps">
+<code class="sig-name descname"><span class="pre">num_leapfrog_steps</span></code><a class="headerlink" href="#bayes_vi.inference.mcmc.transition_kernels.HamiltonianMonteCarlo.num_leapfrog_steps" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of steps to run the leapfrog integrator for.
+Total progress per HMC step is roughly proportional to
+<cite>step_size * num_leapfrog_steps</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><cite>int</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="bayes_vi.inference.mcmc.transition_kernels.HamiltonianMonteCarlo.kernel">
+<code class="sig-name descname"><span class="pre">kernel</span></code><a class="headerlink" href="#bayes_vi.inference.mcmc.transition_kernels.HamiltonianMonteCarlo.kernel" title="Permalink to this definition">¶</a></dt>
+<dd><p>A callable taking a target_log_prob_fn and returning
+<cite>tfp.mcmc.HamiltonianMonteCarlo</cite> with the specified parameters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><cite>callable</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="bayes_vi.inference.mcmc.transition_kernels.HamiltonianMonteCarlo.step_size_adaptation_kernel">
+<code class="sig-name descname"><span class="pre">step_size_adaptation_kernel</span></code><a class="headerlink" href="#bayes_vi.inference.mcmc.transition_kernels.HamiltonianMonteCarlo.step_size_adaptation_kernel" title="Permalink to this definition">¶</a></dt>
+<dd><p>A stepsize adaptation kernel to wrap the transition kernel and optimize stepsize in burnin phase.
+(Default: <cite>None</cite>)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><cite>bayes_vi.inference.mcmc.stepsize_adaptation_kernels.StepSizeAdaptationKernel</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="bayes_vi.inference.mcmc.transition_kernels.HamiltonianMonteCarlo.transforming_bijectors">
+<code class="sig-name descname"><span class="pre">transforming_bijectors</span></code><a class="headerlink" href="#bayes_vi.inference.mcmc.transition_kernels.HamiltonianMonteCarlo.transforming_bijectors" title="Permalink to this definition">¶</a></dt>
+<dd><p>A single or per state part transforming bijector to transform the generated samples.
+This allows trainable bijectors to be applied to achieve decorrelation between parameters and simplifying
+the target distribution for more efficient sampling.
+In the context of HMC this is approximately Riemannian-HMC (RHMC).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><cite>tfp.bijectors.Bijector</cite> or <cite>list</cite> of <cite>tfp.bijectors.Bijector</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="bayes_vi.inference.mcmc.transition_kernels.HamiltonianMonteCarlo.state_gradients_are_stopped">
+<code class="sig-name descname"><span class="pre">state_gradients_are_stopped</span></code><a class="headerlink" href="#bayes_vi.inference.mcmc.transition_kernels.HamiltonianMonteCarlo.state_gradients_are_stopped" title="Permalink to this definition">¶</a></dt>
+<dd><p>A boolean indicating that the proposed
+new state be run through <cite>tf.stop_gradient</cite>. This is particularly useful
+when combining optimization over samples from the HMC chain.
+(Default: <cite>False</cite> (i.e., do not apply <cite>stop_gradient</cite>)).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><cite>bool</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="bayes_vi.inference.mcmc.transition_kernels.HamiltonianMonteCarlo.name">
+<code class="sig-name descname"><span class="pre">name</span></code><a class="headerlink" href="#bayes_vi.inference.mcmc.transition_kernels.HamiltonianMonteCarlo.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Name prefixed to Ops created by this function.
+(Default: <cite>None</cite> (i.e., ‘hmc_kernel’)).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><cite>str</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="bayes_vi.inference.mcmc.transition_kernels.HamiltonianMonteCarlo.trace_fn">
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">trace_fn</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pkr</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bayes_vi.inference.mcmc.transition_kernels.HamiltonianMonteCarlo.trace_fn" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="bayes_vi.inference.mcmc.transition_kernels.NoUTurnSampler">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">bayes_vi.inference.mcmc.transition_kernels.</span></code><code class="sig-name descname"><span class="pre">NoUTurnSampler</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">step_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.01</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_tree_depth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_energy_diff</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unrolled_leapfrog_steps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parallel_iterations</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transforming_bijector</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stepsize_adaptation_kernel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bayes_vi.inference.mcmc.transition_kernels.NoUTurnSampler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#bayes_vi.inference.mcmc.transition_kernels.TransitionKernel" title="bayes_vi.inference.mcmc.transition_kernels.TransitionKernel"><code class="xref py py-class docutils literal notranslate"><span class="pre">bayes_vi.inference.mcmc.transition_kernels.TransitionKernel</span></code></a></p>
+<p>Implementation of the NoUTurnSampler.</p>
+<p>Note: This is a wrapper around <cite>tfp.mcmc.NoUTurnSampler</cite>.</p>
+<dl class="py attribute">
+<dt id="bayes_vi.inference.mcmc.transition_kernels.NoUTurnSampler.step_size">
+<code class="sig-name descname"><span class="pre">step_size</span></code><a class="headerlink" href="#bayes_vi.inference.mcmc.transition_kernels.NoUTurnSampler.step_size" title="Permalink to this definition">¶</a></dt>
+<dd><p>representing the step size for the leapfrog integrator.
+Must broadcast with the shape of the state.
+Larger step sizes lead to faster progress, but too-large step sizes make
+rejection exponentially more likely. When possible, it’s often helpful
+to match per-variable step sizes to the standard deviations of the
+target distribution in each variable.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><cite>float</cite> or <cite>list</cite> of <cite>float</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="bayes_vi.inference.mcmc.transition_kernels.NoUTurnSampler.max_tree_depth">
+<code class="sig-name descname"><span class="pre">max_tree_depth</span></code><a class="headerlink" href="#bayes_vi.inference.mcmc.transition_kernels.NoUTurnSampler.max_tree_depth" title="Permalink to this definition">¶</a></dt>
+<dd><p>Maximum depth of the tree implicitly built by NUTS. The
+maximum number of leapfrog steps is bounded by <cite>2**max_tree_depth</cite> i.e.
+the number of nodes in a binary tree <cite>max_tree_depth</cite> nodes deep. The
+default setting of 10 takes up to 1024 leapfrog steps. (Default: <cite>10</cite>)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><cite>int</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="bayes_vi.inference.mcmc.transition_kernels.NoUTurnSampler.max_energy_diff">
+<code class="sig-name descname"><span class="pre">max_energy_diff</span></code><a class="headerlink" href="#bayes_vi.inference.mcmc.transition_kernels.NoUTurnSampler.max_energy_diff" title="Permalink to this definition">¶</a></dt>
+<dd><p>Threshold of energy differences at each leapfrog,
+divergence samples are defined as leapfrog steps that exceed this
+threshold. (Default: <cite>1000</cite>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><cite>float</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="bayes_vi.inference.mcmc.transition_kernels.NoUTurnSampler.unrolled_leapfrog_steps">
+<code class="sig-name descname"><span class="pre">unrolled_leapfrog_steps</span></code><a class="headerlink" href="#bayes_vi.inference.mcmc.transition_kernels.NoUTurnSampler.unrolled_leapfrog_steps" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of leapfrogs to unroll per tree expansion step.
+Applies a direct linear multiplier to the maximum
+trajectory length implied by max_tree_depth. (Default: <cite>1</cite>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><cite>int</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="bayes_vi.inference.mcmc.transition_kernels.NoUTurnSampler.parallel_iterations">
+<code class="sig-name descname"><span class="pre">parallel_iterations</span></code><a class="headerlink" href="#bayes_vi.inference.mcmc.transition_kernels.NoUTurnSampler.parallel_iterations" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of iterations allowed to run in parallel.
+It must be a positive integer. See <cite>tf.while_loop</cite> for more details.
+(Default: <cite>10</cite>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><cite>int</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="bayes_vi.inference.mcmc.transition_kernels.NoUTurnSampler.kernel">
+<code class="sig-name descname"><span class="pre">kernel</span></code><a class="headerlink" href="#bayes_vi.inference.mcmc.transition_kernels.NoUTurnSampler.kernel" title="Permalink to this definition">¶</a></dt>
+<dd><p>A callable taking a target_log_prob_fn and returning
+<cite>tfp.mcmc.NoUTurnSampler</cite> with the specified parameters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><cite>callable</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="bayes_vi.inference.mcmc.transition_kernels.NoUTurnSampler.step_size_adaptation_kernel">
+<code class="sig-name descname"><span class="pre">step_size_adaptation_kernel</span></code><a class="headerlink" href="#bayes_vi.inference.mcmc.transition_kernels.NoUTurnSampler.step_size_adaptation_kernel" title="Permalink to this definition">¶</a></dt>
+<dd><p>A stepsize adaptation kernel to wrap the transition kernel and optimize stepsize in burnin phase.
+(Default: <cite>None</cite>)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><cite>bayes_vi.inference.mcmc.stepsize_adaptation_kernels.StepSizeAdaptationKernel</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="bayes_vi.inference.mcmc.transition_kernels.NoUTurnSampler.transforming_bijector">
+<code class="sig-name descname"><span class="pre">transforming_bijector</span></code><a class="headerlink" href="#bayes_vi.inference.mcmc.transition_kernels.NoUTurnSampler.transforming_bijector" title="Permalink to this definition">¶</a></dt>
+<dd><p>A single or per state part transforming bijector to transform the generated samples.
+This allows trainable bijectors to be applied to achieve decorrelation between parameters and simplifying
+the target distribution for more efficient sampling.
+In the context of HMC this is approximately Riemannian-HMC (RHMC).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><cite>tfp.bijectors.Bijector</cite> or <cite>list</cite> of <cite>tfp.bijectors.Bijector</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="bayes_vi.inference.mcmc.transition_kernels.NoUTurnSampler.name">
+<code class="sig-name descname"><span class="pre">name</span></code><a class="headerlink" href="#bayes_vi.inference.mcmc.transition_kernels.NoUTurnSampler.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Name prefixed to Ops created by this function.
+(Default: <cite>None</cite> (i.e., ‘nuts_kernel’)).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><cite>str</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="bayes_vi.inference.mcmc.transition_kernels.NoUTurnSampler.trace_fn">
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">trace_fn</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pkr</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bayes_vi.inference.mcmc.transition_kernels.NoUTurnSampler.trace_fn" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="bayes_vi.inference.mcmc.transition_kernels.RandomWalkMetropolis">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">bayes_vi.inference.mcmc.transition_kernels.</span></code><code class="sig-name descname"><span class="pre">RandomWalkMetropolis</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">transforming_bijector</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new_state_fn</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bayes_vi.inference.mcmc.transition_kernels.RandomWalkMetropolis" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#bayes_vi.inference.mcmc.transition_kernels.TransitionKernel" title="bayes_vi.inference.mcmc.transition_kernels.TransitionKernel"><code class="xref py py-class docutils literal notranslate"><span class="pre">bayes_vi.inference.mcmc.transition_kernels.TransitionKernel</span></code></a></p>
+<p>Implementation of the RandomWalkMetropolis kernel.</p>
+<p>Note: This is a wrapper around <cite>tfp.mcmc.RandomWalkMetropolis</cite></p>
+<dl class="py attribute">
+<dt id="bayes_vi.inference.mcmc.transition_kernels.RandomWalkMetropolis.transforming_bijectors">
+<code class="sig-name descname"><span class="pre">transforming_bijectors</span></code><a class="headerlink" href="#bayes_vi.inference.mcmc.transition_kernels.RandomWalkMetropolis.transforming_bijectors" title="Permalink to this definition">¶</a></dt>
+<dd><p>A single or per state part transforming bijector to transform the generated samples.
+This allows trainable bijectors to be applied to achieve decorrelation between parameters and simplifying
+the target distribution for more efficient sampling.
+In the context of HMC this is approximately Riemannian-HMC (RHMC).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><cite>tfp.bijectors.Bijector</cite> or <cite>list</cite> of <cite>tfp.bijectors.Bijector</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="bayes_vi.inference.mcmc.transition_kernels.RandomWalkMetropolis.new_state_fn">
+<code class="sig-name descname"><span class="pre">new_state_fn</span></code><a class="headerlink" href="#bayes_vi.inference.mcmc.transition_kernels.RandomWalkMetropolis.new_state_fn" title="Permalink to this definition">¶</a></dt>
+<dd><p>Callable which takes a list of state parts and a seed;
+returns a same-type <cite>list</cite> of <cite>Tensor`s, each being a perturbation
+of the input state parts. The perturbation distribution is assumed to be
+a symmetric distribution centered at the input state part.
+(Default: `None</cite> which is mapped to <cite>tfp.mcmc.random_walk_normal_fn()</cite>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><cite>callable</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="bayes_vi.inference.mcmc.transition_kernels.RandomWalkMetropolis.kernel">
+<code class="sig-name descname"><span class="pre">kernel</span></code><a class="headerlink" href="#bayes_vi.inference.mcmc.transition_kernels.RandomWalkMetropolis.kernel" title="Permalink to this definition">¶</a></dt>
+<dd><p>A callable taking a target_log_prob_fn and returning
+<cite>tfp.mcmc.RandomWalkMetropolis</cite> with the specified parameters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><cite>callable</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="id0">
+<code class="sig-name descname"><span class="pre">transforming_bijectors</span></code><a class="headerlink" href="#id0" title="Permalink to this definition">¶</a></dt>
+<dd><p>A single or per state part transforming bijector to transform the generated samples.
+This allows trainable bijectors to be applied to achieve decorrelation between parameters and simplifying
+the target distribution for more efficient sampling.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><cite>tfp.bijectors.Bijector</cite> or <cite>list</cite> of <cite>tfp.bijectors.Bijector</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="bayes_vi.inference.mcmc.transition_kernels.RandomWalkMetropolis.name">
+<code class="sig-name descname"><span class="pre">name</span></code><a class="headerlink" href="#bayes_vi.inference.mcmc.transition_kernels.RandomWalkMetropolis.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Name prefixed to Ops created by this function.
+(Default: <cite>None</cite> (i.e., ‘rwm_kernel’)).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><cite>str</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="bayes_vi.inference.mcmc.transition_kernels.RandomWalkMetropolis.trace_fn">
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">trace_fn</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pkr</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bayes_vi.inference.mcmc.transition_kernels.RandomWalkMetropolis.trace_fn" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="bayes_vi.inference.mcmc.transition_kernels.TransitionKernel">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">bayes_vi.inference.mcmc.transition_kernels.</span></code><code class="sig-name descname"><span class="pre">TransitionKernel</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bayes_vi.inference.mcmc.transition_kernels.TransitionKernel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Base class for Markov transition Kernels.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-bayes_vi.inference.mcmc">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-bayes_vi.inference.mcmc" title="Permalink to this headline">¶</a></h2>
+<p>MCMC subpackage containing MCMC related modules.</p>
+<div class="section" id="modules">
+<h3>Modules<a class="headerlink" href="#modules" title="Permalink to this headline">¶</a></h3>
+<p>mcmc: module providing the mcmc inference class</p>
+<p>sample_results: module providing a wrapper for the mcmc sampling results.</p>
+<p>stepsize_adaptation_kernels: module providing different stepsize adaptation kernels.</p>
+<p>transition_kernels: module providing different Markov transition kernels.</p>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, Maximilian Gartz.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
