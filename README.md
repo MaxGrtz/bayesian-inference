@@ -165,6 +165,9 @@ mcmc_result = mcmc.fit(
   99.08% [5000/5000 00:15<00:00]
 </div>
 
+&nbsp;
+
+
 The `mcmc_result` is a wrapper containing the sample results `mcmc_result.samples` and additional traced metrics specific to the kernel `mcmc_result.trace`.
 
 To visualize the results, one can use existing libraries like arviz (https://arviz-devs.github.io/arviz/index.html).
@@ -281,6 +284,7 @@ approx_posterior, meanfield_advi_losses = vi.fit(
 <div>
   100.00% [1000/1000 00:02<00:00 avg loss: 50.336]
 </div>
+&nbsp;
 
 
 
@@ -402,12 +406,10 @@ approx_posterior, affine_flow_losses = vi.fit(
 </div>
 
 
-
-To define continuous normalizing flows, you may use is the `tfp.bijectors.FFJORD` bijector.
-
 &nbsp;
 
 ## 2.2. Continuous Flows
+To define continuous normalizing flows, you may use is the `tfp.bijectors.FFJORD` bijector.
 
 
 ```python
@@ -440,7 +442,6 @@ approx_posterior, cnf_losses = vi.fit(
 <div>
   100.00% [1000/1000 01:02<00:00 avg loss: 50.439]
 </div>
-
 
 &nbsp;
 
@@ -496,6 +497,7 @@ approx_posterior, affine_flow_losses = vi.fit(
 <div>
   100.00% [1000/1000 00:04<00:00 avg loss: 50.310]
 </div>
+&nbsp;
 
 
 
@@ -530,6 +532,7 @@ approx_posterior, cnf_losses = vi.fit(
 <div>
   100.00% [1000/1000 01:08<00:00 avg loss: 50.633]
 </div>
+&nbsp;
 
 
 
@@ -558,9 +561,9 @@ The package provides an implementation of a general Hamiltonian Flow bijector.
 &nbsp;
 
 ## 4.1. Verify Hamiltonian Flow Bijector
-To test the implementation the Hamiltonian Flow Bijector, consider the Hamiltonian of a 1d harmonic oscillator with mass $m=1$ and constant $k=1$:
+To test the implementation the Hamiltonian Flow Bijector, consider the Hamiltonian of a 1d harmonic oscillator with mass m=1 and constant k=1:
 
-$H(q,p) = T(p) + U(q) = 0.5 p^2 + 0.5 q^2$.
+H(q,p) = T(p) + U(q) = 0.5 p^2 + 0.5 q^2.
 
 We know that this should yield an oscillating dynamic, which manifests as a circle on phase space.
 
