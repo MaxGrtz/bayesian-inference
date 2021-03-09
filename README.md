@@ -100,7 +100,7 @@ ax = data.plot(kind='kde', title='Univariate Gaussian Test Data')
 
 
     
-![png](https://github.com/MaxGrtz/bayesian-inference/tree/thesis/readme_images/output_15_0.png)
+![](https://github.com/MaxGrtz/bayesian-inference/tree/thesis/readme_images/output_15_0.png)
     
 
 &nbsp;
@@ -245,7 +245,7 @@ ax = az.plot_trace(posterior_samples)
 
 
     
-![png](https://github.com/MaxGrtz/bayesian-inference/tree/thesis/readme_images/output_29_0.png)
+![](https://github.com/MaxGrtz/bayesian-inference/tree/thesis/readme_images/output_29_0.png)
     
 
 &nbsp;
@@ -291,7 +291,7 @@ ax = plt.plot(meanfield_advi_losses)
 
 
     
-![png](https://github.com/MaxGrtz/bayesian-inference/tree/thesis/readme_images/output_33_0.png)
+![](https://github.com/MaxGrtz/bayesian-inference/tree/thesis/readme_images/output_33_0.png)
     
 
 
@@ -356,7 +356,7 @@ ax = df.plot(kind='kde')
 
 
     
-![png](https://github.com/MaxGrtz/bayesian-inference/tree/thesis/readme_images/output_35_0.png)
+![](https://github.com/MaxGrtz/bayesian-inference/tree/thesis/readme_images/output_35_0.png)
     
 
 &nbsp;
@@ -455,7 +455,7 @@ ax = pd.DataFrame({'meanfield_advi': meanfield_advi_losses, 'affine_flow': affin
 
 
     
-![png](https://github.com/MaxGrtz/bayesian-inference/tree/thesis/readme_images/output_46_0.png)
+![](https://github.com/MaxGrtz/bayesian-inference/tree/thesis/readme_images/output_46_0.png)
     
 
 &nbsp;
@@ -540,7 +540,7 @@ ax = pd.DataFrame({'meanfield_advi': meanfield_advi_losses, 'affine_flow': affin
 
 
     
-![png](https://github.com/MaxGrtz/bayesian-inference/tree/thesis/readme_images/output_52_0.png)
+![](https://github.com/MaxGrtz/bayesian-inference/tree/thesis/readme_images/output_52_0.png)
     
 
 &nbsp;
@@ -601,7 +601,7 @@ plt.tight_layout()
 
 
     
-![png](https://github.com/MaxGrtz/bayesian-inference/tree/thesis/readme_images/output_58_0.png)
+![](https://github.com/MaxGrtz/bayesian-inference/tree/thesis/readme_images/output_58_0.png)
     
 &nbsp;
 
@@ -649,7 +649,7 @@ ax = pd.DataFrame({'meanfield_advi': meanfield_advi_losses, 'affine_flow': affin
 
 
     
-![png](https://github.com/MaxGrtz/bayesian-inference/tree/thesis/readme_images/output_64_0.png)
+![](https://github.com/MaxGrtz/bayesian-inference/tree/thesis/readme_images/output_64_0.png)
     
 
 
@@ -690,7 +690,7 @@ ax = pd.DataFrame({'meanfield_advi': meanfield_advi_losses, 'affine_flow': affin
 
 
     
-![png](https://github.com/MaxGrtz/bayesian-inference/tree/thesis/readme_images/output_67_0.png)
+![](https://github.com/MaxGrtz/bayesian-inference/tree/thesis/readme_images/output_67_0.png)
     
 &nbsp;
 
@@ -727,7 +727,7 @@ ax = data.plot(x='x', y='y', kind='scatter', title='Linear Regression Test Data'
 
 
     
-![png](https://github.com/MaxGrtz/bayesian-inference/tree/thesis/readme_images/output_73_0.png)
+![](https://github.com/MaxGrtz/bayesian-inference/tree/thesis/readme_images/output_73_0.png)
     
 
 &nbsp;
@@ -881,7 +881,7 @@ ax = az.plot_trace(posterior_samples)
 
 
     
-![png](https://github.com/MaxGrtz/bayesian-inference/tree/thesis/readme_images/output_84_0.png)
+![](https://github.com/MaxGrtz/bayesian-inference/tree/thesis/readme_images/output_84_0.png)
     
 
 &nbsp;
@@ -923,7 +923,7 @@ ax = plt.plot(meanfield_advi_losses)
 
 
     
-![png](https://github.com/MaxGrtz/bayesian-inference/tree/thesis/readme_images/output_87_0.png)
+![](https://github.com/MaxGrtz/bayesian-inference/tree/thesis/readme_images/output_87_0.png)
     
 
 
@@ -999,6 +999,6 @@ ax = df.plot(kind='kde')
 
 
     
-![png](https://github.com/MaxGrtz/bayesian-inference/tree/thesis/readme_images/output_89_0.png)
+![](https://github.com/MaxGrtz/bayesian-inference/tree/thesis/readme_images/output_89_0.png)
     
 
